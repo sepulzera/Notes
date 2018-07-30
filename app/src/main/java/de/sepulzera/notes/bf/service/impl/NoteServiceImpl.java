@@ -513,8 +513,12 @@ public final class NoteServiceImpl implements NoteService {
       arr.put(note.toJson());
     }
 
-    file = new File(file, fileName);
-    Helper.writeFile(file.getPath(), arr.toString(), true);
+    try {
+      file = new File(file, fileName);
+      Helper.writeFile(file.getPath(), arr.toString(2), true);
+    } catch (JSONException e) {
+      throw new IllegalArgumentException("JSONException!", e);
+    }
 
     return file;
   }
