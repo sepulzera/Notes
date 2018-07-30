@@ -23,6 +23,7 @@
         android:id="@+id/tabs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryBar"
         app:tabBackground="@color/colorPrimaryBar"
         app:tabMaxWidth="0dp"
         app:tabGravity="fill"/>
