@@ -339,7 +339,7 @@ public final class NoteServiceImpl implements NoteService {
     final Note oldNote = mDb.get(note.getId());
     invalidateRevision(oldNote);
 
-    if (newRev > mPrefDeleteOldRevs) {
+    if (mPrefDeleteOldRevs > 0 && newRev > mPrefDeleteOldRevs) {
       // delete old revisions
       final String[] selectionArgs = { String.valueOf(note.getIdent()), String.valueOf(newRev - mPrefDeleteOldRevs) };
       mDb.delete(NoteEntry.COL_IDENT + " = ? AND " + NoteEntry.COL_REVISION + " <= ?", selectionArgs);
