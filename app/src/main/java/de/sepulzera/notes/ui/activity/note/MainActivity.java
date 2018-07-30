@@ -500,19 +500,6 @@ public class MainActivity extends AppCompatActivity
     fixAppbarPosition();
   }
 
-  /*
-  private void discardDraft(@NonNull final Note draft) {
-    draft.setCurr(true); // workaround: service move to trash
-    final NoteService srv = NoteServiceImpl.getInstance();
-    srv.delete(draft);
-    mAdapter.remove(draft);
-
-    Snackbar.make(mMainView, String.format(getResources().getString(R.string.snack_draft_discarded)
-        , draft.getTitle()), Snackbar.LENGTH_LONG).show();
-
-    fixAppbarPosition();
-  } */
-
   private void fixAppbarPosition() {
     if (mAdapter.isEmpty()) {
       // list empty and appbar faded out -> bring it back

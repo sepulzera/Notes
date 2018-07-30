@@ -175,18 +175,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
       bindPreferenceSummaryToValue(findPreference(getResources().getString(R.string.PREF_LIST_REFRESH_INTERVAL_KEY)));
       bindPreferenceSummaryToValue(findPreference(getResources().getString(R.string.PREF_DAY_NIGHT_MODE_KEY)));
     }
-
-    /*
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-      int id = item.getItemId();
-      if (id == android.R.id.home) {
-        startActivity(new Intent(getActivity(), SettingsActivity.class));
-        return true;
-      }
-      return super.onOptionsItemSelected(item);
-    }
-    */
   }
 
 }

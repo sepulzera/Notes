@@ -444,8 +444,6 @@ public final class NoteServiceImpl implements NoteService {
         throw new IllegalArgumentException("Constraint collision!", e);
       }
     }
-
-    // return addedNotes;
   }
 
   private boolean hasIdent(long ident) {

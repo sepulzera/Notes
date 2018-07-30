@@ -84,9 +84,6 @@
 
   <string name="dialog_restore_select_file_title">Select Backup File</string>
 
-  <!-- <string name="dialog_error_msg">A wild error occurred:\n%1$s</string>
-  <string name="dialog_error_title">Error</string> -->
-
   <!-- Preferences -->
   <string name="pref_header_general">General</string>
   <string name="pref_header_general_sum">This section provides general settings.</string>
@@ -94,7 +91,6 @@
   <!-- Snacks -->
   <string name="snack_note_deleted">Deleted \"%1$s\".</string>
   <string name="snack_note_moved_to_trash">Moved \"%1$s\" to Trash.</string>
-  <!-- <string name="snack_draft_discarded">Discarded \"%1$s\".</string> -->
   <string name="snack_note_restored">Restored \"%1$s\".</string>
   <string name="snack_backup_created">Backup saved to \"%1$s\"!</string>
   <string name="snack_backup_storage_not_writeable">Backup failed, storage is not writable!</string>
