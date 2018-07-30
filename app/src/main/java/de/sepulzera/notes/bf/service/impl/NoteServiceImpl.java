@@ -272,7 +272,6 @@ public final class NoteServiceImpl implements NoteService {
 
     if (noteIsDraft) {
       if (!oldNoteIsDraft) {
-        // create draft of revision
         return createDraft(note);
       } else {
         // draft: just update the draft (no new revision)
@@ -285,19 +284,23 @@ public final class NoteServiceImpl implements NoteService {
   }
 
   private Note createDraft(@NonNull final Note note) {
-    Note draft = getDraft(note);
-    if (null != draft) {
-      draft.setCurr(false);
-      delete(draft);
-    }
+    discardOldDraft(note);
 
-    draft = clone(note);
+    final Note draft = clone(note);
     draft.setRevision(note.getRevision() + 1);
     draft.setCurrRev(true);
     try {
       return mDb.add(draft);
     } catch (SQLIntegrityConstraintViolationException e) {
       throw new IllegalArgumentException("Constraint collision!", e);
+    }
+  }
+
+  private void discardOldDraft(@NonNull final Note note) {
+    final Note draft = getDraft(note);
+    if (null != draft) {
+      draft.setCurr(false);
+      doDelete(draft);
     }
   }
 
@@ -314,11 +317,7 @@ public final class NoteServiceImpl implements NoteService {
   }
 
   private Note upgradeNote(@NonNull final Note note) {
-    // discard old draft
-    final Note draft = getDraft(note);
-    if (null != draft) {
-      delete(draft);
-    }
+    discardOldDraft(note);
 
     if (mPrefDeleteOldRevs == -1) {
       return updateNote(note);
