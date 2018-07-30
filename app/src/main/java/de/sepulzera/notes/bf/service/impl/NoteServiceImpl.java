@@ -388,7 +388,7 @@ public final class NoteServiceImpl implements NoteService {
   }
 
   @Override
-  public List<Note> restoreBackup(@NonNull final Context context, @NonNull final Uri backupFile) {
+  public void restoreBackup(@NonNull final Context context, @NonNull final Uri backupFile) {
     final List<Note> allNotes = new ArrayList<>();
 
     try {
@@ -408,8 +408,6 @@ public final class NoteServiceImpl implements NoteService {
     }
 
     doRestoreBackup(allNotes);
-
-    return allNotes;
   }
 
   private void doRestoreBackup(@NonNull final List<Note> backup) {

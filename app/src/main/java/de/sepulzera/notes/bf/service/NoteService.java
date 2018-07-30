@@ -41,7 +41,7 @@ public interface NoteService {
 
   void readPreferences(@NonNull final Context context);
 
-  List<Note> restoreBackup(@NonNull final Context context, @NonNull final Uri backupFile);
+  void restoreBackup(@NonNull final Context context, @NonNull final Uri backupFile);
 
   File saveBackup(@NonNull final String fileName);
 

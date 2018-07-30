@@ -98,10 +98,7 @@
   <string name="snack_note_restored">Restored \"%1$s\".</string>
   <string name="snack_backup_created">Backup saved to \"%1$s\"!</string>
   <string name="snack_backup_storage_not_writeable">Backup failed, storage is not writable!</string>
-  <plurals name="snack_restore_completed">
-    <item quantity="one">%1$d of %2$d note restored!</item>
-    <item quantity="other">%1$d of %2$d notes restored!</item>
-  </plurals>
+  <string name="snack_restore_completed">Backup restored.</string>
 
   <string name="snack_restore_storage_not_readable">Restore failed, storage is not readable!</string>
 

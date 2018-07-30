@@ -38,7 +38,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import java.io.File;
-import java.util.List;
 
 import de.sepulzera.notes.R;
 import de.sepulzera.notes.bf.helper.Helper;
@@ -416,10 +415,9 @@ public class MainActivity extends AppCompatActivity
       return;
     }
 
-    final List<Note> restoredNotes;
     try {
       NoteService srv = NoteServiceImpl.getInstance();
-      restoredNotes = srv.restoreBackup(this, backupFile);
+      srv.restoreBackup(this, backupFile);
     } catch (IllegalArgumentException e) {
       Log.e("nav restore", "Error parsing a note: " + e.getMessage(), e);
       Snackbar.make(mMainView, "Error parsing a note: " + e.getMessage(), Snackbar.LENGTH_LONG).show();
@@ -427,8 +425,7 @@ public class MainActivity extends AppCompatActivity
     }
     restoreState();
 
-    Snackbar.make(mMainView, getResources().getQuantityString(R.plurals.snack_restore_completed
-        , restoredNotes.size(), restoredNotes.size()), Snackbar.LENGTH_LONG).show();
+    Snackbar.make(mMainView, getResources().getString(R.string.snack_restore_completed), Snackbar.LENGTH_LONG).show();
   }
 
   @Override
