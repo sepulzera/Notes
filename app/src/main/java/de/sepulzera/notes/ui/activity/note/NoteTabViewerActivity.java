@@ -15,7 +15,9 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -64,10 +66,6 @@ public class NoteTabViewerActivity extends AppCompatActivity {
     } else {
       createState(getIntent());
     }
-
-    // set ActionBar title
-    final String title = mNote != null? mNote.getTitle() : mDraft.getTitle();
-    setTitle(StringUtil.isBlank(title)? getResources().getString(R.string.new_note_title) : title);
 
     mPager = findViewById(R.id.viewpager);
     setupViewPager(mPager);
@@ -157,12 +155,18 @@ public class NoteTabViewerActivity extends AppCompatActivity {
         mDisplayedNote = mNote;
       }
     }
+
+    // set ActionBar title
+    final String title = mDisplayedNote.getTitle();
+    setTitle(StringUtil.isBlank(title)? getResources().getString(R.string.new_note_title) : title);
   }
 
   private void restoreState(@NonNull final Bundle outState) {
     mNote  = (Note)outState.getSerializable(Note.TAG_NOTE);
     mDraft = (Note)outState.getSerializable(KEY_DRAFT);
+    mDisplayedNote = (Note)outState.getSerializable(KEY_DISPLAYED_NOTE);
     mShowsRevisions = outState.getBoolean(KEY_SHOW_REVS);
+    setTitle(outState.getString(KEY_TITLE));
 
     final List<Fragment> frags = getSupportFragmentManager().getFragments();
     int numberOfFrags = frags.size();
@@ -207,6 +211,10 @@ public class NoteTabViewerActivity extends AppCompatActivity {
     if (mDraft != null) {
       outState.putSerializable(KEY_DRAFT, mDraft);
     }
+    if (mDisplayedNote != null) {
+      outState.putSerializable(KEY_DISPLAYED_NOTE, mDisplayedNote);
+    }
+    outState.putString(KEY_TITLE, getTitle().toString());
     outState.putBoolean(KEY_SHOW_REVS , mShowsRevisions);
   }
 
@@ -233,21 +241,25 @@ public class NoteTabViewerActivity extends AppCompatActivity {
       mFabSave.hide();
       mFabEdit.hide();
     }
+
+    invalidateOptionsMenu();
   }
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     getMenuInflater().inflate(R.menu.om_note_view, menu);
 
-    final boolean isCurrRev = mDisplayedNote != null && mDisplayedNote.getCurrRev();
-    final boolean isNewNote = mDisplayedNote != null && mDisplayedNote.getId() == 0L;
+    final boolean isCurrRev  = mDisplayedNote != null && mDisplayedNote.getCurrRev();
+    final boolean isNewNote  = mDisplayedNote != null && mDisplayedNote.getId() == 0L;
+    final boolean isEditable = mFabSave.isShown();
 
     MenuItem item;
-    if ((item = menu.findItem(R.id.om_detail_note_show_revisions)) != null) { item.setVisible(!mShowsRevisions && mNote != null && !isNewNote && mDisplayedNote.getRevision() > 1); }
-    if ((item = menu.findItem(R.id.om_detail_note_clear)) != null) { item.setVisible(isCurrRev); }
-    if ((item = menu.findItem(R.id.om_detail_note_revert)) != null) { item.setVisible(isCurrRev && !isNewNote); }
-    if ((item = menu.findItem(R.id.om_detail_note_delete)) != null) { item.setVisible(isCurrRev && !mDisplayedNote.getDraft()); }
-    if ((item = menu.findItem(R.id.om_detail_draft_discard)) != null) { item.setVisible(isCurrRev && mDisplayedNote.getDraft()); }
+    if ((item = menu.findItem(R.id.om_detail_note_show_revisions)) != null) { item.setVisible(!mShowsRevisions && mDisplayedNote != null && !isNewNote && mDisplayedNote.getRevision() > 1); }
+    if ((item = menu.findItem(R.id.om_detail_note_rename)) != null) { item.setVisible(isCurrRev && !isNewNote && isEditable); }
+    if ((item = menu.findItem(R.id.om_detail_note_clear)) != null) { item.setVisible(isCurrRev && isEditable); }
+    if ((item = menu.findItem(R.id.om_detail_note_revert)) != null) { item.setVisible(isCurrRev && !isNewNote && isEditable); }
+    if ((item = menu.findItem(R.id.om_detail_note_delete)) != null) { item.setVisible(isCurrRev && isEditable && !mDisplayedNote.getDraft()); }
+    if ((item = menu.findItem(R.id.om_detail_draft_discard)) != null) { item.setVisible(isCurrRev && isEditable && mDisplayedNote.getDraft()); }
 
     return super.onCreateOptionsMenu(menu);
   }
@@ -278,6 +290,13 @@ public class NoteTabViewerActivity extends AppCompatActivity {
 
       case R.id.om_detail_note_show_revisions:
         showRevisions();
+        return true;
+
+      case R.id.om_detail_note_rename:
+        page = getActiveFragment(getSupportFragmentManager(), mPager);
+        if (page != null) {
+          renameNote((NoteEditFragment)page);
+        }
         return true;
 
       case R.id.om_detail_note_delete:
@@ -319,12 +338,14 @@ public class NoteTabViewerActivity extends AppCompatActivity {
 
   @Override
   public void onBackPressed() {
+    final String newTitle = getTitle().toString();
+
     if (mDraft == null) {
       // Nur Note
         // unverändert -> Zurück
         //   verändert -> Save Draft
       final NoteEditFragment frag = mNoteFrags.get(0).getFragment();
-      if (frag.isChanged()) {
+      if (frag.isChanged() || !StringUtil.equals(frag.getNote().getTitle(), newTitle)) {
         draft(frag);
       }
     } else if (mNote == null) {
@@ -332,7 +353,7 @@ public class NoteTabViewerActivity extends AppCompatActivity {
       // unverändert -> Zurück
       //   verändert -> Update Draft
       final NoteEditFragment frag = mNoteFrags.get(0).getFragment();
-      if (frag.isChanged()) {
+      if (frag.isChanged() || !StringUtil.equals(frag.getNote().getTitle(), newTitle)) {
         draft(frag);
       }
     } else {
@@ -350,6 +371,10 @@ public class NoteTabViewerActivity extends AppCompatActivity {
       final boolean noteChanged  = noteFrag.isChanged();
 
       if (!noteChanged && !draftChanged) {
+        if (!StringUtil.equals(draftFrag.getNote().getTitle(), newTitle)) {
+          // Nur rename
+          draft(draftFrag);
+        }
         // Zurück
         super.onBackPressed();
       } else if (!noteChanged) { // && draftChanged
@@ -383,6 +408,49 @@ public class NoteTabViewerActivity extends AppCompatActivity {
     super.onBackPressed();
   }
 
+  private void renameNote(@NonNull final NoteEditFragment frag) {
+    final Note note = frag.getNote();
+
+    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    builder.setTitle(getResources().getString(R.string.dialog_rename_note_rename_title));
+
+    final EditText input = new EditText(this);
+    input.setInputType(InputType.TYPE_CLASS_TEXT);
+    input.setText(note.getTitle());
+    input.setSelectAllOnFocus(true);
+    builder.setView(input);
+
+    builder.setPositiveButton(getResources().getString(R.string.dialog_rename_note_rename_btn), new DialogInterface.OnClickListener() {
+      @Override
+      public void onClick(DialogInterface dialog, int which) {
+        setTitle(input.getText().toString());
+      }
+    }).setNegativeButton(getResources().getString(R.string.dialog_btn_abort), new DialogInterface.OnClickListener() {
+      @Override
+      public void onClick(DialogInterface dialog, int which) {
+        dialog.cancel();
+      }
+    });
+
+    final AlertDialog dialog = builder.create();
+    final Window dialogWindow = dialog.getWindow();
+    if (null != dialogWindow) {
+      dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+    }
+
+    input.addTextChangedListener(new TextWatcher() {
+      @Override public void beforeTextChanged(CharSequence c, int i, int i2, int i3) {}
+      @Override public void onTextChanged(CharSequence c, int i, int i2, int i3) {}
+
+      @Override
+      public void afterTextChanged(Editable editable) {
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(!StringUtil.isBlank(editable.toString()));
+      }
+    });
+
+    dialog.show();
+  }
+
   private void deleteNote(@NonNull final NoteEditFragment frag) {
     final Note note = frag.getNote();
     if (frag.isChanged()) {
@@ -396,6 +464,7 @@ public class NoteTabViewerActivity extends AppCompatActivity {
   private void draft(@NonNull final NoteEditFragment frag) {
     final Note note = frag.getNote();
     note.setMsg(frag.getMsg());
+    note.setTitle(getTitle().toString());
 
     // save draft
     note.setDraft(true);
@@ -409,7 +478,9 @@ public class NoteTabViewerActivity extends AppCompatActivity {
   private void saveNote(@NonNull final NoteEditFragment frag) {
     final Note note = frag.getNote();
     final String newMsg = frag.getMsg();
-    if (!note.getDraft() && StringUtil.equals(newMsg, note.getMsg())) {
+    final String newTitle = getTitle().toString();
+    if (!note.getDraft()
+        && StringUtil.equals(newMsg, note.getMsg()) && StringUtil.equals(newTitle, note.getTitle())) {
       // no changes made -> just go back
       finish();
       return;
@@ -417,6 +488,7 @@ public class NoteTabViewerActivity extends AppCompatActivity {
 
     final Note saveNote = NoteServiceImpl.getInstance().clone(note);
     saveNote.setMsg(newMsg);
+    saveNote.setTitle(StringUtil.equals(getResources().getString(R.string.new_note_title), newTitle)? "" : newTitle);
 
     final boolean wasDraft = note.getDraft();
     if (wasDraft) {
@@ -426,6 +498,7 @@ public class NoteTabViewerActivity extends AppCompatActivity {
     if (0L != saveNote.getId() && !wasDraft
         || 1L < saveNote.getRevision() && wasDraft) {
       // Note was already saved and thus got a title
+      saveNote.setRevision(saveNote.getRevision() + 1);
       executeDone(saveNote);
       return;
     }
@@ -446,6 +519,7 @@ public class NoteTabViewerActivity extends AppCompatActivity {
       @Override
       public void onClick(DialogInterface dialog, int which) {
         saveNote.setTitle(srv.toNoteTitle(input.getText().toString()));
+        saveNote.setRevision(saveNote.getRevision() + 1);
         executeDone(saveNote);
       }
     }).setNegativeButton(getResources().getString(R.string.dialog_btn_abort), new DialogInterface.OnClickListener() {
@@ -663,6 +737,8 @@ public class NoteTabViewerActivity extends AppCompatActivity {
 
   private static final int mNumScrollTabs = 5;
 
-  private static final String KEY_DRAFT     = "notetabvieweract_draft";
-  private static final String KEY_SHOW_REVS = "notetabvieweract_showrevs";
+  private static final String KEY_DRAFT          = "notetabvieweract_draft";
+  private static final String KEY_TITLE          = "notetabvieweract_title";
+  private static final String KEY_DISPLAYED_NOTE = "notetabvieweract_displayednote";
+  private static final String KEY_SHOW_REVS      = "notetabvieweract_showrevs";
 }

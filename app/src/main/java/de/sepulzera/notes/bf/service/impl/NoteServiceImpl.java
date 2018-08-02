@@ -250,6 +250,8 @@ public final class NoteServiceImpl implements NoteService {
 
     final boolean oldNoteIsDraft = oldNote.getDraft();
     final boolean noteIsDraft = note.getDraft();
+    final boolean revIncreased = oldNote.getRevision() < note.getRevision();
+    note.setRevision(oldNote.getRevision());
 
     if (oldNoteIsDraft && !noteIsDraft) {
       // oldNote was Draft and is now the new revision
@@ -264,6 +266,9 @@ public final class NoteServiceImpl implements NoteService {
       if (noteIsDraft) {
         return updateDraft(note);
       } else {
+        if (revIncreased) {
+          discardOldDraft(note);
+        }
         return updateNote(note);
       }
     }
@@ -355,7 +360,7 @@ public final class NoteServiceImpl implements NoteService {
     final Note savedNote = mDb.update(note);
     if (null != savedNote) {
       final Note draft = getDraft(savedNote);
-      if (null != draft) {
+      if (null != draft && !StringUtil.equals(savedNote.getTitle(), draft.getTitle())) {
         draft.setTitle(savedNote.getTitle());
         mDb.update(draft);
       }

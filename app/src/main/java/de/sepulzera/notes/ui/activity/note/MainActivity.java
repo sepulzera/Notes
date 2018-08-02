@@ -238,7 +238,7 @@ public class MainActivity extends AppCompatActivity
 
   private void renameNote(@NonNull final Note note) {
     AlertDialog.Builder builder = new AlertDialog.Builder(this);
-    builder.setTitle(getResources().getString(R.string.cm_rename_note));
+    builder.setTitle(getResources().getString(R.string.dialog_rename_note_rename_title));
 
     final EditText input = new EditText(this);
     input.setInputType(InputType.TYPE_CLASS_TEXT);

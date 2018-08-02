@@ -16,6 +16,9 @@
       android:id="@+id/om_detail_note_show_revisions"
       android:title="@string/om_detail_note_show_revisions" />
   <item
+      android:id="@+id/om_detail_note_rename"
+      android:title="@string/cm_rename_note" />
+  <item
       android:id="@+id/om_detail_note_clear"
       android:title="@string/clear" />
   <item

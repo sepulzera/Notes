@@ -65,6 +65,7 @@
   <string name="dialog_btn_abort">Cancel</string>
   <string name="dialog_create_note_title">A meaningful title will help you to easily find the note back later:</string>
   <string name="dialog_create_note_save_btn">Create Note</string>
+  <string name="dialog_rename_note_rename_title">New Title</string>
   <string name="dialog_rename_note_rename_btn">Rename Note</string>
 
   <string name="dialog_about_app">App:</string>
