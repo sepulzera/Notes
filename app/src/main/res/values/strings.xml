@@ -38,7 +38,7 @@
   <!-- NoteListActivity -->
   <string name="note_item_empty_content">(no content)</string>
   <string name="note_item_draft">[DRAFT]</string>
-  <string name="note_list_empty">You don\'t have any notes, yet.\n\nPress \"+\" to create your first note.</string>
+  <string name="note_list_empty">Press [+] to create a note.</string>
   <string name="post_now">Now</string>
   <string name="post_minute">" min"</string>
   <string name="post_hour">" h"</string>
