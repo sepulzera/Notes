@@ -454,6 +454,9 @@ public class MainActivity extends AppCompatActivity
 
         case RQ_SETTINGS:
           Helper.updatePreferences(this);
+          if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            mDrawerLayout.closeDrawer(GravityCompat.START);
+          }
           break;
 
         case RQ_TRASH:
