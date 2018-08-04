@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import java.util.Objects;
 
@@ -46,7 +45,6 @@ public class NoteEditFragment extends Fragment {
 
     final View mView = view.findViewById(R.id.main_content);
     mEditMsg = mView.findViewById(R.id.note_msg);
-    mTvMsg = mView.findViewById(R.id.tv_note_msg);
 
     setEditable(mIsEditable);
     setMsg(msg != null? msg : mNote.getMsg());
@@ -83,8 +81,6 @@ public class NoteEditFragment extends Fragment {
     if (cman != null) {
       cman.setPrimaryClip(
           ClipData.newPlainText("notes_" + mNote.getTitle(), getMsg()));
-      // Android Design Support Library: Snack shown below the screen
-      // Snackbar.make(mView, getResources().getString(R.string.copied_to_clipboard), Snackbar.LENGTH_LONG).show();
     }
   }
 
@@ -101,11 +97,9 @@ public class NoteEditFragment extends Fragment {
   public void setEditable(boolean editable) {
     mIsEditable = editable;
     if (editable) {
-      mEditMsg.setVisibility(View.VISIBLE);
-      mTvMsg.setVisibility(View.GONE);
+      mEditMsg.setEnabled(true);
     } else {
-      mEditMsg.setVisibility(View.GONE);
-      mTvMsg.setVisibility(View.VISIBLE);
+      mEditMsg.setEnabled(false);
     }
   }
 
@@ -119,11 +113,9 @@ public class NoteEditFragment extends Fragment {
 
   private void setMsg(@NonNull String msg) {
     mEditMsg.setText(msg);
-    mTvMsg.setText(msg);
   }
 
   private EditText mEditMsg;
-  private TextView mTvMsg;
 
   private int  mIndex = -1;
   private Note mNote;

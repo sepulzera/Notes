@@ -4,7 +4,7 @@
   <color name="colorPrimaryDark">#075511</color>
   <color name="colorAccent">#BB6322</color>
 
-  <color type="color" name="colorTextEnabled">#222</color>
+  <color type="color" name="colorTextEnabled">#111</color>
   <color type="color" name="colorTextDisabled">#444</color>
 
   <color type="color" name="colorPrimaryBar">#158F25</color>
