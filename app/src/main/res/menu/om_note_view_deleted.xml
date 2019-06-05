@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+
+  <item
+      android:id="@+id/om_draft_discard"
+      android:title="@string/cm_delete_permanently"
+      android:icon="@android:drawable/ic_delete"
+      app:showAsAction="ifRoom" />
+  <item
+      android:id="@+id/om_note_restore"
+      android:title="@string/cm_note_restore"
+      android:icon="@android:drawable/ic_menu_rotate"
+      app:showAsAction="ifRoom" />
+</menu>

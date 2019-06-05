@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+  <item
+      android:id="@+id/cm_delete_note"
+      android:title="@string/cm_delete_note"/>
+  <item
+      android:id="@+id/cm_discard_draft"
+      android:title="@string/cm_draft_discard" />
+  <item
+      android:id="@+id/cm_rename_note"
+      android:title="@string/cm_rename_note"/>
+  <item
+      android:id="@+id/cm_rename_draft"
+      android:title="@string/cm_rename_draft"/>
+  <item
+      android:id="@+id/cm_copy_note"
+      android:title="@string/cm_copy_note"/>
+  <item
+      android:id="@+id/cm_copy_draft"
+      android:title="@string/cm_copy_draft"/>
+  <item
+      android:id="@+id/cm_send_as_msg"
+      android:title="@string/cm_send_as_msg"/>
+</menu>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <color name="colorPrimary">#25DA40</color>
+  <color name="colorPrimaryDark">#075511</color>
+  <color name="colorAccent">#DB7F3D</color>
+
+  <color type="color" name="colorTextEnabled">#FFF</color>
+  <color type="color" name="colorTextDisabled">#DDD</color>
+
+  <color type="color" name="colorPrimaryBar">#158F25</color>
+  <color type="color" name="colorAccentDark">#BB6322</color>
+
+  <color type="color" name="white">#DDD</color>
+  <color type="color" name="darkGray">#222</color>
+</resources>

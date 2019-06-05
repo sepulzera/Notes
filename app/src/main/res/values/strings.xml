@@ -1,0 +1,212 @@
+<resources>
+  <string name="app_name">Notes</string>
+  <!-- <string name="app_version">DECLARED IN GRADLE.BUILD</string> -->
+  <string name="app_slogan">Record your thoughts.</string>
+  <string name="app_dev">Sepulzera</string>
+
+  <!-- Navigation Drawer -->
+  <string name="nav_home">Notes</string>
+  <string name="nav_trash">Deleted</string>
+  <string name="nav_preferences">Preferences</string>
+  <string name="nav_commands">Commands</string>
+  <string name="nav_backup">Backup</string>
+  <string name="nav_restore">Restore</string>
+  <string name="nav_about">About This App</string>
+
+  <!-- Kontextmenü -->
+  <string name="clear">Clear Content</string>
+  <string name="revert">Revert Changes</string>
+  <string name="cm_copy_note">Create Copy</string>
+  <string name="cm_copy_draft">Create Copy</string>
+  <string name="cm_delete_note">Delete</string>
+  <string name="cm_delete_permanently">Delete Permanently</string>
+  <string name="cm_draft_discard">Discard</string>
+  <string name="cm_rename_note">Rename</string>
+  <string name="cm_rename_draft">Rename</string>
+  <string name="cm_note_restore">Restore</string>
+  <string name="cm_send_as_msg">Send As Message</string>
+
+  <!-- Optionsmenü -->
+  <string name="copy_to_clipboard">Copy</string>
+  <string name="om_search">Search</string>
+  <string name="om_trash_empty">Empty Trash</string>
+  <string name="om_detail_note_show_revisions">Show revisions</string>
+
+  <!-- Note -->
+  <string name="copy_name_add">Copy</string> <!-- wird bei Kopie an Titel angehängt -->
+
+  <!-- NoteListActivity -->
+  <string name="note_item_empty_content">(no content)</string>
+  <string name="note_item_draft">[DRAFT]</string>
+  <string name="note_list_empty">You don\'t have any notes, yet.\n\nPress \"+\" to create your first note.</string>
+  <string name="post_now">Now</string>
+  <string name="post_minute">" min"</string>
+  <string name="post_hour">" h"</string>
+
+  <string name="backup_file_name">Notes Backup</string>
+
+  <!-- NoteViewActivity -->
+  <string name="new_note_title">New Note</string>
+  <string name="hint_start_writing">Start writing …</string>
+  <string name="copied_to_clipboard">Copied to clipboard.</string>
+  <string name="note_save_ignore_old_rev">Old revisions can not be changed.</string>
+  <string name="note_clear_ignore_old_rev">Old revisions can not be changed.</string>
+  <string name="note_revert_ignore_old_rev">Old revisions can not be changed.</string>
+
+  <!-- Note Trash -->
+  <string name="note_trash_title">Trash</string>
+  <string name="note_trash_empty">Your Trash is empty.</string>
+
+  <!-- Note Tab Viewer -->
+  <string name="tab_viewer_draft_title">Draft</string>
+  <string name="tab_viewer_note_title">Note</string>
+
+  <!-- Dialoge -->
+  <string name="dialog_btn_abort">Cancel</string>
+  <string name="dialog_create_note_title">A meaningful title will help you to easily find the note back later:</string>
+  <string name="dialog_create_note_save_btn">Create Note</string>
+  <string name="dialog_rename_note_rename_btn">Rename Note</string>
+
+  <string name="dialog_about_app">App:</string>
+  <string name="dialog_about_version">Version:</string>
+  <string name="dialog_about_dev">Developer:</string>
+
+  <string name="dialog_trash_delete_note_title">Delete Note From Trash</string>
+  <string name="dialog_trash_delete_note_msg">This note\n\"%1$s\"\nwill be permanently lost.</string>
+  <string name="dialog_trash_delete_note_go_btn">Delete</string>
+  <string name="dialog_empty_trash_title">Empty Trash</string>
+  <string name="dialog_empty_trash_msg">All items in the Trash will be permanently deleted.</string>
+  <string name="dialog_empty_trash_go">Empty Trash</string>
+
+  <string name="dialog_back_unsaved_conflict_title">Unsaved Data</string>
+  <string name="dialog_back_unsaved_conflict_msg">Both the draft and the note are changed.</string>
+  <string name="dialog_back_unsaved_conflict_go">Ignore changes</string>
+
+  <string name="dialog_restore_select_file_title">Select Backup File</string>
+
+  <!-- <string name="dialog_error_msg">A wild error occurred:\n%1$s</string>
+  <string name="dialog_error_title">Error</string> -->
+
+  <!-- Preferences -->
+  <string name="pref_header_general">General</string>
+  <string name="pref_header_general_sum">This section provides general settings.</string>
+
+  <!-- Snacks -->
+  <string name="snack_note_deleted">Deleted \"%1$s\".</string>
+  <string name="snack_note_moved_to_trash">Moved \"%1$s\" to Trash.</string>
+  <!-- <string name="snack_draft_discarded">Discarded \"%1$s\".</string> -->
+  <string name="snack_note_restored">Restored \"%1$s\".</string>
+  <string name="snack_backup_created">Backup saved to \"%1$s\"!</string>
+  <string name="snack_backup_storage_not_writeable">Backup failed, storage is not writable!</string>
+  <plurals name="snack_restore_completed">
+    <item quantity="one">%1$d of %2$d note restored!</item>
+    <item quantity="other">%1$d of %2$d notes restored!</item>
+  </plurals>
+
+  <string name="snack_restore_storage_not_readable">Restore failed, storage is not readable!</string>
+
+  <string name="snack_trash_emptied">Trash emptied.</string>
+
+
+  <!-- Preferences -->
+  <string name="title_activity_note_preference">Settings</string>
+
+  <!-- rev delete old -->
+  <string name="pref_title_rev_delete_old_num">Delete old revisions</string>
+  <string name="pref_rev_delete_old_num_default">5</string>
+  <string-array name="pref_rev_delete_old_num_titles">
+    <item>Never</item>
+    <item>Keep 1 revision</item>
+    <item>Keep 2 revisions</item>
+    <item>Keep 3 revisions</item>
+    <item>Keep 5 revisions</item>
+    <item>Keep 10 revisions</item>
+    <item>Keep 30 revisions</item>
+    <item>Disable revisions</item>
+  </string-array>
+  <string-array name="pref_rev_delete_old_num_values">
+    <item>0</item>
+    <item>1</item>
+    <item>2</item>
+    <item>3</item>
+    <item>5</item>
+    <item>10</item>
+    <item>30</item>
+    <item>-1</item>
+  </string-array>
+
+  <!-- note remove deleted -->
+  <string name="pref_title_note_remove_deleted_days">Remove deleted notes after x days</string>
+  <string name="pref_note_remove_deleted_days_num_default">14</string>
+  <string-array name="pref_note_remove_deleted_days_titles">
+    <item>Never</item>
+    <item>1 day</item>
+    <item>2 days</item>
+    <item>3 days</item>
+    <item>5 days</item>
+    <item>10 days</item>
+    <item>14 days</item>
+    <item>Instantly</item>
+  </string-array>
+  <string-array name="pref_note_remove_deleted_days_values">
+    <item>-1</item>
+    <item>1</item>
+    <item>2</item>
+    <item>3</item>
+    <item>5</item>
+    <item>10</item>
+    <item>14</item>
+    <item>0</item>
+  </string-array>
+
+  <!-- note list refresh -->
+  <string name="pref_title_list_refresh_interval">Interval to refresh the notes list</string>
+  <string name="pref_list_refresh_interval_default">5</string>
+  <string-array name="pref_list_refresh_interval_titles">
+    <item>Never</item>
+    <item>1 Minute</item>
+    <item>2 Minutes</item>
+    <item>5 Minutes</item>
+    <item>10 Minutes</item>
+    <item>30 Minutes</item>
+    <item>60 Minutes</item>
+  </string-array>
+  <string-array name="pref_list_refresh_interval_values">
+    <item>-1</item>
+    <item>1</item>
+    <item>2</item>
+    <item>5</item>
+    <item>30</item>
+    <item>60</item>
+  </string-array>
+  
+  <!-- note open readonly -->
+  <string name="pref_description_note_open_readonly">If activated, notes will be opened read-only.</string>
+  <string name="pref_title_note_open_readonly">Open Notes Read-Only</string>
+  <string name="pref_note_open_readonly_default">true</string>
+
+  <!-- day night theme -->
+  <string name="pref_title_day_night_mode">Night Mode</string>
+  <string name="pref_day_night_mode_default">-1</string>
+  <string-array name="pref_day_night_mode_titles">
+    <item>Follow System</item>
+    <item>Day</item>
+    <item>Night</item>
+    <item>Auto</item>
+  </string-array>
+  <string-array name="pref_day_night_mode_values">
+    <item>-1</item>
+    <item>1</item>
+    <item>2</item>
+    <item>0</item>
+  </string-array>
+
+
+  <!-- constants, DO NOT CHANGE -->
+  <string name="PREF_LIST_REFRESH_INTERVAL_KEY">pref_list_refresh_interval_key</string>
+  <string name="PREF_DAY_NIGHT_MODE_KEY">pref_day_night_mode_key</string>
+  <string name="PREF_NOTE_OPEN_READONLY_KEY">pref_note_open_readonly_key</string>
+  <string name="PREF_REV_DELETE_OLD_NUM_KEY">pref_rev_delete_old_num_key</string>
+  <string name="PREF_NOTE_REMOVE_DELETED_DAYS_NUM_KEY">pref_note_remove_deleted_days_num_key</string>
+
+</resources>

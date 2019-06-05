@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="92dp"
+              android:background="@drawable/agenda_1280"
+              android:theme="@style/ThemeOverlay.AppCompat.Dark"
+              android:orientation="vertical"
+              android:gravity="bottom">
+
+  <RelativeLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      android:gravity="bottom"
+      android:padding="16dp"
+      android:paddingStart="32dp"
+      android:paddingEnd="32dp"
+      android:background="#AA075511" >
+
+    <TextView
+        android:id="@+id/label_app_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:text="@string/dialog_about_app"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textStyle="bold"
+        android:textColor="@color/white" />
+
+    <TextView
+        android:id="@+id/tv_app_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/tv_app_version"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp"
+        android:text="@string/app_name"
+        android:textAllCaps="true"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textStyle="bold"
+        android:textColor="@color/white" />
+
+
+
+    <TextView
+        android:id="@+id/label_app_version"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/label_app_name"
+        android:layout_alignParentStart="true"
+        android:text="@string/dialog_about_version"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@color/white" />
+
+    <!--suppress AndroidDomInspection -->
+    <TextView
+        android:id="@+id/tv_app_version"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/label_app_version"
+        android:layout_alignStart="@+id/tv_app_dev"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:text="@string/app_version"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@color/white" />
+
+
+
+    <TextView
+        android:id="@+id/label_app_dev"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/label_app_version"
+        android:layout_alignParentStart="true"
+        android:text="@string/dialog_about_dev"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@color/white" />
+
+    <TextView
+        android:id="@+id/tv_app_dev"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/label_app_dev"
+        android:layout_toEndOf="@id/label_app_dev"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:text="@string/app_dev"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@color/white" />
+
+  </RelativeLayout>
+
+</LinearLayout>

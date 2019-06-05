@@ -1,0 +1,48 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <!-- NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to
+       dismiss it. -->
+  <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
+  <ListPreference
+      android:defaultValue="@string/pref_day_night_mode_default"
+      android:entries="@array/pref_day_night_mode_titles"
+      android:entryValues="@array/pref_day_night_mode_values"
+      android:key="@string/PREF_DAY_NIGHT_MODE_KEY"
+      android:negativeButtonText="@null"
+      android:positiveButtonText="@null"
+      android:title="@string/pref_title_day_night_mode" />
+
+  <ListPreference
+      android:defaultValue="@string/pref_rev_delete_old_num_default"
+      android:entries="@array/pref_rev_delete_old_num_titles"
+      android:entryValues="@array/pref_rev_delete_old_num_values"
+      android:key="@string/PREF_REV_DELETE_OLD_NUM_KEY"
+      android:negativeButtonText="@null"
+      android:positiveButtonText="@null"
+      android:title="@string/pref_title_rev_delete_old_num"/>
+
+  <ListPreference
+      android:defaultValue="@string/pref_note_remove_deleted_days_num_default"
+      android:entries="@array/pref_note_remove_deleted_days_titles"
+      android:entryValues="@array/pref_note_remove_deleted_days_values"
+      android:key="@string/PREF_NOTE_REMOVE_DELETED_DAYS_NUM_KEY"
+      android:negativeButtonText="@null"
+      android:positiveButtonText="@null"
+      android:title="@string/pref_title_note_remove_deleted_days" />
+
+  <ListPreference
+      android:defaultValue="@string/pref_list_refresh_interval_default"
+      android:entries="@array/pref_list_refresh_interval_titles"
+      android:entryValues="@array/pref_list_refresh_interval_values"
+      android:key="@string/PREF_LIST_REFRESH_INTERVAL_KEY"
+      android:negativeButtonText="@null"
+      android:positiveButtonText="@null"
+      android:title="@string/pref_title_list_refresh_interval" />
+
+  <SwitchPreference
+      android:defaultValue="@string/pref_note_open_readonly_default"
+      android:key="@string/PREF_NOTE_OPEN_READONLY_KEY"
+      android:summary="@string/pref_description_note_open_readonly"
+      android:title="@string/pref_title_note_open_readonly"/>
+
+</PreferenceScreen>
