@@ -38,10 +38,6 @@ This app fits your needs. Doesn't? Change it right to your needs.
 * Display: 480x800, hdpi
 * Touch Input
 
-**License**
-
-This project is licensed under MIT. See LICENSE for further information.
-
 ## Installation
 
 1. Download the [latest version](https://github.com/sepulzera/Notes/releases) to the target device. You can also build your own .apk, you will find the required steps under [Hacking The Source](https://github.com/sepulzera/Notes#hacking-the-source).
@@ -54,3 +50,7 @@ This project is licensed under MIT. See LICENSE for further information.
 Simply checkout this repository and import the project into your IDE of choice.
 Run "Build" > "Rebuild Project" to make sure that everything is working.
 You may need to download required dependencies.
+
+# License
+
+This project is licensed under MIT. See LICENSE for further information.
