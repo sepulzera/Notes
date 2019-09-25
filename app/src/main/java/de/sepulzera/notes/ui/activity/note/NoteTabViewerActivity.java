@@ -356,7 +356,6 @@ public class NoteTabViewerActivity extends AppCompatActivity {
       // unverändert -> Zurück
       //   verändert -> Update Draft
       final NoteEditFragment frag = mNoteFrags.get(0).getFragment();
-      // TODO ignore if frag.getNote().getTitle() is empty and newTitle == "New Note"
       if (frag.isChanged() || (!StringUtil.isEmpty(frag.getNote().getTitle()) && !StringUtil.equals(frag.getNote().getTitle(), newTitle))) {
         draft(frag);
       }
