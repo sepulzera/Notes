@@ -4,13 +4,15 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+@SuppressWarnings("ConstantConditions")
 public class StringUtilTest {
 
   @Test
   public void abbreviateTest() {
-    assertEquals(null, StringUtil.abbreviate(null, 4));
+    assertNull(StringUtil.abbreviate(null, 4));
     assertEquals("", StringUtil.abbreviate("", 10));
     assertEquals("abc...", StringUtil.abbreviate("abcdefg", 6));
     assertEquals("abcdefg", StringUtil.abbreviate("abcdefg", 7));
@@ -24,7 +26,7 @@ public class StringUtilTest {
     final String defaultString = "default";
     assertEquals(defaultString, StringUtil.defaultIfNull(null, defaultString));
     assertEquals(actualString, StringUtil.defaultIfNull(actualString, defaultString));
-    assertEquals(null, StringUtil.defaultIfNull(null, null));
+    assertNull(StringUtil.defaultIfNull(null, null));
     assertEquals(actualString, StringUtil.defaultIfNull(actualString, null));
   }
 

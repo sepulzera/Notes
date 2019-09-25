@@ -706,6 +706,7 @@ public class NoteTabViewerActivity extends AppCompatActivity {
       return result;
     }
 
+    @NonNull
     @Override
     public String toString() {
       return "NoteFragPair{" +

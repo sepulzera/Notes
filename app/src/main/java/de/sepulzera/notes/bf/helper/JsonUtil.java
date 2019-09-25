@@ -118,7 +118,7 @@ public class JsonUtil {
       try {
         json.put(key, DateUtil.formatDate(value));
       } catch (JSONException e) {
-        throw new IllegalArgumentException("Der Wert \"" + String.valueOf(value) + "\" konnte nicht zum JSON-Schlüssel \"" + key + "\" gespeichert werden!", e);
+        throw new IllegalArgumentException("Der Wert \"" + value + "\" konnte nicht zum JSON-Schlüssel \"" + key + "\" gespeichert werden!", e);
       }
     }
   }

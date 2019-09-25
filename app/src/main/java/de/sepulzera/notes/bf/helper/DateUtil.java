@@ -128,18 +128,18 @@ public class DateUtil {
     if (diff < 5) {
       return POST_NOW;
     } else if (diff < 60) {
-      return String.valueOf(diff) + POST_MINUTE;
+      return diff + POST_MINUTE;
     } else if (isWithinDay(compareDate, nowNotNull)) {
-      return String.valueOf(getDateDiff(compareDate, nowNotNull, TimeUnit.HOURS)) + POST_HOUR;
+      return getDateDiff(compareDate, nowNotNull, TimeUnit.HOURS) + POST_HOUR;
     } else if (isWithinWeek(compareDate, nowNotNull)) {
-        // is within a week -> display day only ("Mo")
-        return df_day.format(compareDate);
+      // is within a week -> display day only ("Mo")
+      return df_day.format(compareDate);
     } else if (isWithinYear(compareDate, nowNotNull)) {
-        // is within a year -> display month and day ("Feb 02")
-        return df_monthDay.format(compareDate);
+      // is within a year -> display month and day ("Feb 02")
+      return df_monthDay.format(compareDate);
     } else {
-        // past one year
-        return df_yearMonth.format(compareDate);
+      // past one year
+      return df_yearMonth.format(compareDate);
     }
   }
 

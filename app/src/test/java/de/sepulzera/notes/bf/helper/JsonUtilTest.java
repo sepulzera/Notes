@@ -9,9 +9,10 @@ import org.robolectric.RobolectricTestRunner;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-@SuppressWarnings("NonAsciiCharacters") // false warning
+@SuppressWarnings("ConstantConditions") // false warning
 @RunWith(RobolectricTestRunner.class)
 public class JsonUtilTest {
   @Test
@@ -35,7 +36,7 @@ public class JsonUtilTest {
 
   @Test
   public void putDate_Test() {
-    final Date nuĺlDate = null;
+    final Date nullDate = null;
     final Date nonNullDate = GregorianCalendar.getInstance().getTime();
 
     final String nullKey = null;
@@ -43,14 +44,14 @@ public class JsonUtilTest {
 
     final JSONObject json = new JSONObject();
 
-    JsonUtil.putDateIfPresent(json, nullKey, nuĺlDate);
-    assertTrue(!json.has(nullKey));
+    JsonUtil.putDateIfPresent(json, nullKey, nullDate);
+    assertFalse(json.has(nullKey));
 
     JsonUtil.putDateIfPresent(json, nullKey, nonNullDate);
-    assertTrue(!json.has(nullKey));
+    assertFalse(json.has(nullKey));
 
-    JsonUtil.putDateIfPresent(json, nonNullKey, nuĺlDate);
-    assertTrue(!json.has(nonNullKey));
+    JsonUtil.putDateIfPresent(json, nonNullKey, nullDate);
+    assertFalse(json.has(nonNullKey));
 
     JsonUtil.putDateIfPresent(json, nonNullKey, nonNullDate);
     assertTrue(json.has(nonNullKey));
@@ -58,7 +59,7 @@ public class JsonUtilTest {
 
   @Test
   public void putLongTest() {
-    final String nuĺlStr = null;
+    final String nullDate = null;
     final Long lng0 = 0L;
     final long lng999 = 999L;
     final Long longMinus500 = -500L;
@@ -70,8 +71,8 @@ public class JsonUtilTest {
 
     final JSONObject json = new JSONObject();
 
-    JsonUtil.putStringIfPresent(json, nullKey, nuĺlStr);
-    assertTrue(!json.has(nullKey));
+    JsonUtil.putStringIfPresent(json, nullKey, nullDate);
+    assertFalse(json.has(nullKey));
 
     JsonUtil.putLong(json, lng0Key, lng0);
     assertTrue(json.has(lng0Key));
@@ -85,7 +86,7 @@ public class JsonUtilTest {
 
   @Test
   public void putString_Test() {
-    final String nuĺlStr = null;
+    final String nullDate = null;
     final String emptyStr = "";
     final String blankStr = " ";
     final String filledStr = "xx";
@@ -97,20 +98,20 @@ public class JsonUtilTest {
 
     final JSONObject json = new JSONObject();
 
-    JsonUtil.putStringIfPresent(json, nullKey, nuĺlStr);
-    assertTrue(!json.has(nullKey));
+    JsonUtil.putStringIfPresent(json, nullKey, nullDate);
+    assertFalse(json.has(nullKey));
 
-    JsonUtil.putStringIfPresent(json, filledStrKey, nuĺlStr);
-    assertTrue(!json.has(filledStrKey));
+    JsonUtil.putStringIfPresent(json, filledStrKey, nullDate);
+    assertFalse(json.has(filledStrKey));
 
     JsonUtil.putStringIfPresent(json, nullKey, filledStr);
-    assertTrue(!json.has(nullKey));
+    assertFalse(json.has(nullKey));
 
     JsonUtil.putStringIfPresent(json, filledStrKey, filledStr);
     assertTrue(json.has(filledStrKey));
 
     JsonUtil.putStringIfPresent(json, emptyStrKey, emptyStr);
-    assertTrue(!json.has(emptyStrKey));
+    assertFalse(json.has(emptyStrKey));
 
     JsonUtil.putStringIfPresent(json, blankStrKey, blankStr);
     assertTrue(json.has(blankStrKey));

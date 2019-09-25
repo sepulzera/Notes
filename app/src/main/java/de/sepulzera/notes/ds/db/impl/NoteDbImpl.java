@@ -39,7 +39,7 @@ public class NoteDbImpl implements NoteDatabase {
         find(NoteEntry.COL_IDENT + "=? AND " + NoteEntry.COL_REVISION + "=?", selectionArgs);
     if (!secondaryKeyCollision.isEmpty()) {
       throw new SQLIntegrityConstraintViolationException("Secondary key "
-          + "[ident=" + String.valueOf(note.getIdent()) + ",revision=" + String.valueOf(note.getRevision()) + "]"
+          + "[ident=" + note.getIdent() + ",revision=" + note.getRevision() + "]"
           + " does already exist");
     }
 

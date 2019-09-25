@@ -206,10 +206,6 @@ public class MainActivity extends AppCompatActivity
 
     switch (item.getItemId()) {
       case R.id.cm_discard_draft:
-        deleteNote(note);
-        invalidateOptionsMenu();
-        mSearchView.setIconified(true);
-        return true;
       case R.id.cm_delete_note:
         deleteNote(note);
         invalidateOptionsMenu();
@@ -299,8 +295,10 @@ public class MainActivity extends AppCompatActivity
       case android.R.id.home:
         mDrawerLayout.openDrawer(GravityCompat.START);
         return true;
+
+      default:
+        return super.onOptionsItemSelected(item);
     }
-    return super.onOptionsItemSelected(item);
   }
 
   @Override
@@ -435,12 +433,6 @@ public class MainActivity extends AppCompatActivity
       switch (requestCode) {
 
         case RQ_CREATE_NOTE_ACTION:
-          if (!data.hasExtra(Note.TAG_NOTE)) {
-            break;
-          }
-          saveNote((Note)(data.getSerializableExtra(Note.TAG_NOTE)));
-          break;
-
         case RQ_EDIT_NOTE_ACTION:
           if (!data.hasExtra(Note.TAG_NOTE)) {
             break;

@@ -1,5 +1,7 @@
 package de.sepulzera.notes.ds.model;
 
+import android.support.annotation.NonNull;
+
 import org.json.JSONObject;
 
 import java.io.Serializable;
@@ -108,11 +110,12 @@ public class Note implements Serializable {
     return json;
   }
 
+  @NonNull
   @Override
   public String toString() {
-    return "id=" + String.valueOf(getId())
-        + ",ident=" + String.valueOf(getIdent()) + ",rev=" + getRevision() + ",draft=" + String.valueOf(getDraft())
-        + ",currRev=" + String.valueOf(getCurrRev()) + ",curr=" + String.valueOf(getCurr())
+    return "id=" + getId()
+        + ",ident=" + getIdent() + ",rev=" + getRevision() + ",draft=" + getDraft()
+        + ",currRev=" + getCurrRev() + ",curr=" + getCurr()
         + ",title=" + getTitle() + ",msg=" + getMsg()
         + ",deldt=" + DateUtil.formatDate(getDeldt())
         + ",creadt=" + DateUtil.formatDate(getCreadt()) + ",lchadt=" + DateUtil.formatDate(getLchadt());
