@@ -59,7 +59,7 @@ public class JsonUtilTest {
 
   @Test
   public void putLongTest() {
-    final String nullDate = null;
+    final String nullStr = null;
     final Long lng0 = 0L;
     final long lng999 = 999L;
     final Long longMinus500 = -500L;
@@ -71,7 +71,7 @@ public class JsonUtilTest {
 
     final JSONObject json = new JSONObject();
 
-    JsonUtil.putStringIfPresent(json, nullKey, nullDate);
+    JsonUtil.putStringIfPresent(json, nullKey, nullStr);
     assertFalse(json.has(nullKey));
 
     JsonUtil.putLong(json, lng0Key, lng0);
@@ -86,7 +86,7 @@ public class JsonUtilTest {
 
   @Test
   public void putString_Test() {
-    final String nullDate = null;
+    final String nullStr = null;
     final String emptyStr = "";
     final String blankStr = " ";
     final String filledStr = "xx";
@@ -98,10 +98,10 @@ public class JsonUtilTest {
 
     final JSONObject json = new JSONObject();
 
-    JsonUtil.putStringIfPresent(json, nullKey, nullDate);
+    JsonUtil.putStringIfPresent(json, nullKey, nullStr);
     assertFalse(json.has(nullKey));
 
-    JsonUtil.putStringIfPresent(json, filledStrKey, nullDate);
+    JsonUtil.putStringIfPresent(json, filledStrKey, nullStr);
     assertFalse(json.has(filledStrKey));
 
     JsonUtil.putStringIfPresent(json, nullKey, filledStr);
