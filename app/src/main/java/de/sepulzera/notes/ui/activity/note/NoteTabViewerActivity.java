@@ -251,13 +251,14 @@ public class NoteTabViewerActivity extends AppCompatActivity {
 
     final boolean isCurrRev  = mDisplayedNote != null && mDisplayedNote.getCurrRev();
     final boolean isNewNote  = mDisplayedNote != null && mDisplayedNote.getId() == 0L;
-    final boolean isEditable = mFabSave.isShown();
+    final NoteEditFragment frag = mNoteFrags.size() > 0? mNoteFrags.get(0).getFragment() : null;
+    final boolean isEditable = frag != null && frag.isEditable();
 
     MenuItem item;
-    if ((item = menu.findItem(R.id.om_detail_note_show_revisions)) != null) { item.setVisible(!mShowsRevisions && mDisplayedNote != null && !isNewNote && mDisplayedNote.getRevision() > 1); }
+    if ((item = menu.findItem(R.id.om_detail_note_show_revisions)) != null) { item.setVisible(!mShowsRevisions && mDisplayedNote != null && !isNewNote && (mDisplayedNote.getRevision() > 2 || (mDisplayedNote.getRevision() == 2 && !mDisplayedNote.getDraft()))); }
     if ((item = menu.findItem(R.id.om_detail_note_rename)) != null) { item.setVisible(isCurrRev && !isNewNote && isEditable); }
-    if ((item = menu.findItem(R.id.om_detail_note_clear)) != null) { item.setVisible(isCurrRev && isEditable); }
-    if ((item = menu.findItem(R.id.om_detail_note_revert)) != null) { item.setVisible(isCurrRev && !isNewNote && isEditable); }
+    if ((item = menu.findItem(R.id.om_detail_note_clear)) != null) { item.setVisible(isCurrRev && isEditable && !frag.getMsg().isEmpty()); }
+    if ((item = menu.findItem(R.id.om_detail_note_revert)) != null) { item.setVisible(isCurrRev && !isNewNote && isEditable && frag.isChanged()); }
     if ((item = menu.findItem(R.id.om_detail_note_delete)) != null) { item.setVisible(isCurrRev && isEditable && !mDisplayedNote.getDraft()); }
     if ((item = menu.findItem(R.id.om_detail_draft_discard)) != null) { item.setVisible(isCurrRev && isEditable && mDisplayedNote.getDraft()); }
 
@@ -316,6 +317,7 @@ public class NoteTabViewerActivity extends AppCompatActivity {
             return true;
           }
           ((NoteEditFragment)page).clearNote();
+          invalidateOptionsMenu();
         }
         return true;
 
@@ -328,6 +330,7 @@ public class NoteTabViewerActivity extends AppCompatActivity {
             return true;
           }
           ((NoteEditFragment)page).revert();
+          invalidateOptionsMenu();
         }
         return true;
 
