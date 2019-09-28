@@ -28,6 +28,7 @@
       android:layout_alignParentTop="true"
       android:layout_alignParentBottom="@id/title"
       android:layout_toEndOf="@id/timestamp"
+      android:textColor="@color/colorTextDisabled"
       android:textAppearance="?android:attr/textAppearanceSmall"/>
 
   <TextView
@@ -36,6 +37,7 @@
       android:layout_height="wrap_content"
       android:layout_below="@id/title"
       android:layout_alignParentStart="true"
+      android:textColor="@color/colorTextDisabled"
       android:textAppearance="?android:attr/textAppearanceSmall"
       android:lines="2"
       android:ellipsize="end" />
