@@ -6,6 +6,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,7 +44,7 @@ public class NoteEditFragment extends Fragment {
       throw new IllegalStateException("Initialization was not called!");
     }
 
-    final View mView = view.findViewById(R.id.main_content);
+    mView = view.findViewById(R.id.main_content);
     mEditMsg = mView.findViewById(R.id.note_msg);
 
     setEditable(mIsEditable);
@@ -101,6 +102,8 @@ public class NoteEditFragment extends Fragment {
     } else {
       mEditMsg.setEnabled(false);
     }
+
+    mView.setBackgroundColor(getResources().getColor(editable? R.color.colorNoteBg : R.color.colorNoteBgReadonly, null));
   }
 
   public boolean isChanged() {
@@ -118,6 +121,7 @@ public class NoteEditFragment extends Fragment {
   private EditText mEditMsg;
 
   private int  mIndex = -1;
+  private CoordinatorLayout mView;
   private Note mNote;
   private boolean mIsEditable;
 

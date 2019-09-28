@@ -4,7 +4,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:focusableInTouchMode="true" >
+    android:focusableInTouchMode="true"
+    android:background="@color/colorNoteBg">
 
   <android.support.v4.widget.NestedScrollView
       android:id="@+id/scrollView"
@@ -36,7 +37,7 @@
           android:inputType="textMultiLine"
           android:importantForAutofill="no"
           android:textAppearance="?android:attr/textAppearanceMedium"
-          android:textColor="@drawable/edit_text_selector" />
+          android:textColor="@drawable/edit_text_selector"/>
 
     </LinearLayout>
 

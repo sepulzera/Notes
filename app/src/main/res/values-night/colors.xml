@@ -10,6 +10,9 @@
   <color type="color" name="colorPrimaryBar">#158F25</color>
   <color type="color" name="colorAccentDark">#BB6322</color>
 
+  <color type="color" name="colorNoteBg">#222</color>
+  <color type="color" name="colorNoteBgReadonly">#302020</color>
+
   <color type="color" name="white">#DDD</color>
   <color type="color" name="darkGray">#222</color>
 </resources>
