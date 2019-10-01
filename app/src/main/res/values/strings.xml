@@ -16,8 +16,8 @@
   <!-- Kontextmenü -->
   <string name="clear">Clear Content</string>
   <string name="revert">Revert Changes</string>
-  <string name="cm_copy_note">Create Copy</string>
-  <string name="cm_copy_draft">Create Copy</string>
+  <string name="cm_copy_note">Copy</string>
+  <string name="cm_copy_draft">Copy</string>
   <string name="cm_delete_note">Delete</string>
   <string name="cm_delete_permanently">Delete Permanently</string>
   <string name="cm_draft_discard">Discard</string>
