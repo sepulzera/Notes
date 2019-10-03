@@ -8,12 +8,14 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.ActionMenuView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.InputType;
@@ -107,11 +109,35 @@ public class NoteTabViewerActivity extends AppCompatActivity {
           }
           ((NoteEditFragment)page).setEditable(true);
           invalidateFloatingActionButton(true, true);
+          invalidateOptionsMenu();
         }
       }
     });
 
+    mFabShowTbEdit = findViewById(R.id.fab_show_toolbar_edit);
+    mFabShowTbEdit.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        mShowToolbarEdit = true;
+        hideFloatingActionButton(mFabShowTbEdit);
+        showFloatingActionButton(mFabHideTbEdit);
+        mEditToolbar.setVisibility(View.VISIBLE);
+      }
+    });
+
+    mFabHideTbEdit = findViewById(R.id.fab_hide_toolbar_edit);
+    mFabHideTbEdit.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        mShowToolbarEdit = false;
+        hideFloatingActionButton(mFabHideTbEdit);
+        showFloatingActionButton(mFabShowTbEdit);
+        mEditToolbar.setVisibility(View.GONE);
+      }
+    });
+
     invalidateFloatingActionButton(true, mNoteFrags.get(0).getFragment().isEditable());
+    invalidateOptionsMenu();
   }
 
   private void createState(final Intent intent) {
@@ -166,6 +192,7 @@ public class NoteTabViewerActivity extends AppCompatActivity {
     mDraft = (Note)outState.getSerializable(KEY_DRAFT);
     mDisplayedNote = (Note)outState.getSerializable(KEY_DISPLAYED_NOTE);
     mShowsRevisions = outState.getBoolean(KEY_SHOW_REVS);
+    mShowToolbarEdit = outState.getBoolean(KEY_SHOW_TB_EDIT);
     setTitle(outState.getString(KEY_TITLE));
 
     final List<Fragment> frags = getSupportFragmentManager().getFragments();
@@ -216,6 +243,7 @@ public class NoteTabViewerActivity extends AppCompatActivity {
     }
     outState.putString(KEY_TITLE, getTitle().toString());
     outState.putBoolean(KEY_SHOW_REVS , mShowsRevisions);
+    outState.putBoolean(KEY_SHOW_TB_EDIT, mShowToolbarEdit);
   }
 
   public static void readPreferences(@NonNull final Context context) {
@@ -233,21 +261,74 @@ public class NoteTabViewerActivity extends AppCompatActivity {
       if (isEditable) {
         mFabSave.show();
         mFabEdit.hide();
+        showFloatingActionButton(mShowToolbarEdit? mFabHideTbEdit : mFabShowTbEdit);
+        hideFloatingActionButton(mShowToolbarEdit? mFabShowTbEdit : mFabHideTbEdit);
       } else {
         mFabSave.hide();
         mFabEdit.show();
+        hideFloatingActionButton(mFabShowTbEdit);
+        hideFloatingActionButton(mFabHideTbEdit);
       }
     } else {
       mFabSave.hide();
       mFabEdit.hide();
+      hideFloatingActionButton(mFabShowTbEdit);
+      hideFloatingActionButton(mFabHideTbEdit);
+    }
+  }
+
+  /**
+   * https://stackoverflow.com/a/43077760
+   * @param fab Fab
+   */
+  private void hideFloatingActionButton(FloatingActionButton fab) {
+    CoordinatorLayout.LayoutParams params =
+        (CoordinatorLayout.LayoutParams) fab.getLayoutParams();
+    FloatingActionButton.Behavior behavior =
+        (FloatingActionButton.Behavior) params.getBehavior();
+
+    if (behavior != null) {
+      behavior.setAutoHideEnabled(false);
     }
 
-    invalidateOptionsMenu();
+    fab.hide();
+  }
+
+  /**
+   * https://stackoverflow.com/a/43077760
+   * @param fab Fab
+   */
+  private void showFloatingActionButton(FloatingActionButton fab) {
+    fab.show();
+    CoordinatorLayout.LayoutParams params =
+        (CoordinatorLayout.LayoutParams) fab.getLayoutParams();
+    FloatingActionButton.Behavior behavior =
+        (FloatingActionButton.Behavior) params.getBehavior();
+
+    if (behavior != null) {
+      behavior.setAutoHideEnabled(true);
+    }
   }
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     getMenuInflater().inflate(R.menu.om_note_view, menu);
+
+    // Inflate and initialize the bottom menu
+    mEditToolbar = findViewById(R.id.toolbar_edit);
+    Menu bottomMenu = mEditToolbar.getMenu();
+    if (bottomMenu.size() == 0) {
+      getMenuInflater().inflate(R.menu.om_note_edit, bottomMenu);
+      for (int i = 0; i < bottomMenu.size(); i++) {
+        bottomMenu.getItem(i).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+          @Override
+          public boolean onMenuItemClick(MenuItem item) {
+            return onOptionsItemSelected(item);
+          }
+        });
+      }
+    }
+    mEditToolbar.setVisibility(mShowToolbarEdit? View.VISIBLE : View.GONE);
 
     final boolean isCurrRev  = mDisplayedNote != null && mDisplayedNote.getCurrRev();
     final boolean isNewNote  = mDisplayedNote != null && mDisplayedNote.getId() == 0L;
@@ -261,6 +342,9 @@ public class NoteTabViewerActivity extends AppCompatActivity {
     if ((item = menu.findItem(R.id.om_detail_note_revert)) != null) { item.setVisible(isCurrRev && !isNewNote && isEditable && frag.isChanged()); }
     if ((item = menu.findItem(R.id.om_detail_note_delete)) != null) { item.setVisible(isCurrRev && isEditable && !mDisplayedNote.getDraft()); }
     if ((item = menu.findItem(R.id.om_detail_draft_discard)) != null) { item.setVisible(isCurrRev && isEditable && mDisplayedNote.getDraft()); }
+
+    if ((item = menu.findItem(R.id.om_detail_note_line_duplicate)) != null) { item.getIcon().setAlpha(130); }
+
 
     return super.onCreateOptionsMenu(menu);
   }
@@ -332,6 +416,13 @@ public class NoteTabViewerActivity extends AppCompatActivity {
           ((NoteEditFragment)page).revert();
           invalidateOptionsMenu();
         }
+        return true;
+
+
+      /* Note Edit Options */
+
+      case R.id.om_detail_note_line_delete:
+        Snackbar.make(mView, "NOTE DELETE LINE", Snackbar.LENGTH_LONG).show();
         return true;
 
       default:
@@ -578,8 +669,8 @@ public class NoteTabViewerActivity extends AppCompatActivity {
     Fragment page = getActiveFragment(getSupportFragmentManager(), mPager);
     if (page != null) {
       mDisplayedNote = ((NoteEditFragment)page).getNote();
-      invalidateOptionsMenu();
       invalidateFloatingActionButton(((NoteEditFragment)page));
+      invalidateOptionsMenu();
     }
   }
 
@@ -724,8 +815,11 @@ public class NoteTabViewerActivity extends AppCompatActivity {
   }
 
   private View     mView;
+  private ActionMenuView mEditToolbar;
   private FloatingActionButton mFabSave;
   private FloatingActionButton mFabEdit;
+  private FloatingActionButton mFabShowTbEdit;
+  private FloatingActionButton mFabHideTbEdit;
 
   private Note    mNote;
   private Note    mDraft;
@@ -738,6 +832,7 @@ public class NoteTabViewerActivity extends AppCompatActivity {
   private NoteFragmentPagerAdapter mAdapter;
   private ViewPager mPager;
   private TabLayout mTabLayout;
+  private boolean mShowToolbarEdit = false;
 
   private static final int mNumScrollTabs = 5;
 
@@ -745,4 +840,5 @@ public class NoteTabViewerActivity extends AppCompatActivity {
   private static final String KEY_TITLE          = "notetabvieweract_title";
   private static final String KEY_DISPLAYED_NOTE = "notetabvieweract_displayednote";
   private static final String KEY_SHOW_REVS      = "notetabvieweract_showrevs";
+  private static final String KEY_SHOW_TB_EDIT   = "notetabvieweract_showtoolbaredit";
 }

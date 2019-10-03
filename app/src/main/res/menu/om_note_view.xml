@@ -1,17 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
   <item
       android:id="@+id/om_detail_note_copy_to_clipboard"
       android:icon="@drawable/ic_content_copy_white_24dp"
-      android:title="@string/copy_to_clipboard"
-      app:showAsAction="ifRoom"/>
+      android:title="@string/copy_to_clipboard"/>
   <item
       android:id="@+id/om_detail_note_send_as_msg"
       android:icon="@drawable/ic_email_white_24dp"
-      android:title="@string/cm_send_as_msg"
-      app:showAsAction="ifRoom"/>
+      android:title="@string/cm_send_as_msg"/>
   <item
       android:id="@+id/om_detail_note_show_revisions"
       android:title="@string/om_detail_note_show_revisions" />

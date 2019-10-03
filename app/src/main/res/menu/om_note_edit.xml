@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+
+  <item
+      android:id="@+id/om_detail_note_line_delete"
+      android:icon="@drawable/ic_remove_24px"
+      android:title="@string/om_detail_note_line_delete"
+      app:showAsAction="always"
+      tools:ignore="AlwaysShowAction" />
+  <item
+      android:id="@+id/om_detail_note_line_duplicate"
+      android:icon="@drawable/ic_content_copy_white_24dp"
+      android:title="@string/om_detail_note_line_duplicate"
+      app:showAsAction="always"
+      android:enabled="false"
+      tools:ignore="AlwaysShowAction" />
+  <item
+      android:id="@+id/om_detail_note_undo"
+      android:icon="@drawable/ic_undo_24px"
+      android:title="@string/om_detail_note_undo"
+      app:showAsAction="always"
+      tools:ignore="AlwaysShowAction" />
+  <item
+      android:id="@+id/om_detail_note_redo"
+      android:icon="@drawable/ic_redo_24px"
+      android:title="@string/om_detail_note_redo"
+      app:showAsAction="always"
+      tools:ignore="AlwaysShowAction" />
+  <item
+      android:id="@+id/om_detail_note_line_up"
+      android:icon="@drawable/ic_arrow_upward_24px"
+      android:title="@string/om_detail_note_line_down"
+      app:showAsAction="always"
+      tools:ignore="AlwaysShowAction" />
+  <item
+      android:id="@+id/om_detail_note_line_down"
+      android:icon="@drawable/ic_arrow_downward_24px"
+      android:title="@string/om_detail_note_line_up"
+      app:showAsAction="always"
+      tools:ignore="AlwaysShowAction" />
+
+</menu>
