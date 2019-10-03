@@ -21,13 +21,43 @@ public class StringUtilTest {
   }
 
   @Test
-  public void defaultIfNull_Test() {
+  public void defaultIfNullTest() {
     final String actualString  = "actual";
     final String defaultString = "default";
     assertEquals(defaultString, StringUtil.defaultIfNull(null, defaultString));
     assertEquals(actualString, StringUtil.defaultIfNull(actualString, defaultString));
     assertNull(StringUtil.defaultIfNull(null, null));
     assertEquals(actualString, StringUtil.defaultIfNull(actualString, null));
+  }
+
+  @Test
+  public void deleteLineTest() {
+    assertEquals("empty string", "", StringUtil.deleteLine("", 0));
+    assertEquals("one char", "", StringUtil.deleteLine("x", 0));
+
+    assertEquals("no linebreak", "", StringUtil.deleteLine("Hello World!", 0));
+    assertEquals("no linebreak", "", StringUtil.deleteLine("Hello World!", 5));
+    assertEquals("no linebreak", "", StringUtil.deleteLine("Hello World!", 12));
+
+    assertEquals("single linebreak, selection before", "Another World!", StringUtil.deleteLine("Hello World!\nAnother World!", 5));
+    assertEquals("single linebreak, selection after", "Hello World!", StringUtil.deleteLine("Hello World!\nAnother World!", 20));
+    assertEquals("single linebreak, selection after2", "Hello World!", StringUtil.deleteLine("Hello World!\n", 13));
+
+    assertEquals("two linebreakes, selection first", "Another World!\nA third World!", StringUtil.deleteLine("Hello World!\nAnother World!\nA third World!", 5));
+    assertEquals("two linebreakes, selection middle", "Hello World!\nA third World!", StringUtil.deleteLine("Hello World!\nAnother World!\nA third World!", 20));
+    assertEquals("two linebreakes, selection last", "Hello World!\nAnother World!", StringUtil.deleteLine("Hello World!\nAnother World!\nA third World!", 35));
+  }
+
+  @Test
+  public void deleteLine_span_selectionTest() {
+    assertEquals("no linebreak", "", StringUtil.deleteLine("Hello World!", 0, 5));
+    assertEquals("no linebreak", "", StringUtil.deleteLine("Hello World!", 5, 12));
+
+    assertEquals("single linebreak, selection before", "Another World!", StringUtil.deleteLine("Hello World!\nAnother World!", 0, "Hello World!".length()));
+    assertEquals("single linebreak, selection after", "Hello World!", StringUtil.deleteLine("Hello World!\nAnother World!", "Hello World!".length() + 1, "Hello World!\nAnother World!".length()));
+
+    assertEquals("two linebreakes, selection first and middle", "A third World!", StringUtil.deleteLine("Hello World!\nAnother World!\nA third World!", 5, 20));
+    assertEquals("two linebreakes, selection middle and last", "Hello World!", StringUtil.deleteLine("Hello World!\nAnother World!\nA third World!", 20, 35));
   }
 
   @Test

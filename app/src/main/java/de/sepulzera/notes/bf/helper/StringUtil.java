@@ -1,11 +1,10 @@
 package de.sepulzera.notes.bf.helper;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 public class StringUtil {
-  private StringUtil() {
-    // Utility class
-  }
+  public final static String LINE_ENDING = "\n";
 
   /**
    * <p>Abbreviates a String using ellipses. This will turn
@@ -117,6 +116,94 @@ public class StringUtil {
   }
 
   /**
+   * <p>Removes the selected line from a string.</p>
+   * <p>A line is a substring delimited by {@link StringUtil#LINE_ENDING}s.
+   *    Lines do not have to have delimiters. In that case, the whole prior
+   *    or post substring is part of that line (e.g. beginning or end).</p>
+   *
+   * @param str String to remove the line from.
+   * @param pos Index of the line to be removed.
+   *
+   * See {@link StringUtil#deleteLine(String str, int selectionStart, int selectionEnd)}
+   */
+  public static String deleteLine(@NonNull String str, int pos) {
+    return deleteLine(str, pos, pos);
+  }
+
+  /**
+   * <p>Removes the selected line(s) from a string.</p>
+   * <p>A line is a substring delimited by {@link StringUtil#LINE_ENDING}s.
+   *    Lines do not have to have delimiters. In that case, the whole prior
+   *    or post substring is part of that line (e.g. beginning or end).</p>
+   *
+   * @param str String to remove the line from.
+   * @param selectionStart Beginning of the selection, which line(s) should be removed.
+   * @param selectionEnd End of the selection.
+   *
+   * @return str without the selected line(s).
+   *
+   * @see StringUtil#deleteLine(String str, int pos)
+   */
+  public static String deleteLine(@NonNull String str, int selectionStart, int selectionEnd) {
+    int selStart = selectionStart;
+    int selEnd = selectionEnd;
+
+    if (selStart > selEnd) {
+      int swap = selStart;
+      selStart = selEnd;
+      selEnd = swap;
+    }
+
+    int strLen = str.length();
+    int ixRemoveLineBegin = getIndexOfLineStart(str, selStart);
+    int ixRemoveLineEnd = getIndexOfLineEnd(str, selEnd);
+
+    if (ixRemoveLineBegin == 0 && (ixRemoveLineEnd == 0 || ixRemoveLineEnd >= strLen)) {
+      return "";
+    }
+
+    StringBuilder strBuilder = new StringBuilder();
+    if (ixRemoveLineBegin > 0) {
+      strBuilder.append(str.substring(0, ixRemoveLineBegin - 1));
+    }
+    if (ixRemoveLineEnd > 0 && ixRemoveLineEnd < strLen) {
+      strBuilder.append(str.substring(ixRemoveLineEnd + (ixRemoveLineBegin > 1? 1 : 2) ));
+    }
+
+    return strBuilder.toString();
+  }
+
+  public static int getIndexOfLineStart(@NonNull String str, int pos) {
+    int strLen = str.length();
+    int selStart;
+    if (pos < 0) {
+      selStart = 0;
+    } else if (strLen > 0 && pos > strLen) {
+      selStart = strLen;
+    } else {
+      selStart = pos;
+    }
+
+    int lineStart = str.substring(0, selStart).lastIndexOf(LINE_ENDING);
+    return lineStart < 0? 0 : lineStart + 1;
+  }
+
+  public static int getIndexOfLineEnd(@NonNull String str, int pos) {
+    int strLen = str.length();
+    int selEnd;
+    if (pos < 0) {
+      selEnd = 0;
+    } else if (strLen > 0 && pos > strLen) {
+      selEnd = strLen;
+    } else {
+      selEnd = pos;
+    }
+
+    int lineEnd = str.indexOf(LINE_ENDING, selEnd);
+    return lineEnd < 0? strLen : lineEnd - 1;
+  }
+
+  /**
    * <p>Compares two Strings, returning true if they are equal.</p>
    *
    * <p>{@code null}s are handled without exceptions. Two {@code null}
@@ -209,5 +296,9 @@ public class StringUtil {
    */
   public static boolean isEmpty(@Nullable final CharSequence cs) {
     return cs == null || cs.length() == 0;
+  }
+
+  private StringUtil() {
+    // Utility class
   }
 }

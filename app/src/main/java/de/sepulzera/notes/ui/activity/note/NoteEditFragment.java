@@ -93,6 +93,19 @@ public class NoteEditFragment extends Fragment {
     setMsg(mNote.getMsg());
   }
 
+  public void deleteLine() {
+    String msg = getMsg();
+    int selStart = mEditMsg.getSelectionStart();
+
+    String msgDeletedLine = StringUtil.deleteLine(msg, selStart, mEditMsg.getSelectionEnd());
+    setMsg(msgDeletedLine);
+
+    int delMsgLen = msgDeletedLine.length();
+    if (selStart > delMsgLen) {
+      mEditMsg.setSelection(delMsgLen);
+    }
+  }
+
   public boolean isEditable() { return mIsEditable; }
 
   public void setEditable(boolean editable) {

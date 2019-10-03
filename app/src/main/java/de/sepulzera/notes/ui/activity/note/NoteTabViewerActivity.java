@@ -395,11 +395,6 @@ public class NoteTabViewerActivity extends AppCompatActivity {
       case R.id.om_detail_note_clear:
         page = getActiveFragment(getSupportFragmentManager(), mPager);
         if (page != null) {
-          final Note note = ((NoteEditFragment)page).getNote();
-          if (!note.getCurrRev()) {
-            Snackbar.make(mView, getResources().getString(R.string.note_clear_ignore_old_rev), Snackbar.LENGTH_LONG).show();
-            return true;
-          }
           ((NoteEditFragment)page).clearNote();
           invalidateOptionsMenu();
         }
@@ -408,11 +403,6 @@ public class NoteTabViewerActivity extends AppCompatActivity {
       case R.id.om_detail_note_revert:
         page = getActiveFragment(getSupportFragmentManager(), mPager);
         if (page != null) {
-          final Note note = ((NoteEditFragment)page).getNote();
-          if (!note.getCurrRev()) {
-            Snackbar.make(mView, getResources().getString(R.string.note_revert_ignore_old_rev), Snackbar.LENGTH_LONG).show();
-            return true;
-          }
           ((NoteEditFragment)page).revert();
           invalidateOptionsMenu();
         }
@@ -422,7 +412,11 @@ public class NoteTabViewerActivity extends AppCompatActivity {
       /* Note Edit Options */
 
       case R.id.om_detail_note_line_delete:
-        Snackbar.make(mView, "NOTE DELETE LINE", Snackbar.LENGTH_LONG).show();
+        page = getActiveFragment(getSupportFragmentManager(), mPager);
+        if (page != null) {
+          ((NoteEditFragment)page).deleteLine();
+          invalidateOptionsMenu();
+        }
         return true;
 
       default:

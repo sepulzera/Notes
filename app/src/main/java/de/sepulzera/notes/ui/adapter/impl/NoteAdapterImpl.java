@@ -187,7 +187,7 @@ public class NoteAdapterImpl extends BaseAdapter
 
     final String displayedTitle = note.getDraft()? mDraftTitle + note.getTitle() : note.getTitle();
 
-    String content = StringUtil.defaultIfNull(note.getMsg(), "").replace("\n", "   ");
+    String content = StringUtil.defaultIfNull(note.getMsg(), "").replace(StringUtil.LINE_ENDING, "   ");
 
     if (!StringUtil.isEmpty(mSearch)) {
       int ixBegin = displayedTitle.toLowerCase().indexOf(mSearch);
