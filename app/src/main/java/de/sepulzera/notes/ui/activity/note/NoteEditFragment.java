@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import java.util.List;
 import java.util.Objects;
 
 import de.sepulzera.notes.R;
@@ -93,12 +94,12 @@ public class NoteEditFragment extends Fragment {
     setMsg(mNote.getMsg());
   }
 
-  public void deleteLine() {
+  public void deleteSelectedLines() {
     String msgDeletedLine = StringUtil.deleteLines(getMsg(), mEditMsg.getSelectionStart(), mEditMsg.getSelectionEnd());
     setMsgAndFixSelection(msgDeletedLine);
   }
 
-  public void duplicateLine() {
+  public void duplicateSelectedLines() {
     String msgCopiedLine = StringUtil.duplicateLines(getMsg(), mEditMsg.getSelectionStart(), mEditMsg.getSelectionEnd());
     setMsgAndFixSelection(msgCopiedLine);
   }
@@ -113,6 +114,40 @@ public class NoteEditFragment extends Fragment {
     selStart = (selStart > len? len : selStart);
     selEnd = (selEnd > len? len : selEnd);
     mEditMsg.setSelection(selStart, selEnd);
+  }
+
+  public void moveSelectedLinesUp() {
+    String msgMovedLine = StringUtil.moveLinesUp(getMsg(), mEditMsg.getSelectionStart(), mEditMsg.getSelectionEnd());
+
+    String oldMsg = getMsg();
+
+    int selStart = mEditMsg.getSelectionStart();
+    int selEnd   = mEditMsg.getSelectionEnd();
+
+    List<String> lines = StringUtil.getLines(oldMsg);
+    int[] selectedLines = StringUtil.getSelectedLines(oldMsg, selStart, selEnd);
+    if (selectedLines[0] == 0) return;
+    String movedLine = lines.get(selectedLines[0] - 1);
+
+    setMsg(msgMovedLine);
+    mEditMsg.setSelection(selStart - movedLine.length() - 1, selEnd - movedLine.length() - 1);
+  }
+
+  public void moveSelectedLinesDown() {
+    String msgMovedLine = StringUtil.moveLinesDown(getMsg(), mEditMsg.getSelectionStart(), mEditMsg.getSelectionEnd());
+
+    String oldMsg = getMsg();
+
+    int selStart = mEditMsg.getSelectionStart();
+    int selEnd   = mEditMsg.getSelectionEnd();
+
+    List<String> lines = StringUtil.getLines(oldMsg);
+    int[] selectedLines = StringUtil.getSelectedLines(oldMsg, selStart, selEnd);
+    if (selectedLines[selectedLines.length - 1] == (lines.size() - 1)) return;
+    String movedLine = lines.get(selectedLines[selectedLines.length - 1] + 1);
+
+    setMsg(msgMovedLine);
+    mEditMsg.setSelection(selStart + movedLine.length() + 1, selEnd + movedLine.length() + 1);
   }
 
   public boolean isEditable() { return mIsEditable; }

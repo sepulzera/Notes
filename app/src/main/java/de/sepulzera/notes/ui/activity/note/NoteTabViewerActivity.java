@@ -414,7 +414,7 @@ public class NoteTabViewerActivity extends AppCompatActivity {
       case R.id.om_detail_note_line_delete:
         page = getActiveFragment(getSupportFragmentManager(), mPager);
         if (page != null) {
-          ((NoteEditFragment)page).deleteLine();
+          ((NoteEditFragment)page).deleteSelectedLines();
           invalidateOptionsMenu();
         }
         return true;
@@ -422,7 +422,23 @@ public class NoteTabViewerActivity extends AppCompatActivity {
       case R.id.om_detail_note_line_duplicate:
         page = getActiveFragment(getSupportFragmentManager(), mPager);
         if (page != null) {
-          ((NoteEditFragment)page).duplicateLine();
+          ((NoteEditFragment)page).duplicateSelectedLines();
+          invalidateOptionsMenu();
+        }
+        return true;
+
+      case R.id.om_detail_note_line_up:
+        page = getActiveFragment(getSupportFragmentManager(), mPager);
+        if (page != null) {
+          ((NoteEditFragment)page).moveSelectedLinesUp();
+          invalidateOptionsMenu();
+        }
+        return true;
+
+      case R.id.om_detail_note_line_down:
+        page = getActiveFragment(getSupportFragmentManager(), mPager);
+        if (page != null) {
+          ((NoteEditFragment)page).moveSelectedLinesDown();
           invalidateOptionsMenu();
         }
         return true;
