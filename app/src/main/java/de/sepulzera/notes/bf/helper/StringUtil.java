@@ -3,6 +3,10 @@ package de.sepulzera.notes.bf.helper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class StringUtil {
   public final static String LINE_ENDING = "\n";
 
@@ -124,10 +128,10 @@ public class StringUtil {
    * @param str String to remove the line from.
    * @param pos Index of the line to be removed.
    *
-   * See {@link StringUtil#deleteLine(String str, int selectionStart, int selectionEnd)}
+   * @see StringUtil#deleteLines(String str, int selectionStart, int selectionEnd)
    */
-  public static String deleteLine(@NonNull String str, int pos) {
-    return deleteLine(str, pos, pos);
+  public static String deleteLines(@NonNull String str, int pos) {
+    return deleteLines(str, pos, pos);
   }
 
   /**
@@ -142,9 +146,48 @@ public class StringUtil {
    *
    * @return str without the selected line(s).
    *
-   * @see StringUtil#deleteLine(String str, int pos)
+   * @see StringUtil#deleteLines(String str, int pos)
    */
-  public static String deleteLine(@NonNull String str, int selectionStart, int selectionEnd) {
+  public static String deleteLines(@NonNull String str, int selectionStart, int selectionEnd) {
+    if (str.length() == 0) return "";
+
+    List<String> lines = getLines(str);
+    int[] selLines = getSelectedLines(str, selectionStart, selectionEnd);
+
+    for (int i = selLines.length - 1; i >= 0; --i) {
+      lines.remove(selLines[i]);
+    }
+
+    return toString(lines);
+  }
+
+  private static List<String> getLines(@NonNull String str) {
+    List<String> lines = new ArrayList<>(Arrays.asList(str.split(LINE_ENDING)));
+
+    if (str.charAt(str.length() - 1) == '\n') {
+      lines.add("");
+    }
+
+    return lines;
+  }
+
+  private static String toString(@NonNull List<String> lines) {
+    StringBuilder blder = new StringBuilder();
+
+    boolean first = true;
+    for (String s : lines) {
+      if (first) {
+        first = false;
+      } else {
+        blder.append(LINE_ENDING);
+      }
+      blder.append(s);
+    }
+
+    return blder.toString();
+  }
+
+  private static int[] getSelectedLines(@NonNull String str, int selectionStart, int selectionEnd) {
     int selStart = selectionStart;
     int selEnd = selectionEnd;
 
@@ -155,24 +198,85 @@ public class StringUtil {
     }
 
     int strLen = str.length();
-    int ixRemoveLineBegin = getIndexOfLineStart(str, selStart);
-    int ixRemoveLineEnd = getIndexOfLineEnd(str, selEnd);
-
-    if (ixRemoveLineBegin == 0 && (ixRemoveLineEnd == 0 || ixRemoveLineEnd >= strLen)) {
-      return "";
+    if (selStart > strLen || selEnd > strLen) {
+      throw new IndexOutOfBoundsException("selectionStart and selectionEnd may not be larger than the length of the given string");
     }
 
-    StringBuilder strBuilder = new StringBuilder();
-    if (ixRemoveLineBegin > 0) {
-      strBuilder.append(str.substring(0, ixRemoveLineBegin - 1));
+    List<Integer> selLines = new ArrayList<>();
+
+    int lineCounter = 0;
+    for (int i = 0; i < selStart; ++i) {
+      if ('\n' == str.charAt(i)) {
+        ++lineCounter;
+      }
     }
-    if (ixRemoveLineEnd > 0 && ixRemoveLineEnd < strLen) {
-      strBuilder.append(str.substring(ixRemoveLineEnd + (ixRemoveLineBegin > 1? 1 : 2) ));
+    selLines.add(lineCounter);
+    for (int i = selStart; i < selEnd; ++i) {
+      if ('\n' == str.charAt(i)) {
+        selLines.add(++lineCounter);
+      }
     }
 
-    return strBuilder.toString();
+    return toIntArray(selLines);
   }
 
+  private static int[] toIntArray(@NonNull List<Integer> intList) {
+
+    // Java8
+    // return intList.stream().mapToInt( i -> i).toArray();
+
+    int[] intArray = new int[intList.size()];
+    for (int i = 0; i < intList.size(); ++i) {
+      intArray[i] = intList.get(i);
+    }
+    return intArray;
+  }
+
+  /**
+   * <p>Duplicates the selected line from a string.</p>
+   * <p>A line is a substring delimited by {@link StringUtil#LINE_ENDING}s.
+   *    Lines do not have to have delimiters. In that case, the whole prior
+   *    or post substring is part of that line (e.g. beginning or end).</p>
+   *
+   * @param str String to duplicate the line from.
+   * @param pos Index of the line to be duplicated.
+   *
+   * @see StringUtil#duplicateLines(String str, int selectionStart, int selectionEnd)
+   */
+  public static String duplicateLines(@NonNull String str, int pos) {
+    return duplicateLines(str, pos, pos);
+  }
+
+  /**
+   * <p>Duplicates the selected line(s) from a string.</p>
+   * <p>A line is a substring delimited by {@link StringUtil#LINE_ENDING}s.
+   *    Lines do not have to have delimiters. In that case, the whole prior
+   *    or post substring is part of that line (e.g. beginning or end).</p>
+   *
+   * @param str String to duplicate the line from.
+   * @param selectionStart Beginning of the selection, which line(s) should be duplicated.
+   * @param selectionEnd End of the selection.
+   *
+   * @return str with duplicated selected line(s).
+   *
+   * @see StringUtil#duplicateLines(String str, int pos)
+   */
+  public static String duplicateLines(@NonNull String str, int selectionStart, int selectionEnd) {
+    if (str.length() == 0) return LINE_ENDING;
+
+    List<String> lines = getLines(str);
+    int[] selLines = getSelectedLines(str, selectionStart, selectionEnd);
+
+    int lastSelectedLine = selLines[selLines.length - 1];
+
+    for (int i = 0; i < selLines.length; ++i) {
+      lines.add(lastSelectedLine + 1 + i, lines.get(selLines[i]));
+    }
+
+    return toString(lines);
+  }
+
+  /*
   public static int getIndexOfLineStart(@NonNull String str, int pos) {
     int strLen = str.length();
     int selStart;
@@ -190,18 +294,23 @@ public class StringUtil {
 
   public static int getIndexOfLineEnd(@NonNull String str, int pos) {
     int strLen = str.length();
+
+    if (strLen == 0) {
+      return 0;
+    }
+
     int selEnd;
     if (pos < 0) {
       selEnd = 0;
-    } else if (strLen > 0 && pos > strLen) {
+    } else if (pos > strLen) {
       selEnd = strLen;
     } else {
       selEnd = pos;
     }
 
     int lineEnd = str.indexOf(LINE_ENDING, selEnd);
-    return lineEnd < 0? strLen : lineEnd - 1;
-  }
+    return lineEnd < 0? strLen - 1 : lineEnd - 1;
+  } */
 
   /**
    * <p>Compares two Strings, returning true if they are equal.</p>

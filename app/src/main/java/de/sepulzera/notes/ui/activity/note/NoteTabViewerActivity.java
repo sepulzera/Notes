@@ -343,7 +343,7 @@ public class NoteTabViewerActivity extends AppCompatActivity {
     if ((item = menu.findItem(R.id.om_detail_note_delete)) != null) { item.setVisible(isCurrRev && isEditable && !mDisplayedNote.getDraft()); }
     if ((item = menu.findItem(R.id.om_detail_draft_discard)) != null) { item.setVisible(isCurrRev && isEditable && mDisplayedNote.getDraft()); }
 
-    if ((item = menu.findItem(R.id.om_detail_note_line_duplicate)) != null) { item.getIcon().setAlpha(130); }
+    // if ((item = menu.findItem(R.id.om_detail_note_line_duplicate)) != null) { item.getIcon().setAlpha(130); } // TODO render disabled
 
 
     return super.onCreateOptionsMenu(menu);
@@ -415,6 +415,14 @@ public class NoteTabViewerActivity extends AppCompatActivity {
         page = getActiveFragment(getSupportFragmentManager(), mPager);
         if (page != null) {
           ((NoteEditFragment)page).deleteLine();
+          invalidateOptionsMenu();
+        }
+        return true;
+
+      case R.id.om_detail_note_line_duplicate:
+        page = getActiveFragment(getSupportFragmentManager(), mPager);
+        if (page != null) {
+          ((NoteEditFragment)page).duplicateLine();
           invalidateOptionsMenu();
         }
         return true;

@@ -30,6 +30,43 @@ public class StringUtilTest {
     assertEquals(actualString, StringUtil.defaultIfNull(actualString, null));
   }
 
+  /*
+  @Test
+  public void getIndexOfLineStartTest() {
+    assertEquals("empty string", 0, StringUtil.getIndexOfLineStart("", 0));
+    assertEquals("one char", 0, StringUtil.getIndexOfLineStart("x", 0));
+
+    assertEquals("no linebreak", 0, StringUtil.getIndexOfLineStart("Hello World!", 0));
+    assertEquals("no linebreak", 0, StringUtil.getIndexOfLineStart("Hello World!", 5));
+    assertEquals("no linebreak", 0, StringUtil.getIndexOfLineStart("Hello World!", 12));
+
+    assertEquals("single linebreak, selection before", 0, StringUtil.getIndexOfLineStart("Hello World!\nAnother World!", 5));
+    assertEquals("single linebreak, selection after", 13, StringUtil.getIndexOfLineStart("Hello World!\nAnother World!", 20));
+    assertEquals("single linebreak, selection after2", 13, StringUtil.getIndexOfLineStart("Hello World!\n", 13));
+
+    assertEquals("two linebreakes, selection first", 0, StringUtil.getIndexOfLineStart("Hello World!\nAnother World!\nA third World!", 5));
+    assertEquals("two linebreakes, selection middle", 13, StringUtil.getIndexOfLineStart("Hello World!\nAnother World!\nA third World!", 20));
+    assertEquals("two linebreakes, selection last", 28, StringUtil.getIndexOfLineStart("Hello World!\nAnother World!\nA third World!", 35));
+  }
+
+  @Test
+  public void getIndexOfLineEndTest() {
+    assertEquals("empty string", 0, StringUtil.getIndexOfLineEnd("", 0));
+    assertEquals("one char", 0, StringUtil.getIndexOfLineEnd("x", 0));
+
+    assertEquals("no linebreak", 11, StringUtil.getIndexOfLineEnd("Hello World!", 0));
+    assertEquals("no linebreak", 11, StringUtil.getIndexOfLineEnd("Hello World!", 5));
+    assertEquals("no linebreak", 11, StringUtil.getIndexOfLineEnd("Hello World!", 12));
+
+    assertEquals("single linebreak, selection before", 11, StringUtil.getIndexOfLineEnd("Hello World!\nAnother World!", 5));
+    assertEquals("single linebreak, selection after", 26, StringUtil.getIndexOfLineEnd("Hello World!\nAnother World!", 20));
+    assertEquals("single linebreak, selection after2", 12, StringUtil.getIndexOfLineEnd("Hello World!\n", 13));
+
+    assertEquals("two linebreakes, selection first", 11, StringUtil.getIndexOfLineEnd("Hello World!\nAnother World!\nA third World!", 5));
+    assertEquals("two linebreakes, selection middle", 26, StringUtil.getIndexOfLineEnd("Hello World!\nAnother World!\nA third World!", 20));
+    assertEquals("two linebreakes, selection last", 41, StringUtil.getIndexOfLineEnd("Hello World!\nAnother World!\nA third World!", 35));
+  } */
+
   @Test
   public void deleteLineTest() {
     assertEquals("empty string", "", StringUtil.deleteLine("", 0));
@@ -58,6 +95,24 @@ public class StringUtilTest {
 
     assertEquals("two linebreakes, selection first and middle", "A third World!", StringUtil.deleteLine("Hello World!\nAnother World!\nA third World!", 5, 20));
     assertEquals("two linebreakes, selection middle and last", "Hello World!", StringUtil.deleteLine("Hello World!\nAnother World!\nA third World!", 20, 35));
+  }
+
+  @Test
+  public void duplicateLineTest() {
+    assertEquals("empty string", StringUtil.LINE_ENDING, StringUtil.duplicateLine("", 0));
+    assertEquals("one char", "x" + StringUtil.LINE_ENDING + "x", StringUtil.duplicateLine("x", 0));
+
+    assertEquals("no linebreak", "Hello World!" + StringUtil.LINE_ENDING + "Hello World!", StringUtil.duplicateLine("Hello World!", 0));
+    assertEquals("no linebreak", "Hello World!" + StringUtil.LINE_ENDING + "Hello World!", StringUtil.duplicateLine("Hello World!", 5));
+    assertEquals("no linebreak", "Hello World!" + StringUtil.LINE_ENDING + "Hello World!", StringUtil.duplicateLine("Hello World!", 12));
+
+    assertEquals("single linebreak, selection before", "Hello World!" + StringUtil.LINE_ENDING + "Hello World!" + StringUtil.LINE_ENDING + "Another World!", StringUtil.duplicateLine("Hello World!\nAnother World!", 5));
+    assertEquals("single linebreak, selection after", "Hello World!" + StringUtil.LINE_ENDING + "Another World!" + StringUtil.LINE_ENDING + "Another World!", StringUtil.duplicateLine("Hello World!\nAnother World!", 20));
+    assertEquals("single linebreak, selection after2", "Hello World!" + StringUtil.LINE_ENDING + StringUtil.LINE_ENDING, StringUtil.duplicateLine("Hello World!\n", 13));
+
+    assertEquals("two linebreakes, selection first", "Hello World!" + StringUtil.LINE_ENDING + "Hello World!" + StringUtil.LINE_ENDING + "Another World!\nA third World!", StringUtil.duplicateLine("Hello World!\nAnother World!\nA third World!", 5));
+    assertEquals("two linebreakes, selection middle", "Hello World!\nAnother World!" + StringUtil.LINE_ENDING + "Another World!" + "\nA third World!", StringUtil.duplicateLine("Hello World!\nAnother World!\nA third World!", 20));
+    assertEquals("two linebreakes, selection last", "Hello World!\nAnother World!\nA third World!" + StringUtil.LINE_ENDING + "A third World!", StringUtil.duplicateLine("Hello World!\nAnother World!\nA third World!", 35));
   }
 
   @Test

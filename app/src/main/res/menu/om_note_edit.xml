@@ -14,7 +14,6 @@
       android:icon="@drawable/ic_content_copy_white_24dp"
       android:title="@string/om_detail_note_line_duplicate"
       app:showAsAction="always"
-      android:enabled="false"
       tools:ignore="AlwaysShowAction" />
   <item
       android:id="@+id/om_detail_note_undo"

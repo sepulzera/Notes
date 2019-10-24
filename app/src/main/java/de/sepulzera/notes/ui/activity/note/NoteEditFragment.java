@@ -94,16 +94,25 @@ public class NoteEditFragment extends Fragment {
   }
 
   public void deleteLine() {
-    String msg = getMsg();
+    String msgDeletedLine = StringUtil.deleteLines(getMsg(), mEditMsg.getSelectionStart(), mEditMsg.getSelectionEnd());
+    setMsgAndFixSelection(msgDeletedLine);
+  }
+
+  public void duplicateLine() {
+    String msgCopiedLine = StringUtil.duplicateLines(getMsg(), mEditMsg.getSelectionStart(), mEditMsg.getSelectionEnd());
+    setMsgAndFixSelection(msgCopiedLine);
+  }
+
+  private void setMsgAndFixSelection(@NonNull String msg) {
     int selStart = mEditMsg.getSelectionStart();
+    int selEnd   = mEditMsg.getSelectionEnd();
 
-    String msgDeletedLine = StringUtil.deleteLine(msg, selStart, mEditMsg.getSelectionEnd());
-    setMsg(msgDeletedLine);
+    setMsg(msg);
+    int len = msg.length();
 
-    int delMsgLen = msgDeletedLine.length();
-    if (selStart > delMsgLen) {
-      mEditMsg.setSelection(delMsgLen);
-    }
+    selStart = (selStart > len? len : selStart);
+    selEnd = (selEnd > len? len : selEnd);
+    mEditMsg.setSelection(selStart, selEnd);
   }
 
   public boolean isEditable() { return mIsEditable; }
