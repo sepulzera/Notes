@@ -631,7 +631,7 @@ public class NoteTabViewerActivity extends AppCompatActivity {
       @Override
       public void onClick(DialogInterface dialog, int which) {
         saveNote.setTitle(srv.toNoteTitle(input.getText().toString()));
-        saveNote.setRevision(saveNote.getRevision() + 1);
+        saveNote.setRevision(1);
         executeDone(saveNote);
       }
     }).setNegativeButton(getResources().getString(R.string.dialog_btn_abort), new DialogInterface.OnClickListener() {
