@@ -57,8 +57,6 @@
   <string name="hint_start_writing">Start writing …</string>
   <string name="copied_to_clipboard">Copied to clipboard.</string>
   <string name="note_save_ignore_old_rev">Old revisions can not be changed.</string>
-  <string name="note_clear_ignore_old_rev">Old revisions can not be changed.</string>
-  <string name="note_revert_ignore_old_rev">Old revisions can not be changed.</string>
 
   <!-- Note Trash -->
   <string name="note_trash_title">Trash</string>

@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -20,6 +21,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,6 +29,7 @@ import android.view.View;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -44,7 +47,7 @@ import de.sepulzera.notes.bf.service.impl.NoteServiceImpl;
 import de.sepulzera.notes.ds.model.Note;
 import de.sepulzera.notes.ui.helper.UiHelper;
 
-public class NoteTabViewerActivity extends AppCompatActivity {
+public class NoteTabViewerActivity extends AppCompatActivity implements NoteEditFragment.NoteEditFragmentListener {
   public static boolean mOpenNotesReadonly = true;
 
   @Override
@@ -121,7 +124,8 @@ public class NoteTabViewerActivity extends AppCompatActivity {
         mShowToolbarEdit = true;
         hideFloatingActionButton(mFabShowTbEdit);
         showFloatingActionButton(mFabHideTbEdit);
-        mEditToolbar.setVisibility(View.VISIBLE);
+        setEditToolbarVisibility(View.VISIBLE);
+        invalidateOptionsMenu();
       }
     });
 
@@ -132,7 +136,8 @@ public class NoteTabViewerActivity extends AppCompatActivity {
         mShowToolbarEdit = false;
         hideFloatingActionButton(mFabHideTbEdit);
         showFloatingActionButton(mFabShowTbEdit);
-        mEditToolbar.setVisibility(View.GONE);
+        setEditToolbarVisibility(View.GONE);
+        invalidateOptionsMenu();
       }
     });
 
@@ -314,22 +319,6 @@ public class NoteTabViewerActivity extends AppCompatActivity {
   public boolean onCreateOptionsMenu(Menu menu) {
     getMenuInflater().inflate(R.menu.om_note_view, menu);
 
-    // Inflate and initialize the bottom menu
-    mEditToolbar = findViewById(R.id.toolbar_edit);
-    Menu bottomMenu = mEditToolbar.getMenu();
-    if (bottomMenu.size() == 0) {
-      getMenuInflater().inflate(R.menu.om_note_edit, bottomMenu);
-      for (int i = 0; i < bottomMenu.size(); i++) {
-        bottomMenu.getItem(i).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-          @Override
-          public boolean onMenuItemClick(MenuItem item) {
-            return onOptionsItemSelected(item);
-          }
-        });
-      }
-    }
-    mEditToolbar.setVisibility(mShowToolbarEdit? View.VISIBLE : View.GONE);
-
     final boolean isCurrRev  = mDisplayedNote != null && mDisplayedNote.getCurrRev();
     final boolean isNewNote  = mDisplayedNote != null && mDisplayedNote.getId() == 0L;
     final NoteEditFragment frag = mNoteFrags.size() > 0? mNoteFrags.get(0).getFragment() : null;
@@ -337,16 +326,96 @@ public class NoteTabViewerActivity extends AppCompatActivity {
 
     MenuItem item;
     if ((item = menu.findItem(R.id.om_detail_note_show_revisions)) != null) { item.setVisible(!mShowsRevisions && mDisplayedNote != null && !isNewNote && (mDisplayedNote.getRevision() > 2 || (mDisplayedNote.getRevision() == 2 && !mDisplayedNote.getDraft()))); }
-    if ((item = menu.findItem(R.id.om_detail_note_rename)) != null) { item.setVisible(isCurrRev && !isNewNote && isEditable); }
-    if ((item = menu.findItem(R.id.om_detail_note_clear)) != null) { item.setVisible(isCurrRev && isEditable && !frag.getMsg().isEmpty()); }
-    if ((item = menu.findItem(R.id.om_detail_note_revert)) != null) { item.setVisible(isCurrRev && !isNewNote && isEditable && frag.isChanged()); }
-    if ((item = menu.findItem(R.id.om_detail_note_delete)) != null) { item.setVisible(isCurrRev && isEditable && !mDisplayedNote.getDraft()); }
-    if ((item = menu.findItem(R.id.om_detail_draft_discard)) != null) { item.setVisible(isCurrRev && isEditable && mDisplayedNote.getDraft()); }
+    if ((item = menu.findItem(R.id.om_detail_note_rename))         != null) { item.setVisible(isCurrRev && !isNewNote && isEditable); }
+    if ((item = menu.findItem(R.id.om_detail_note_clear))          != null) { item.setVisible(isCurrRev && isEditable && !frag.getMsg().isEmpty()); }
+    if ((item = menu.findItem(R.id.om_detail_note_revert))         != null) { item.setVisible(isCurrRev && !isNewNote && isEditable && frag.isChanged()); }
+    if ((item = menu.findItem(R.id.om_detail_note_delete))         != null) { item.setVisible(isCurrRev && isEditable && !mDisplayedNote.getDraft()); }
+    if ((item = menu.findItem(R.id.om_detail_draft_discard))       != null) { item.setVisible(isCurrRev && isEditable && mDisplayedNote.getDraft()); }
 
-    // if ((item = menu.findItem(R.id.om_detail_note_line_duplicate)) != null) { item.getIcon().setAlpha(130); } // TODO render disabled
-
+    onCreateToolbarMenu(frag);
 
     return super.onCreateOptionsMenu(menu);
+  }
+
+  private void onCreateToolbarMenu(NoteEditFragment frag) {
+    // Inflate and initialize the bottom menu
+    mEditToolbar = findViewById(R.id.toolbar_edit);
+    Menu bottomMenu = mEditToolbar.getMenu();
+    if (bottomMenu.size() == 0) {
+      getMenuInflater().inflate(R.menu.om_note_edit, bottomMenu);
+      MenuItem item;
+      for (int i = 0; i < bottomMenu.size(); i++) {
+        item = bottomMenu.getItem(i);
+        item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+          @Override
+          public boolean onMenuItemClick(MenuItem item) {
+            return onOptionsItemSelected(item);
+          }
+        });
+
+        if ((item = bottomMenu.findItem(R.id.om_detail_note_line_delete))    != null) { mItemDeleteLine = item; }
+        if ((item = bottomMenu.findItem(R.id.om_detail_note_line_duplicate)) != null) { mItemDuplicateLine = item; }
+        // if ((item = bottomMenu.findItem(R.id.om_detail_note_undo))           != null) { mItemUndo = item; }
+        // if ((item = bottomMenu.findItem(R.id.om_detail_note_redo))           != null) { mItemRedo = item; }
+        if ((item = bottomMenu.findItem(R.id.om_detail_note_line_up))        != null) { mItemLineUp = item; }
+        if ((item = bottomMenu.findItem(R.id.om_detail_note_line_down))      != null) { mItemLineDown = item; }
+      }
+    }
+    setEditToolbarVisibility(mShowToolbarEdit? View.VISIBLE : View.GONE);
+
+    if (mShowToolbarEdit) {
+      setEditToolbarEnabled(frag.getMsg(), frag.hasFocus(), frag.getSelectionStart(), frag.getSelectionEnd());
+    }
+  }
+
+  private void setEditToolbarVisibility(int visibility) {
+    mEditToolbar.setVisibility(visibility);
+    setMargins(mFabSave, 0, 0, 12, visibility == View.VISIBLE ? 36 : 12);
+  }
+
+  private void setEditToolbarEnabled(String msg, boolean hasFocus, int selStart, int selEnd) {
+    if (!hasFocus || msg.isEmpty()) {
+      if (mItemDeleteLine != null)    { setItemEnabled(mItemDeleteLine    , false); }
+      if (mItemDuplicateLine != null) { setItemEnabled(mItemDuplicateLine , false); }
+
+      if (mItemLineUp != null)        { setItemEnabled(mItemLineUp        , false); }
+      if (mItemLineDown != null)      { setItemEnabled(mItemLineDown      , false); }
+    } else {
+      if (mItemDeleteLine != null)    { setItemEnabled(mItemDeleteLine    , true); }
+      if (mItemDuplicateLine != null) { setItemEnabled(mItemDuplicateLine , true); }
+
+      List<String> lines = StringUtil.getLines(msg);
+      int[] selLines = StringUtil.getSelectedLines(msg, selStart, selEnd);
+      if (mItemLineUp != null)        { setItemEnabled(mItemLineUp   , selLines.length != 0 && selLines[0] != 0); }
+      if (mItemLineDown != null)      { setItemEnabled(mItemLineDown , selLines.length != 0 && selLines[selLines.length - 1] != lines.size() - 1); }
+    }
+
+    /* TODO #3 Provide editing history
+    if (mItemUndo != null) { setItemEnabled(mItemUndo , ...); }
+    if (mItemRedo != null) { setItemEnabled(mItemRedo , ...); }
+    */
+  }
+
+  private static void setItemEnabled(MenuItem item, boolean enabled) {
+    item.setEnabled(enabled);
+    item.getIcon().setAlpha(enabled ? 255 : 130);
+  }
+
+  private void setMargins(View view, int left, int top, int right, int bottom) {
+    if (view.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+      ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+      p.setMargins(toPx(left), toPx(top), toPx(right), toPx(bottom));
+      view.requestLayout();
+    }
+  }
+
+  private int toPx(int dp) {
+    Resources r = getApplicationContext().getResources();
+    return (int) TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP,
+        dp,
+        r.getDisplayMetrics()
+    );
   }
 
   @Override
@@ -722,6 +791,11 @@ public class NoteTabViewerActivity extends AppCompatActivity {
     invalidateOptionsMenu();
   }
 
+  @Override
+  public void onTextChanged(String msg, boolean hasFocus, int selectionStart, int selectionEnd) {
+    setEditToolbarEnabled(msg, hasFocus, selectionStart, selectionEnd);
+  }
+
   static class NoteFragmentPagerAdapter extends FragmentPagerAdapter {
     private final List<Fragment> mFragments = new ArrayList<>();
     private final List<String> mFragmentTitles = new ArrayList<>();
@@ -851,6 +925,13 @@ public class NoteTabViewerActivity extends AppCompatActivity {
   private ViewPager mPager;
   private TabLayout mTabLayout;
   private boolean mShowToolbarEdit = false;
+
+  private MenuItem mItemDeleteLine;
+  private MenuItem mItemDuplicateLine;
+  // private MenuItem mItemUndo;
+  // private MenuItem mItemRedo;
+  private MenuItem mItemLineUp;
+  private MenuItem mItemLineDown;
 
   private static final int mNumScrollTabs = 5;
 

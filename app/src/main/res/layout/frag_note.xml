@@ -22,7 +22,7 @@
         android:focusableInTouchMode="true"
         android:orientation="vertical">
 
-      <EditText
+      <de.sepulzera.notes.ui.widgets.EditTextSelectable
           android:id="@+id/note_msg"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"

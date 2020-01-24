@@ -8,10 +8,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 
 import java.util.List;
 import java.util.Objects;
@@ -19,8 +20,9 @@ import java.util.Objects;
 import de.sepulzera.notes.R;
 import de.sepulzera.notes.bf.helper.StringUtil;
 import de.sepulzera.notes.ds.model.Note;
+import de.sepulzera.notes.ui.widgets.EditTextSelectable;
 
-public class NoteEditFragment extends Fragment {
+public class NoteEditFragment extends Fragment implements EditTextSelectable.SelectionChangedListener {
 
   @Nullable
   @Override
@@ -46,7 +48,22 @@ public class NoteEditFragment extends Fragment {
     }
 
     mView = view.findViewById(R.id.main_content);
+
     mEditMsg = mView.findViewById(R.id.note_msg);
+    mEditMsg.addTextChangedListener(new TextWatcher() {
+      public void afterTextChanged(Editable s) {
+        mListener.onTextChanged(s.toString(), mEditMsg.hasFocus(), mEditMsg.getSelectionStart(), mEditMsg.getSelectionEnd());
+      }
+      public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+      public void onTextChanged(CharSequence s, int start, int before, int count) {}
+    });
+    mEditMsg.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+      @Override
+      public void onFocusChange(View view, boolean hasFocus) {
+        mListener.onTextChanged(getMsg(), mEditMsg.hasFocus(), mEditMsg.getSelectionStart(), mEditMsg.getSelectionEnd());
+      }
+    });
+    mEditMsg.addSelectionChangedListener(this);
 
     setEditable(mIsEditable);
     setMsg(msg != null? msg : mNote.getMsg());
@@ -168,14 +185,60 @@ public class NoteEditFragment extends Fragment {
   }
 
   public String getMsg() {
-    return mEditMsg.getText().toString();
+    @Nullable Editable text = mEditMsg.getText();
+    return text == null ? "" : text.toString();
   }
 
   private void setMsg(@NonNull String msg) {
     mEditMsg.setText(msg);
   }
 
-  private EditText mEditMsg;
+  public boolean hasFocus() {
+    return mEditMsg.hasFocus();
+  }
+
+  public int getSelectionStart() {
+    return mEditMsg.getSelectionStart();
+  }
+
+  public int getSelectionEnd() {
+    return mEditMsg.getSelectionEnd();
+  }
+
+  @Override
+  public void onSelectionChanged(int selStart, int selEnd) {
+    mListener.onTextChanged(getMsg(), mEditMsg.hasFocus(), selStart, selEnd);
+  }
+
+
+  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*
+   *  CALLBACK INTERFACE
+   * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+  public interface NoteEditFragmentListener {
+    void onTextChanged(String msg, boolean hasFocus, int selectionStart, int SelectionEnd);
+  }
+
+  @Override
+  public void onAttach(Context context) {
+    super.onAttach(context);
+    if (context instanceof NoteEditFragmentListener ) {
+      mListener = (NoteEditFragmentListener)context;
+    } else {
+      throw new RuntimeException(context.toString()
+          + " must implement TeamCreateFragmentListener");
+    }
+  }
+
+  @Override
+  public void onDetach() {
+    super.onDetach();
+    mListener = null;
+  }
+  private NoteEditFragmentListener mListener;
+
+
+  private EditTextSelectable mEditMsg;
 
   private int  mIndex = -1;
   private CoordinatorLayout mView;
