@@ -4,6 +4,20 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
 
   <item
+      android:id="@+id/om_detail_note_undo"
+      android:icon="@drawable/ic_undo_24px"
+      android:title="@string/om_detail_note_undo"
+      app:showAsAction="always"
+      tools:ignore="AlwaysShowAction"
+      android:visible="false" />
+  <item
+      android:id="@+id/om_detail_note_redo"
+      android:icon="@drawable/ic_redo_24px"
+      android:title="@string/om_detail_note_redo"
+      app:showAsAction="always"
+      tools:ignore="AlwaysShowAction"
+      android:visible="false" />
+  <item
       android:id="@+id/om_detail_note_line_delete"
       android:icon="@drawable/ic_remove_24px"
       android:title="@string/om_detail_note_line_delete"
@@ -13,18 +27,6 @@
       android:id="@+id/om_detail_note_line_duplicate"
       android:icon="@drawable/ic_content_copy_white_24dp"
       android:title="@string/om_detail_note_line_duplicate"
-      app:showAsAction="always"
-      tools:ignore="AlwaysShowAction" />
-  <item
-      android:id="@+id/om_detail_note_undo"
-      android:icon="@drawable/ic_undo_24px"
-      android:title="@string/om_detail_note_undo"
-      app:showAsAction="always"
-      tools:ignore="AlwaysShowAction" />
-  <item
-      android:id="@+id/om_detail_note_redo"
-      android:icon="@drawable/ic_redo_24px"
-      android:title="@string/om_detail_note_redo"
       app:showAsAction="always"
       tools:ignore="AlwaysShowAction" />
   <item
