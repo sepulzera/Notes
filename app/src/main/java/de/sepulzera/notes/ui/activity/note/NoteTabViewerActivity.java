@@ -370,7 +370,7 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
 
   private void setEditToolbarVisibility(int visibility) {
     mEditToolbar.setVisibility(visibility);
-    setMargins(mFabSave, 0, 0, 12, visibility == View.VISIBLE ? 36 : 12);
+    setMargins(mFabSave, 0, 0, 12, visibility == View.VISIBLE ? 50 : 12);
   }
 
   private void setEditToolbarEnabled(String msg, boolean hasFocus, int selStart, int selEnd) {
