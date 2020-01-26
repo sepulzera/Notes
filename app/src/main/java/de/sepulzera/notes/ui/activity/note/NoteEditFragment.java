@@ -8,11 +8,13 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import java.util.List;
 import java.util.Objects;
@@ -21,8 +23,10 @@ import de.sepulzera.notes.R;
 import de.sepulzera.notes.bf.helper.StringUtil;
 import de.sepulzera.notes.ds.model.Note;
 import de.sepulzera.notes.ui.widgets.EditTextSelectable;
+import de.sepulzera.notes.ui.widgets.rundo.RunDo;
+import de.sepulzera.notes.ui.widgets.rundo.RunDoSupport;
 
-public class NoteEditFragment extends Fragment implements EditTextSelectable.SelectionChangedListener {
+public class NoteEditFragment extends Fragment implements EditTextSelectable.SelectionChangedListener, RunDo.TextLink {
 
   @Nullable
   @Override
@@ -34,13 +38,10 @@ public class NoteEditFragment extends Fragment implements EditTextSelectable.Sel
       throw new IllegalStateException("Could not find view!");
     }
 
-    String msg = null;
     if (null != savedInstanceState) {
-      mIndex      = savedInstanceState.getInt(KEY_INDEX, -1);
-
-      mNote       = (Note) savedInstanceState.getSerializable(Note.TAG_NOTE);
-      msg         = savedInstanceState.getString(KEY_MSG);
-      mIsEditable = savedInstanceState.getBoolean(KEY_EDITABLE, true);
+      restoreState(savedInstanceState);
+    } else {
+      createState();
     }
 
     if (null == mNote || mIndex == -1) {
@@ -66,7 +67,7 @@ public class NoteEditFragment extends Fragment implements EditTextSelectable.Sel
     mEditMsg.addSelectionChangedListener(this);
 
     setEditable(mIsEditable);
-    setMsg(msg != null? msg : mNote.getMsg());
+    setMsg(mMsg != null? mMsg : mNote.getMsg());
 
     // only show keyboard on new notes
     if (0L == mNote.getId()) {
@@ -76,6 +77,40 @@ public class NoteEditFragment extends Fragment implements EditTextSelectable.Sel
     }
 
     return mView;
+  }
+
+  private void createState() {
+    FragmentManager fragmentManager = getFragmentManager();
+    if (fragmentManager == null) {
+      throw new IllegalStateException("No FragmentManager!");
+    }
+    mRunDo = RunDo.Factory.getInstance(fragmentManager);
+  }
+
+  private void restoreState(@NonNull final Bundle savedInstanceState) {
+    mIndex      = savedInstanceState.getInt(KEY_INDEX, -1);
+
+    mNote       = (Note) savedInstanceState.getSerializable(Note.TAG_NOTE);
+    mMsg        = savedInstanceState.getString(KEY_MSG);
+    mIsEditable = savedInstanceState.getBoolean(KEY_EDITABLE, true);
+
+    FragmentManager fragmentManager = getFragmentManager();
+    if (fragmentManager == null) {
+      throw new IllegalStateException("No FragmentManager!");
+    }
+    final List<Fragment> frags = fragmentManager.getFragments();
+    if (frags.size() == 0) {
+      throw new IllegalStateException("RunDo Fragment is lost");
+    }
+    // may have additional frags, but only the RunDo is needed
+    for (final Fragment frag : frags) {
+      if (frag instanceof RunDoSupport) {
+        mRunDo = (RunDoSupport)frag;
+      }
+    }
+    if (mRunDo == null) {
+      throw new IllegalStateException("RunDo Fragment is lost");
+    }
   }
 
   @Override
@@ -205,9 +240,26 @@ public class NoteEditFragment extends Fragment implements EditTextSelectable.Sel
     return mEditMsg.getSelectionEnd();
   }
 
+  public void undo() {
+    if (mRunDo != null) {
+      mRunDo.undo();
+    }
+  }
+
+  public void redo() {
+    if (mRunDo != null) {
+      mRunDo.redo();
+    }
+  }
+
   @Override
   public void onSelectionChanged(int selStart, int selEnd) {
     mListener.onTextChanged(getMsg(), mEditMsg.hasFocus(), selStart, selEnd);
+  }
+
+  @Override
+  public EditText getEditTextForRunDo() {
+    return mEditMsg;
   }
 
 
@@ -239,10 +291,12 @@ public class NoteEditFragment extends Fragment implements EditTextSelectable.Sel
 
 
   private EditTextSelectable mEditMsg;
+  private RunDo mRunDo;
 
   private int  mIndex = -1;
   private CoordinatorLayout mView;
   private Note mNote;
+  private String mMsg;
   private boolean mIsEditable;
 
   private static final String KEY_INDEX    = "noteEditFrag_index";
