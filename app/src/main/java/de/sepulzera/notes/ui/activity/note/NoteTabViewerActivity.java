@@ -48,7 +48,7 @@ import de.sepulzera.notes.ds.model.Note;
 import de.sepulzera.notes.ui.helper.UiHelper;
 import de.sepulzera.notes.ui.widgets.rundo.RunDo;
 
-public class NoteTabViewerActivity extends AppCompatActivity implements NoteEditFragment.NoteEditFragmentListener, RunDo.TextLink {
+public class NoteTabViewerActivity extends AppCompatActivity implements NoteEditFragment.NoteEditFragmentListener, RunDo.Callbacks, RunDo.TextLink {
   public static boolean mOpenNotesReadonly = true;
 
   @Override
@@ -199,6 +199,10 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
     mDisplayedNote = (Note)outState.getSerializable(KEY_DISPLAYED_NOTE);
     mShowsRevisions = outState.getBoolean(KEY_SHOW_REVS);
     mShowToolbarEdit = outState.getBoolean(KEY_SHOW_TB_EDIT);
+
+    mCanUndo = outState.getBoolean(KEY_CAN_UNDO);
+    mCanRedo = outState.getBoolean(KEY_CAN_REDO);
+
     setTitle(outState.getString(KEY_TITLE));
 
     final List<Fragment> frags = getSupportFragmentManager().getFragments();
@@ -251,6 +255,9 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
     outState.putString(KEY_TITLE, getTitle().toString());
     outState.putBoolean(KEY_SHOW_REVS , mShowsRevisions);
     outState.putBoolean(KEY_SHOW_TB_EDIT, mShowToolbarEdit);
+
+    outState.putBoolean(KEY_CAN_UNDO, mCanUndo);
+    outState.putBoolean(KEY_CAN_REDO, mCanRedo);
   }
 
   public static void readPreferences(@NonNull final Context context) {
@@ -392,9 +399,8 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
       if (mItemLineDown != null)      { setItemEnabled(mItemLineDown , selLines.length != 0 && selLines[selLines.length - 1] != lines.size() - 1); }
     }
 
-    // TODO add callbacks for hasUndo, hasRedo
-    if (mItemUndo != null) { setItemEnabled(mItemUndo , true); }
-    if (mItemRedo != null) { setItemEnabled(mItemRedo , true); }
+    if (mItemUndo != null) { setItemEnabled(mItemUndo , mCanUndo); }
+    if (mItemRedo != null) { setItemEnabled(mItemRedo , mCanRedo); }
   }
 
   private static void setItemEnabled(MenuItem item, boolean enabled) {
@@ -822,6 +828,40 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
     return null;
   }
 
+  @Override
+  public void undoCalled() {
+    // not needed
+  }
+
+  @Override
+  public void redoCalled() {
+    // not needed
+  }
+
+  @Override
+  public void undoEmpty() {
+    mCanUndo = false;
+    if (mItemUndo != null) { setItemEnabled(mItemUndo , false); }
+  }
+
+  @Override
+  public void redoEmpty() {
+    mCanRedo = false;
+    if (mItemUndo != null) { setItemEnabled(mItemUndo , false); }
+  }
+
+  @Override
+  public void undoAvailable() {
+    mCanUndo = true;
+    if (mItemUndo != null) { setItemEnabled(mItemUndo , true); }
+  }
+
+  @Override
+  public void redoAvailable() {
+    mCanRedo = true;
+    if (mItemUndo != null) { setItemEnabled(mItemUndo , true); }
+  }
+
   static class NoteFragmentPagerAdapter extends FragmentPagerAdapter {
     private final List<Fragment> mFragments = new ArrayList<>();
     private final List<String> mFragmentTitles = new ArrayList<>();
@@ -952,10 +992,13 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
   private TabLayout mTabLayout;
   private boolean mShowToolbarEdit = false;
 
-  private MenuItem mItemDeleteLine;
-  private MenuItem mItemDuplicateLine;
   private MenuItem mItemUndo;
   private MenuItem mItemRedo;
+  private boolean  mCanUndo;
+  private boolean  mCanRedo;
+
+  private MenuItem mItemDeleteLine;
+  private MenuItem mItemDuplicateLine;
   private MenuItem mItemLineUp;
   private MenuItem mItemLineDown;
 
@@ -966,4 +1009,7 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
   private static final String KEY_DISPLAYED_NOTE = "notetabvieweract_displayednote";
   private static final String KEY_SHOW_REVS      = "notetabvieweract_showrevs";
   private static final String KEY_SHOW_TB_EDIT   = "notetabvieweract_showtoolbaredit";
+
+  private static final String KEY_CAN_UNDO = "notetabvieweract_canundo";
+  private static final String KEY_CAN_REDO = "notetabvieweract_canredo";
 }
