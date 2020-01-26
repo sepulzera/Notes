@@ -21,6 +21,7 @@ public class RunDoSupport extends Fragment implements RunDo {
     private Handler mHandler;
     private WriteToArrayDequeRunnable mRunnable;
     private boolean isRunning;
+    private boolean undoRequested;
 
     private long countdownTimerLength;
     private int queueSize;
@@ -179,6 +180,9 @@ public class RunDoSupport extends Fragment implements RunDo {
 
         trackingState = TRACKING_ENDED;
 
+        if (undoRequested) {
+            undo();
+        }
     }
 
     /**
@@ -217,12 +221,14 @@ public class RunDoSupport extends Fragment implements RunDo {
     @Override
     public void undo() {
 
-        if (isRunning) {
+        if (isRunning && !undoRequested) {
+            undoRequested = true;
             restartCountdownRunnableImmediately();
             return;
         }
 
         trackingState = TRACKING_STARTED;
+        undoRequested = false;
 
         if (mUndoQueue.peek() == null) {
             //Log.e(TAG, "Undo Queue Empty");
