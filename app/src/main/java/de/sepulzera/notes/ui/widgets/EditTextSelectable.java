@@ -39,6 +39,8 @@ public class EditTextSelectable extends AppCompatEditText {
 
   @Override
   protected void onSelectionChanged(int selStart, int selEnd) {
+    super.onSelectionChanged(selStart, selEnd);
+    
     if (mListeners == null) {
       init();
     }
