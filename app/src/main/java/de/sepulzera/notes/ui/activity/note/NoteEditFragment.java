@@ -40,8 +40,6 @@ public class NoteEditFragment extends Fragment implements EditTextSelectable.Sel
 
     if (null != savedInstanceState) {
       restoreState(savedInstanceState);
-    } else {
-      createState();
     }
 
     if (null == mNote || mIndex == -1) {
@@ -79,9 +77,6 @@ public class NoteEditFragment extends Fragment implements EditTextSelectable.Sel
     }
 
     return mView;
-  }
-
-  private void createState() {
   }
 
   private void restoreState(@NonNull final Bundle savedInstanceState) {

@@ -447,9 +447,8 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
       case R.id.om_detail_note_send_as_msg:
         noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
         if (noteFrag != null) {
-          final NoteEditFragment noteEditFragment = noteFrag;
           startActivity(new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:"))
-              .putExtra("sms_body", NoteServiceImpl.getInstance().toNoteTitle(noteEditFragment.getNote().getTitle()) + ": " + noteEditFragment.getMsg()));
+              .putExtra("sms_body", NoteServiceImpl.getInstance().toNoteTitle(noteFrag.getNote().getTitle()) + ": " + noteFrag.getMsg()));
         }
         return true;
 
