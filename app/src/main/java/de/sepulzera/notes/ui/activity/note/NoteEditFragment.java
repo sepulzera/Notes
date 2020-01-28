@@ -142,32 +142,62 @@ public class NoteEditFragment extends Fragment implements EditTextSelectable.Sel
   }
 
   public void deleteSelectedLines() {
+    String oldMsg = getMsg();
+
+    // fix selection
+
+    int selStart = mEditMsg.getSelectionStart();
+    int selEnd   = mEditMsg.getSelectionEnd();
+
+    List<String> lines = StringUtil.getLines(oldMsg);
+    int[] selectedLines = StringUtil.getSelectedLines(oldMsg, selStart, selEnd);
+
+    boolean firstLineDeleted = selectedLines[0] == 0;
+    boolean lastLineDeleted   = selectedLines[selectedLines.length - 1] == (lines.size() - 1);
+
+    int posOfLine = oldMsg.lastIndexOf(lines.get(selectedLines[0]), selStart);
+    int posInLine = selStart - posOfLine;
+
+    int selPos;
+
+    if (firstLineDeleted && lastLineDeleted) {
+      // everything deleted
+      selPos = 0;
+    } else if (lastLineDeleted) {
+      // last line deleted -> go up
+      String previousLine = lines.get(selectedLines[0] - 1);
+      int previousStartPos = oldMsg.lastIndexOf(previousLine, posOfLine - 1);
+
+      if (previousLine.length() - 1 < posInLine) {
+        selPos = previousStartPos + previousLine.length();
+      } else {
+        selPos = previousStartPos + posInLine;
+      }
+    } else {
+      // stay
+      String nextLine = lines.get(selectedLines[selectedLines.length - 1] + 1);
+      if (nextLine.length() - 1 < posInLine) {
+        selPos = posOfLine + (nextLine.length() > 0 ? nextLine.length() : 0);
+      } else {
+        selPos = posOfLine + posInLine;
+      }
+    }
+
     String msgDeletedLine = StringUtil.deleteLines(getMsg(), mEditMsg.getSelectionStart(), mEditMsg.getSelectionEnd());
-    setMsgAndFixSelection(msgDeletedLine);
+    setMsg(msgDeletedLine);
+    mEditMsg.setSelection(selPos, selPos);
   }
 
   public void duplicateSelectedLines() {
     String msgCopiedLine = StringUtil.duplicateLines(getMsg(), mEditMsg.getSelectionStart(), mEditMsg.getSelectionEnd());
-    setMsgAndFixSelection(msgCopiedLine);
-  }
 
-  private void setMsgAndFixSelection(@NonNull String msg) {
-    int selStart = mEditMsg.getSelectionStart();
-    int selEnd   = mEditMsg.getSelectionEnd();
-
-    setMsg(msg);
-    int len = msg.length();
-
-    selStart = (selStart > len? len : selStart);
-    selEnd = (selEnd > len? len : selEnd);
-    mEditMsg.setSelection(selStart, selEnd);
+    setMsg(msgCopiedLine);
   }
 
   public void moveSelectedLinesUp() {
     String msgMovedLine = StringUtil.moveLinesUp(getMsg(), mEditMsg.getSelectionStart(), mEditMsg.getSelectionEnd());
 
     String oldMsg = getMsg();
-
     int selStart = mEditMsg.getSelectionStart();
     int selEnd   = mEditMsg.getSelectionEnd();
 
