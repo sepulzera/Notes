@@ -88,14 +88,14 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
     mFabSave.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        Fragment page = getActiveFragment(getSupportFragmentManager(), mPager);
-        if (page != null) {
-          final Note note = ((NoteEditFragment)page).getNote();
+        NoteEditFragment noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
+        if (noteFrag != null) {
+          final Note note = noteFrag.getNote();
           if (!note.getCurrRev()) {
             Snackbar.make(mView, getResources().getString(R.string.note_save_ignore_old_rev), Snackbar.LENGTH_LONG).show();
             return;
           }
-          saveNote((NoteEditFragment)page);
+          saveNote(noteFrag);
         }
       }
     });
@@ -105,13 +105,13 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
     mFabEdit.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        Fragment page = getActiveFragment(getSupportFragmentManager(), mPager);
-        if (page != null) {
-          final Note note = ((NoteEditFragment)page).getNote();
+        NoteEditFragment noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
+        if (noteFrag != null) {
+          final Note note = noteFrag.getNote();
           if (!note.getCurrRev()) {
             return;
           }
-          ((NoteEditFragment)page).setEditable(true);
+          noteFrag.setEditable(true);
           invalidateFloatingActionButton(true, true);
           invalidateOptionsMenu();
         }
@@ -330,7 +330,7 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
 
     final boolean isCurrRev  = mDisplayedNote != null && mDisplayedNote.getCurrRev();
     final boolean isNewNote  = mDisplayedNote != null && mDisplayedNote.getId() == 0L;
-    final NoteEditFragment frag = mNoteFrags.size() > 0? mNoteFrags.get(0).getFragment() : null;
+    final NoteEditFragment frag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
     final boolean isEditable = frag != null && frag.isEditable();
 
     MenuItem item;
@@ -370,9 +370,11 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
         if ((item = bottomMenu.findItem(R.id.om_detail_note_line_down))      != null) { mItemLineDown = item; }
       }
     }
-    setEditToolbarVisibility(mShowToolbarEdit? View.VISIBLE : View.GONE);
+    setEditToolbarVisibility(mShowToolbarEdit && frag.isEditable()? View.VISIBLE : View.GONE);
 
-    if (mShowToolbarEdit) {
+    if (mShowToolbarEdit && frag.isEditable()) {
+      mCanUndo = frag.canUndo();
+      mCanRedo = frag.canRedo();
       setEditToolbarEnabled(frag.getMsg(), frag.hasFocus(), frag.getSelectionStart(), frag.getSelectionEnd());
     }
   }
@@ -433,17 +435,17 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
         return true;
 
       case R.id.om_detail_note_copy_to_clipboard:
-        Fragment page = getActiveFragment(getSupportFragmentManager(), mPager);
-        if (page != null) {
-          ((NoteEditFragment)page).copyToClipboard();
+        NoteEditFragment noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
+        if (noteFrag != null) {
+          noteFrag.copyToClipboard();
           Snackbar.make(mView, getResources().getString(R.string.copied_to_clipboard), Snackbar.LENGTH_LONG).show();
         }
         return true;
 
       case R.id.om_detail_note_send_as_msg:
-        page = getActiveFragment(getSupportFragmentManager(), mPager);
-        if (page != null) {
-          final NoteEditFragment noteEditFragment = (NoteEditFragment)page;
+        noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
+        if (noteFrag != null) {
+          final NoteEditFragment noteEditFragment = noteFrag;
           startActivity(new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:"))
               .putExtra("sms_body", NoteServiceImpl.getInstance().toNoteTitle(noteEditFragment.getNote().getTitle()) + ": " + noteEditFragment.getMsg()));
         }
@@ -454,32 +456,32 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
         return true;
 
       case R.id.om_detail_note_rename:
-        page = getActiveFragment(getSupportFragmentManager(), mPager);
-        if (page != null) {
-          renameNote((NoteEditFragment)page);
+        noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
+        if (noteFrag != null) {
+          renameNote(noteFrag);
         }
         return true;
 
       case R.id.om_detail_note_delete:
       case R.id.om_detail_draft_discard:
-        page = getActiveFragment(getSupportFragmentManager(), mPager);
-        if (page != null) {
-          deleteNote((NoteEditFragment)page);
+        noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
+        if (noteFrag != null) {
+          deleteNote(noteFrag);
         }
         return true;
 
       case R.id.om_detail_note_clear:
-        page = getActiveFragment(getSupportFragmentManager(), mPager);
-        if (page != null) {
-          ((NoteEditFragment)page).clearNote();
+        noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
+        if (noteFrag != null) {
+          (noteFrag).clearNote();
           invalidateOptionsMenu();
         }
         return true;
 
       case R.id.om_detail_note_revert:
-        page = getActiveFragment(getSupportFragmentManager(), mPager);
-        if (page != null) {
-          ((NoteEditFragment)page).revert();
+        noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
+        if (noteFrag != null) {
+          (noteFrag).revert();
           invalidateOptionsMenu();
         }
         return true;
@@ -488,49 +490,49 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
       /* Note Edit Options */
 
       case R.id.om_detail_note_undo:
-        page = getActiveFragment(getSupportFragmentManager(), mPager);
-        if (page != null) {
-          ((NoteEditFragment)page).undo();
+        noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
+        if (noteFrag != null) {
+          (noteFrag).undo();
           invalidateOptionsMenu();
         }
         return true;
 
       case R.id.om_detail_note_redo:
-        page = getActiveFragment(getSupportFragmentManager(), mPager);
-        if (page != null) {
-          ((NoteEditFragment)page).redo();
+        noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
+        if (noteFrag != null) {
+          (noteFrag).redo();
           invalidateOptionsMenu();
         }
         return true;
 
       case R.id.om_detail_note_line_delete:
-        page = getActiveFragment(getSupportFragmentManager(), mPager);
-        if (page != null) {
-          ((NoteEditFragment)page).deleteSelectedLines();
+        noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
+        if (noteFrag != null) {
+          (noteFrag).deleteSelectedLines();
           invalidateOptionsMenu();
         }
         return true;
 
       case R.id.om_detail_note_line_duplicate:
-        page = getActiveFragment(getSupportFragmentManager(), mPager);
-        if (page != null) {
-          ((NoteEditFragment)page).duplicateSelectedLines();
+        noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
+        if (noteFrag != null) {
+          (noteFrag).duplicateSelectedLines();
           invalidateOptionsMenu();
         }
         return true;
 
       case R.id.om_detail_note_line_up:
-        page = getActiveFragment(getSupportFragmentManager(), mPager);
-        if (page != null) {
-          ((NoteEditFragment)page).moveSelectedLinesUp();
+        noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
+        if (noteFrag != null) {
+          (noteFrag).moveSelectedLinesUp();
           invalidateOptionsMenu();
         }
         return true;
 
       case R.id.om_detail_note_line_down:
-        page = getActiveFragment(getSupportFragmentManager(), mPager);
-        if (page != null) {
-          ((NoteEditFragment)page).moveSelectedLinesDown();
+        noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
+        if (noteFrag != null) {
+          (noteFrag).moveSelectedLinesDown();
           invalidateOptionsMenu();
         }
         return true;
@@ -776,10 +778,10 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
   }
 
   private void updatePage() {
-    Fragment page = getActiveFragment(getSupportFragmentManager(), mPager);
-    if (page != null) {
-      mDisplayedNote = ((NoteEditFragment)page).getNote();
-      invalidateFloatingActionButton(((NoteEditFragment)page));
+    NoteEditFragment noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
+    if (noteFrag != null) {
+      mDisplayedNote = noteFrag.getNote();
+      invalidateFloatingActionButton(noteFrag);
       invalidateOptionsMenu();
     }
   }
@@ -820,10 +822,16 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
   }
 
   @Override
-  public EditText getEditTextForRunDo() {
-    Fragment page = getActiveFragment(getSupportFragmentManager(), mPager);
-    if (page != null) {
-      return ((NoteEditFragment)page).getEditTextForRunDo();
+  public EditText getEditTextForRunDo(String ident) {
+    final List<Fragment> frags = getSupportFragmentManager().getFragments();
+    int numberOfFrags = frags.size();
+    if (numberOfFrags == 0) {
+      throw new IllegalStateException("Frags are lost");
+    }
+    for (final Fragment frag : frags) {
+      if (frag instanceof NoteEditFragment && (ident == null || ident.equals(String.valueOf(((NoteEditFragment)frag).getIndex())))) {
+        return ((NoteEditFragment) frag).getRef();
+      }
     }
     return null;
   }
@@ -965,6 +973,15 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
           ", mFrag=" + mFrag +
           ", mTitle='" + mTitle + '\'' +
           '}';
+    }
+  }
+
+  private static NoteEditFragment getActiveNoteFragment(@NonNull final FragmentManager fragmentManager, @NonNull final ViewPager pager) {
+    Fragment frag = getActiveFragment(fragmentManager, pager);
+    if (frag instanceof NoteEditFragment) {
+      return (NoteEditFragment) frag;
+    } else {
+      return null;
     }
   }
 

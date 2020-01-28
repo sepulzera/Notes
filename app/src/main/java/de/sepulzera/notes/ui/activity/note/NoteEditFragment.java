@@ -26,7 +26,7 @@ import de.sepulzera.notes.ui.widgets.EditTextSelectable;
 import de.sepulzera.notes.ui.widgets.rundo.RunDo;
 import de.sepulzera.notes.ui.widgets.rundo.RunDoSupport;
 
-public class NoteEditFragment extends Fragment implements EditTextSelectable.SelectionChangedListener, RunDo.TextLink {
+public class NoteEditFragment extends Fragment implements EditTextSelectable.SelectionChangedListener {
 
   @Nullable
   @Override
@@ -80,11 +80,6 @@ public class NoteEditFragment extends Fragment implements EditTextSelectable.Sel
   }
 
   private void createState() {
-    FragmentManager fragmentManager = getFragmentManager();
-    if (fragmentManager == null) {
-      throw new IllegalStateException("No FragmentManager!");
-    }
-    mRunDo = RunDo.Factory.getInstance(fragmentManager);
   }
 
   private void restoreState(@NonNull final Bundle savedInstanceState) {
@@ -104,12 +99,10 @@ public class NoteEditFragment extends Fragment implements EditTextSelectable.Sel
     }
     // may have additional frags, but only the RunDo is needed
     for (final Fragment frag : frags) {
-      if (frag instanceof RunDoSupport) {
+      if (frag instanceof RunDoSupport && String.valueOf(mIndex).equals(((RunDoSupport)frag).getIdent())) {
         mRunDo = (RunDoSupport)frag;
+        break;
       }
-    }
-    if (mRunDo == null) {
-      throw new IllegalStateException("RunDo Fragment is lost");
     }
   }
 
@@ -212,6 +205,14 @@ public class NoteEditFragment extends Fragment implements EditTextSelectable.Sel
       mEditMsg.setEnabled(false);
     }
 
+    if (editable && mRunDo == null) {
+      FragmentManager fragmentManager = getFragmentManager();
+      if (fragmentManager == null) {
+        throw new IllegalStateException("No FragmentManager!");
+      }
+      mRunDo = RunDo.Factory.getInstance(fragmentManager, String.valueOf(mIndex));
+    }
+
     mView.setBackgroundColor(getResources().getColor(editable? R.color.colorNoteBg : R.color.colorNoteBgReadonly, null));
   }
 
@@ -240,10 +241,18 @@ public class NoteEditFragment extends Fragment implements EditTextSelectable.Sel
     return mEditMsg.getSelectionEnd();
   }
 
+  public boolean canUndo() {
+    return mRunDo != null && mRunDo.canUndo();
+  }
+
   public void undo() {
     if (mRunDo != null) {
       mRunDo.undo();
     }
+  }
+
+  public boolean canRedo() {
+    return mRunDo != null && mRunDo.canRedo();
   }
 
   public void redo() {
@@ -257,8 +266,7 @@ public class NoteEditFragment extends Fragment implements EditTextSelectable.Sel
     mListener.onTextChanged(getMsg(), mEditMsg.hasFocus(), selStart, selEnd);
   }
 
-  @Override
-  public EditText getEditTextForRunDo() {
+  public EditText getRef() {
     return mEditMsg;
   }
 
@@ -293,7 +301,7 @@ public class NoteEditFragment extends Fragment implements EditTextSelectable.Sel
   private EditTextSelectable mEditMsg;
   private RunDo mRunDo;
 
-  private int  mIndex = -1;
+  private int mIndex = -1;
   private CoordinatorLayout mView;
   private Note mNote;
   private String mMsg;
