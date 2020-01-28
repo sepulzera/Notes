@@ -14,17 +14,18 @@ final class WriteToArrayDequeRunnable implements Runnable {
     public void run() {
 
         try {
+            WriteToArrayDeque writeToArrayDeque = mWriteToArrayDeque.get();
 
-            mWriteToArrayDeque.get().setIsRunning(true);
+            writeToArrayDeque.setIsRunning(true);
 
-            String mNewString = mWriteToArrayDeque.get().getNewString();
-            String mOldString = mWriteToArrayDeque.get().getOldString();
+            String mNewString = writeToArrayDeque.getNewString();
+            String mOldString = writeToArrayDeque.getOldString();
 
             SubtractStrings.Item mItem = new SubtractStrings(mOldString, mNewString).getItem();
 
-            mWriteToArrayDeque.get().notifyArrayDequeDataReady(mItem);
+            writeToArrayDeque.notifyArrayDequeDataReady(mItem);
 
-            mWriteToArrayDeque.get().setIsRunning(false);
+            writeToArrayDeque.setIsRunning(false);
 
         } catch (NullPointerException e) {
             //Occurs on config change

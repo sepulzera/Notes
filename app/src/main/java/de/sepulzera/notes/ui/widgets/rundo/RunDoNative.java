@@ -147,7 +147,7 @@ public class RunDoNative extends Fragment implements RunDo {
         if (trackingState == TRACKING_ENDED) {
 
             //Redo Queue should only be required as response to Undo calls. Otherwise clear.
-            mRedoQueue.clear();
+            clearRedoQueue();
 
             startCountdownRunnable();
             trackingState = TRACKING_CURRENT;
@@ -255,7 +255,7 @@ public class RunDoNative extends Fragment implements RunDo {
      */
     @Override
     public boolean canUndo() {
-        return isQueueEmpty(mUndoQueue);
+        return !isQueueEmpty(mUndoQueue);
     }
 
     /**
@@ -264,7 +264,7 @@ public class RunDoNative extends Fragment implements RunDo {
      */
     @Override
     public boolean canRedo() {
-        return isQueueEmpty(mRedoQueue);
+        return !isQueueEmpty(mRedoQueue);
     }
 
     /**
@@ -375,7 +375,7 @@ public class RunDoNative extends Fragment implements RunDo {
 
             mTextRef.setSelection(temp.getFirstDeviation());
 
-            mUndoQueue.addFirst(temp);
+            fillUndoQueue(temp);
 
             if (mCallbacks != null) mCallbacks.redoCalled();
 
@@ -430,7 +430,7 @@ public class RunDoNative extends Fragment implements RunDo {
     }
 
     private static boolean isQueueEmpty(FixedSizeArrayDeque<SubtractStrings.Item> queue) {
-        return queue.peek() == null;
+        return queue == null || queue.peek() == null;
     }
 
     private void restartCountdownRunnableImmediately() {
