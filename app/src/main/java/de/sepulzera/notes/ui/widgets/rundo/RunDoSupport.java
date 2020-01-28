@@ -148,6 +148,8 @@ public class RunDoSupport extends Fragment implements RunDo {
 
             startCountdownRunnable();
             trackingState = TRACKING_CURRENT;
+
+            if (mCallbacks != null && isQueueEmpty(mUndoQueue)) mCallbacks.undoAvailable();
         }
 
     }
@@ -197,15 +199,16 @@ public class RunDoSupport extends Fragment implements RunDo {
     @Override
     public void notifyArrayDequeDataReady(SubtractStrings.Item item) {
 
+        trackingState = TRACKING_ENDED;
+
         if (item.getDeviationType() == SubtractStrings.UNCHANGED) {
+            if (mCallbacks != null && isQueueEmpty(mUndoQueue)) mCallbacks.undoEmpty();
             return;
         }
 
         fillUndoQueue(item);
 
         mOldText = mTextRef.getText().toString();
-
-        trackingState = TRACKING_ENDED;
 
         if (undoRequested) {
             undo();
@@ -256,7 +259,7 @@ public class RunDoSupport extends Fragment implements RunDo {
      */
     @Override
     public boolean canUndo() {
-        return !isQueueEmpty(mUndoQueue);
+        return !isQueueEmpty(mUndoQueue) || trackingState != TRACKING_ENDED;
     }
 
     /**

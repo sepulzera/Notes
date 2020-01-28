@@ -151,6 +151,8 @@ public class RunDoNative extends Fragment implements RunDo {
 
             startCountdownRunnable();
             trackingState = TRACKING_CURRENT;
+
+            if (mCallbacks != null && isQueueEmpty(mUndoQueue)) mCallbacks.undoAvailable();
         }
 
     }
@@ -201,6 +203,7 @@ public class RunDoNative extends Fragment implements RunDo {
     public void notifyArrayDequeDataReady(SubtractStrings.Item item) {
 
         if (item.getDeviationType() == SubtractStrings.UNCHANGED) {
+            if (mCallbacks != null && isQueueEmpty(mUndoQueue)) mCallbacks.undoEmpty();
             return;
         }
 
@@ -259,7 +262,7 @@ public class RunDoNative extends Fragment implements RunDo {
      */
     @Override
     public boolean canUndo() {
-        return !isQueueEmpty(mUndoQueue);
+        return !isQueueEmpty(mUndoQueue) || trackingState != TRACKING_ENDED;
     }
 
     /**
