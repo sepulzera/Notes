@@ -406,8 +406,10 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
   }
 
   private static void setItemEnabled(MenuItem item, boolean enabled) {
-    item.setEnabled(enabled);
-    item.getIcon().setAlpha(enabled ? 255 : 130);
+    if (item.isEnabled() != enabled) {
+      item.setEnabled(enabled);
+      item.getIcon().setAlpha(enabled ? 255 : 130);
+    }
   }
 
   private void setMargins(View view, int left, int top, int right, int bottom) {

@@ -61,7 +61,9 @@ public class NoteEditFragment extends Fragment implements EditTextSelectable.Sel
     mEditMsg.setOnFocusChangeListener(new View.OnFocusChangeListener() {
       @Override
       public void onFocusChange(View view, boolean hasFocus) {
-        mListener.onTextChanged(getMsg(), mEditMsg.hasFocus(), mEditMsg.getSelectionStart(), mEditMsg.getSelectionEnd());
+        if (mEditMsg.hasFocus()) {
+          mListener.onTextChanged(getMsg(), true, mEditMsg.getSelectionStart(), mEditMsg.getSelectionEnd());
+        }
       }
     });
     mEditMsg.addSelectionChangedListener(this);
@@ -263,7 +265,9 @@ public class NoteEditFragment extends Fragment implements EditTextSelectable.Sel
 
   @Override
   public void onSelectionChanged(int selStart, int selEnd) {
-    mListener.onTextChanged(getMsg(), mEditMsg.hasFocus(), selStart, selEnd);
+    if (mEditMsg.hasFocus()) {
+      mListener.onTextChanged(getMsg(), true, selStart, selEnd);
+    }
   }
 
   public EditText getRef() {
