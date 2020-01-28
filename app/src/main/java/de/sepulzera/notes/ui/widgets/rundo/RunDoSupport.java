@@ -77,10 +77,8 @@ public class RunDoSupport extends Fragment implements RunDo {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mIdent = getArguments().getString(IDENT_TAG);
-        if (mIdent == null) {
-            mIdent = null;
-        }
+        Bundle args = getArguments();
+        mIdent = args != null? args.getString(IDENT_TAG) : null;
 
         if (mUndoQueue == null) mUndoQueue = new FixedSizeArrayDeque<>(queueSize);
         if (mRedoQueue == null) mRedoQueue = new FixedSizeArrayDeque<>(queueSize);
