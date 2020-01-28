@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
+import android.widget.EditText;
 
 /**
  * Implementation of {@link RunDo} which extends {@link Fragment}. It is best to create an
@@ -16,7 +17,10 @@ import android.text.Editable;
 public class RunDoSupport extends Fragment implements RunDo {
 
     private RunDo.TextLink mTextLink;
+    private EditText mTextRef;
     private RunDo.Callbacks mCallbacks;
+
+    private String mIdent;
 
     private Handler mHandler;
     private WriteToArrayDequeRunnable mRunnable;
@@ -45,6 +49,18 @@ public class RunDoSupport extends Fragment implements RunDo {
         return new RunDoSupport();
     }
 
+    public static RunDoSupport newInstance(String ident) {
+        RunDoSupport runDo = new RunDoSupport();
+
+        if (ident != null) {
+            Bundle args = new Bundle();
+            args.putString(IDENT_TAG, ident);
+            runDo.setArguments(args);
+        }
+
+        return runDo;
+    }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -60,6 +76,11 @@ public class RunDoSupport extends Fragment implements RunDo {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mIdent = getArguments().getString(IDENT_TAG);
+        if (mIdent == null) {
+            mIdent = null;
+        }
 
         if (mUndoQueue == null) mUndoQueue = new FixedSizeArrayDeque<>(queueSize);
         if (mRedoQueue == null) mRedoQueue = new FixedSizeArrayDeque<>(queueSize);
@@ -88,7 +109,8 @@ public class RunDoSupport extends Fragment implements RunDo {
     @Override
     public void onResume() {
         super.onResume();
-        mTextLink.getEditTextForRunDo().addTextChangedListener(this);
+        mTextRef = mTextLink.getEditTextForRunDo(mIdent);
+        mTextRef.addTextChangedListener(this);
     }
 
     @Override
@@ -109,6 +131,7 @@ public class RunDoSupport extends Fragment implements RunDo {
 
     @Override
     public void onDetach() {
+        mTextRef = null;
         mTextLink = null;
         super.onDetach();
     }
@@ -116,7 +139,7 @@ public class RunDoSupport extends Fragment implements RunDo {
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-        if (mOldText == null) mOldText = mTextLink.getEditTextForRunDo().getText().toString();
+        if (mOldText == null) mOldText = mTextRef.getText().toString();
 
         if (trackingState == TRACKING_ENDED) {
 
@@ -154,7 +177,7 @@ public class RunDoSupport extends Fragment implements RunDo {
      */
     @Override
     public String getNewString() {
-        mNewText = mTextLink.getEditTextForRunDo().getText().toString();
+        mNewText = mTextRef.getText().toString();
         return mNewText;
     }
 
@@ -176,7 +199,7 @@ public class RunDoSupport extends Fragment implements RunDo {
 
         fillUndoQueue(item);
 
-        mOldText = mTextLink.getEditTextForRunDo().getText().toString();
+        mOldText = mTextRef.getText().toString();
 
         trackingState = TRACKING_ENDED;
 
@@ -192,6 +215,15 @@ public class RunDoSupport extends Fragment implements RunDo {
     @Override
     public void setIsRunning(boolean isRunning) {
         this.isRunning = isRunning;
+    }
+
+    /**
+     *
+     * @see {@link RunDo#getIdent()}
+     */
+    @Override
+    public String getIdent() {
+        return mIdent;
     }
 
     /**
@@ -259,21 +291,21 @@ public class RunDoSupport extends Fragment implements RunDo {
 
             switch (temp.getDeviationType()) {
                 case SubtractStrings.ADDITION:
-                    mTextLink.getEditTextForRunDo().getText().delete(
-                            temp.getFirstDeviation(),
-                            temp.getLastDeviationNewText()
+                    mTextRef.getText().delete(
+                        temp.getFirstDeviation(),
+                        temp.getLastDeviationNewText()
                     );
                     break;
                 case SubtractStrings.DELETION:
-                    mTextLink.getEditTextForRunDo().getText().insert(
-                            temp.getFirstDeviation(),
-                            temp.getReplacedText());
+                    mTextRef.getText().insert(
+                        temp.getFirstDeviation(),
+                        temp.getReplacedText());
                     break;
                 case SubtractStrings.REPLACEMENT:
-                    mTextLink.getEditTextForRunDo().getText().replace(
-                            temp.getFirstDeviation(),
-                            temp.getLastDeviationNewText(),
-                            temp.getReplacedText());
+                    mTextRef.getText().replace(
+                        temp.getFirstDeviation(),
+                        temp.getLastDeviationNewText(),
+                        temp.getReplacedText());
                     break;
                 case SubtractStrings.UNCHANGED:
                     break;
@@ -281,7 +313,7 @@ public class RunDoSupport extends Fragment implements RunDo {
                     break;
             }
 
-            mTextLink.getEditTextForRunDo().setSelection(temp.getFirstDeviation());
+            mTextRef.setSelection(temp.getFirstDeviation());
 
             fillRedoQueue(temp);
 
@@ -290,7 +322,7 @@ public class RunDoSupport extends Fragment implements RunDo {
         } catch (IndexOutOfBoundsException e) {
             e.printStackTrace();
         } finally {
-            mOldText = mTextLink.getEditTextForRunDo().getText().toString();
+            mOldText = mTextRef.getText().toString();
         }
 
     }
@@ -315,21 +347,21 @@ public class RunDoSupport extends Fragment implements RunDo {
 
             switch (temp.getDeviationType()) {
                 case SubtractStrings.ADDITION:
-                    mTextLink.getEditTextForRunDo().getText().insert(
-                            temp.getFirstDeviation(),
-                            temp.getAlteredText());
+                    mTextRef.getText().insert(
+                        temp.getFirstDeviation(),
+                        temp.getAlteredText());
                     break;
                 case SubtractStrings.DELETION:
-                    mTextLink.getEditTextForRunDo().getText().delete(
-                            temp.getFirstDeviation(),
-                            temp.getLastDeviationOldText()
+                    mTextRef.getText().delete(
+                        temp.getFirstDeviation(),
+                        temp.getLastDeviationOldText()
                     );
                     break;
                 case SubtractStrings.REPLACEMENT:
-                    mTextLink.getEditTextForRunDo().getText().replace(
-                            temp.getFirstDeviation(),
-                            temp.getLastDeviationOldText(),
-                            temp.getAlteredText());
+                    mTextRef.getText().replace(
+                        temp.getFirstDeviation(),
+                        temp.getLastDeviationOldText(),
+                        temp.getAlteredText());
                     break;
                 case SubtractStrings.UNCHANGED:
                     break;
@@ -338,7 +370,7 @@ public class RunDoSupport extends Fragment implements RunDo {
 
             }
 
-            mTextLink.getEditTextForRunDo().setSelection(temp.getFirstDeviation());
+            mTextRef.setSelection(temp.getFirstDeviation());
 
             fillUndoQueue(temp);
 
@@ -347,7 +379,7 @@ public class RunDoSupport extends Fragment implements RunDo {
         } catch (IndexOutOfBoundsException e) {
             e.printStackTrace();
         } finally {
-            mOldText = mTextLink.getEditTextForRunDo().getText().toString();
+            mOldText = mTextRef.getText().toString();
         }
 
     }
@@ -373,15 +405,15 @@ public class RunDoSupport extends Fragment implements RunDo {
     }
 
     private SubtractStrings.Item pollUndoQueue() {
-      SubtractStrings.Item item = mUndoQueue.poll();
-      if (mCallbacks != null && isQueueEmpty(mUndoQueue)) mCallbacks.undoEmpty();
-      return item;
+        SubtractStrings.Item item = mUndoQueue.poll();
+        if (mCallbacks != null && isQueueEmpty(mUndoQueue)) mCallbacks.undoEmpty();
+        return item;
     }
 
     private SubtractStrings.Item pollRedoQueue() {
-      SubtractStrings.Item item = mRedoQueue.poll();
-      if (mCallbacks != null && isQueueEmpty(mRedoQueue)) mCallbacks.redoEmpty();
-      return item;
+        SubtractStrings.Item item = mRedoQueue.poll();
+        if (mCallbacks != null && isQueueEmpty(mRedoQueue)) mCallbacks.redoEmpty();
+        return item;
     }
 
     private void fillUndoQueue(SubtractStrings.Item item) {

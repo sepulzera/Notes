@@ -17,6 +17,8 @@ public interface RunDo extends TextWatcher, WriteToArrayDeque {
 
     String TAG = "RunDo";
 
+    String IDENT_TAG = "ident";
+
     String UNDO_TAG = "undo_queue";
     String REDO_TAG = "redo_queue";
     String OLD_TEXT_TAG = "old_text";
@@ -29,6 +31,11 @@ public interface RunDo extends TextWatcher, WriteToArrayDeque {
     int TRACKING_STARTED = 12;
     int TRACKING_CURRENT = TRACKING_STARTED + 1;
     int TRACKING_ENDED = TRACKING_CURRENT + 1;
+
+    /**
+     * @return The given ident for the instance or {@code null}.
+     */
+    String getIdent();
 
     /**
      * Sets size of Undo and Redo queues. Default size is {@value #DEFAULT_QUEUE_SIZE}.
@@ -83,7 +90,7 @@ public interface RunDo extends TextWatcher, WriteToArrayDeque {
          * @return The {@link EditText} to be monitored and updated by a {@link RunDo}
          * implementation.
          */
-        EditText getEditTextForRunDo();
+        EditText getEditTextForRunDo(String ident);
 
     }
 
@@ -136,11 +143,20 @@ public interface RunDo extends TextWatcher, WriteToArrayDeque {
         @TargetApi(Build.VERSION_CODES.HONEYCOMB)
         public static RunDo getInstance(@NonNull android.app.FragmentManager fm) {
 
-            RunDoNative frag = (RunDoNative) fm.findFragmentByTag(RunDo.TAG);
+            return getInstance(fm, null);
+
+        }
+
+        @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+        public static RunDo getInstance(@NonNull android.app.FragmentManager fm, String ident) {
+
+            String tag = ident == null || ident.isEmpty() ? RunDo.TAG : RunDo.TAG + '_' + ident;
+
+            RunDoNative frag = (RunDoNative) fm.findFragmentByTag(tag);
 
             if (frag == null) {
                 frag = RunDoNative.newInstance();
-                fm.beginTransaction().add(frag, RunDo.TAG).commit();
+                fm.beginTransaction().add(frag, tag).commit();
             }
 
             return frag;
@@ -149,11 +165,19 @@ public interface RunDo extends TextWatcher, WriteToArrayDeque {
 
         public static RunDo getInstance(@NonNull android.support.v4.app.FragmentManager fm) {
 
-            RunDoSupport frag = (RunDoSupport) fm.findFragmentByTag(RunDo.TAG);
+            return getInstance(fm, null);
+
+        }
+
+        public static RunDo getInstance(@NonNull android.support.v4.app.FragmentManager fm, String ident) {
+
+            String tag = ident == null || ident.isEmpty() ? RunDo.TAG : RunDo.TAG + '_' + ident;
+
+            RunDoSupport frag = (RunDoSupport) fm.findFragmentByTag(tag);
 
             if (frag == null) {
-                frag = RunDoSupport.newInstance();
-                fm.beginTransaction().add(frag, RunDo.TAG).commit();
+                frag = RunDoSupport.newInstance(ident);
+                fm.beginTransaction().add(frag, tag).commit();
             }
 
             return frag;
