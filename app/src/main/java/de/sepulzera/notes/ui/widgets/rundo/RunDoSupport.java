@@ -197,6 +197,10 @@ public class RunDoSupport extends Fragment implements RunDo {
     @Override
     public void notifyArrayDequeDataReady(SubtractStrings.Item item) {
 
+        if (item.getDeviationType() == SubtractStrings.UNCHANGED) {
+            return;
+        }
+
         fillUndoQueue(item);
 
         mOldText = mTextRef.getText().toString();
