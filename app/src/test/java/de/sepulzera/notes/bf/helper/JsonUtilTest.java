@@ -57,6 +57,7 @@ public class JsonUtilTest {
     assertTrue(json.has(nonNullKey));
   }
 
+  @SuppressWarnings("WrapperTypeMayBePrimitive")
   @Test
   public void putLongTest() {
     final String nullStr = null;

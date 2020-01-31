@@ -86,6 +86,13 @@ public class StringUtilTest {
   }
 
   @Test
+  public void deleteLines_emptyLineTest() {
+    assertEquals("first line empty", "Hello World!", StringUtil.deleteLines("\nHello World!", 0));
+    assertEquals("middle line empty", "Hello World!\nAnother World!", StringUtil.deleteLines("Hello World!\n\nAnother World!", 13));
+    assertEquals("last line empty", "Hello World!", StringUtil.deleteLines("Hello World!\n", 13));
+  }
+
+  @Test
   public void deleteLines_span_selectionTest() {
     assertEquals("no linebreak", "", StringUtil.deleteLines("Hello World!", 0, 5));
     assertEquals("no linebreak", "", StringUtil.deleteLines("Hello World!", 5, 12));

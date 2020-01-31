@@ -138,6 +138,7 @@ public class StringUtil {
    * @return {@code true} if the Strings are equal, case sensitive, or both {@code null}
    */
   public static boolean equals(@Nullable String str1, @Nullable String str2) {
+    //noinspection EqualsReplaceableByObjectsCall
     return str1 == null ? str2 == null : str1.equals(str2);
   }
 
@@ -160,6 +161,7 @@ public class StringUtil {
    * @return {@code true} if the Strings are equal and not {@code null}, case sensitive
    */
   public static boolean equalsExceptNull(@Nullable String str1, @Nullable String str2) {
+    //noinspection PointlessNullCheck
     return str1 != null && str2 != null && str1.equals(str2);
   }
 

@@ -8,15 +8,13 @@
       android:icon="@drawable/ic_undo_24px"
       android:title="@string/om_detail_note_undo"
       app:showAsAction="always"
-      tools:ignore="AlwaysShowAction"
-      android:visible="false" />
+      tools:ignore="AlwaysShowAction" />
   <item
       android:id="@+id/om_detail_note_redo"
       android:icon="@drawable/ic_redo_24px"
       android:title="@string/om_detail_note_redo"
       app:showAsAction="always"
-      tools:ignore="AlwaysShowAction"
-      android:visible="false" />
+      tools:ignore="AlwaysShowAction" />
   <item
       android:id="@+id/om_detail_note_line_delete"
       android:icon="@drawable/ic_remove_24px"
