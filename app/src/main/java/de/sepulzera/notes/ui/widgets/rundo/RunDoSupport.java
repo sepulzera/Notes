@@ -3,6 +3,7 @@ package de.sepulzera.notes.ui.widgets.rundo;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.widget.EditText;
@@ -10,7 +11,7 @@ import android.widget.EditText;
 /**
  * Implementation of {@link RunDo} which extends {@link Fragment}. It is best to create an
  * instance of this class with {@link de.sepulzera.notes.ui.widgets.rundo.RunDo.Factory}, rather than
- * with {@link #newInstance()} or {@link #RunDoSupport()} directly.
+ * with {@link #newInstance(String)} or {@link #RunDoSupport()} directly.
  *
  * @author Tom Calver
  */
@@ -22,8 +23,8 @@ public class RunDoSupport extends Fragment implements RunDo {
 
     private String mIdent;
 
-    private Handler mHandler;
-    private WriteToArrayDequeRunnable mRunnable;
+    private final Handler mHandler;
+    private final WriteToArrayDequeRunnable mRunnable;
     private boolean isRunning;
     private boolean undoRequested;
 
@@ -32,7 +33,7 @@ public class RunDoSupport extends Fragment implements RunDo {
 
     private FixedSizeArrayDeque<SubtractStrings.Item> mUndoQueue, mRedoQueue;
 
-    private String mOldText, mNewText;
+    private String mOldText;
     private int mOldSelectionStart, mOldSelectionEnd;
     private int trackingState;
 
@@ -44,10 +45,6 @@ public class RunDoSupport extends Fragment implements RunDo {
         queueSize = DEFAULT_QUEUE_SIZE;
 
         trackingState = TRACKING_ENDED;
-    }
-
-    public static RunDoSupport newInstance() {
-        return new RunDoSupport();
     }
 
     public static RunDoSupport newInstance(String ident) {
@@ -113,7 +110,7 @@ public class RunDoSupport extends Fragment implements RunDo {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putParcelable(UNDO_TAG, mUndoQueue);
@@ -182,17 +179,16 @@ public class RunDoSupport extends Fragment implements RunDo {
 
     /**
      *
-     * @see {@link WriteToArrayDeque#getNewString()}
+     * @see WriteToArrayDeque#getNewString()
      */
     @Override
     public String getNewString() {
-        mNewText = mTextRef.getText().toString();
-        return mNewText;
+        return mTextRef.getText().toString();
     }
 
     /**
      *
-     * @see {@link WriteToArrayDeque#getOldString()}
+     * @see WriteToArrayDeque#getOldString()
      */
     @Override
     public String getOldString() {
@@ -201,7 +197,7 @@ public class RunDoSupport extends Fragment implements RunDo {
 
     /**
      *
-     * @see {@link WriteToArrayDeque#notifyArrayDequeDataReady(de.sepulzera.notes.ui.widgets.rundo.SubtractStrings.Item)}
+     * @see WriteToArrayDeque#notifyArrayDequeDataReady(de.sepulzera.notes.ui.widgets.rundo.SubtractStrings.Item)
      */
     @Override
     public void notifyArrayDequeDataReady(SubtractStrings.Item item) {
@@ -226,7 +222,7 @@ public class RunDoSupport extends Fragment implements RunDo {
 
     /**
      *
-     * @see {@link WriteToArrayDeque#setIsRunning(boolean)}
+     * @see WriteToArrayDeque#setIsRunning(boolean)
      */
     @Override
     public void setIsRunning(boolean isRunning) {
@@ -235,7 +231,7 @@ public class RunDoSupport extends Fragment implements RunDo {
 
     /**
      *
-     * @see {@link RunDo#getIdent()}
+     * @see RunDo#getIdent()
      */
     @Override
     public String getIdent() {
@@ -244,7 +240,7 @@ public class RunDoSupport extends Fragment implements RunDo {
 
     /**
      *
-     * @see {@link RunDo#setQueueSize(int)}
+     * @see RunDo#setQueueSize(int)
      */
     @Override
     public void setQueueSize(int size) {
@@ -255,7 +251,7 @@ public class RunDoSupport extends Fragment implements RunDo {
 
     /**
      *
-     * @see {@link RunDo#setTimerLength(long)}
+     * @see RunDo#setTimerLength(long)
      */
     @Override
     public void setTimerLength(long lengthInMillis) {
@@ -264,7 +260,7 @@ public class RunDoSupport extends Fragment implements RunDo {
 
     /**
      *
-     * @see {@link RunDo#canUndo()}
+     * @see RunDo#canUndo()
      */
     @Override
     public boolean canUndo() {
@@ -273,7 +269,7 @@ public class RunDoSupport extends Fragment implements RunDo {
 
     /**
      *
-     * @see {@link RunDo#canRedo()}
+     * @see RunDo#canRedo()
      */
     @Override
     public boolean canRedo() {
@@ -282,7 +278,7 @@ public class RunDoSupport extends Fragment implements RunDo {
 
     /**
      *
-     * @see {@link RunDo#undo()}
+     * @see RunDo#undo()
      */
     @Override
     public void undo() {
@@ -323,8 +319,7 @@ public class RunDoSupport extends Fragment implements RunDo {
                         temp.getLastDeviationNewText(),
                         temp.getReplacedText());
                     break;
-                case SubtractStrings.UNCHANGED:
-                    break;
+                // case SubtractStrings.UNCHANGED:
                 default:
                     break;
             }
@@ -345,7 +340,7 @@ public class RunDoSupport extends Fragment implements RunDo {
 
     /**
      *
-     * @see {@link RunDo#redo()}
+     * @see RunDo#redo()
      */
     @Override
     public void redo() {
@@ -379,8 +374,7 @@ public class RunDoSupport extends Fragment implements RunDo {
                         temp.getLastDeviationOldText(),
                         temp.getAlteredText());
                     break;
-                case SubtractStrings.UNCHANGED:
-                    break;
+                // case SubtractStrings.UNCHANGED:
                 default:
                     break;
 
@@ -402,7 +396,7 @@ public class RunDoSupport extends Fragment implements RunDo {
 
     /**
      *
-     * @see {@link RunDo#clearAllQueues()}
+     * @see RunDo#clearAllQueues()
      */
     @Override
     public void clearAllQueues() {

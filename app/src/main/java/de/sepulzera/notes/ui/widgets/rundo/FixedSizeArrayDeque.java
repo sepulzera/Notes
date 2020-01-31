@@ -29,7 +29,7 @@ public final class FixedSizeArrayDeque<T> extends ArrayDeque<T> implements Parce
         this.maxSize = maxSize;
     }
 
-    protected FixedSizeArrayDeque(Parcel in) {
+    private FixedSizeArrayDeque(Parcel in) {
         maxSize = in.readInt();
     }
 

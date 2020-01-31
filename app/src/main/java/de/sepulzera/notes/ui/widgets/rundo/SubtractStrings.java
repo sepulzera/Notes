@@ -26,7 +26,7 @@ final class SubtractStrings {
 
     private Item mItem = null;
 
-    public SubtractStrings(String oldString, String newString) {
+    SubtractStrings(String oldString, String newString) {
 
         mOldText = oldString.toCharArray();
         mNewText = newString.toCharArray();
@@ -310,7 +310,7 @@ final class SubtractStrings {
      *
      * @return First deviation
      */
-    int getFirstDeviation() {
+    private int getFirstDeviation() {
 
         if (firstDeviation == -1) {
             firstDeviation = findFirstDeviation();
@@ -319,7 +319,7 @@ final class SubtractStrings {
         return  firstDeviation;
     }
 
-    int getLastDeviationOldText() {
+    private int getLastDeviationOldText() {
 
         if (lastDeviationOldText == -1) {
             lastDeviationOldText = (lastDeviationNewText == -1 )
@@ -330,7 +330,7 @@ final class SubtractStrings {
         return lastDeviationOldText;
     }
 
-    int getLastDeviationNewText() {
+    private int getLastDeviationNewText() {
 
         if (lastDeviationNewText == -1) {
             lastDeviationNewText = (lastDeviationOldText == -1)
@@ -343,10 +343,9 @@ final class SubtractStrings {
 
     /**
      *
-     * @return Deviation type, in the form of an int value. For a String representation, use
-     * {@link #valueOfDeviation(int)} ()}
+     * @return Deviation type, in the form of an int value.
      */
-    int getDeviationType() {
+    private int getDeviationType() {
         if (deviationType == -1) {
             deviationType = findDeviationType();
         }
@@ -354,35 +353,11 @@ final class SubtractStrings {
     }
 
     /**
-     * Converts {@code int} value returned by {@link #getDeviationType()} to {@link String}
-     * representation.
-     * @param deviationType Value return from {@link #getDeviationType()}
-     * @return String representation of argument if argument is valid. Otherwise, {@code null}
-     */
-    @SuppressWarnings("unused")
-    public static String valueOfDeviation(int deviationType) {
-
-        switch (deviationType) {
-            case ADDITION:
-                return "Addition";
-            case DELETION:
-                return "Deletion";
-            case REPLACEMENT:
-                return "Replacement";
-            case UNCHANGED:
-                return "Unchanged";
-            default:
-                return null;
-        }
-
-    }
-
-    /**
      *
      * @return If text has been added or replaced, returns a substring of the new text that has
      * been altered in respect to old text.
      */
-    public String getAlteredText() {
+    private String getAlteredText() {
 
         if (firstDeviation == -1) getFirstDeviation();
         if (lastDeviationNewText == -1) getLastDeviationNewText();
@@ -401,7 +376,7 @@ final class SubtractStrings {
      * @return If text has been deleted or replaced, returns a substring of the old text that has
      * been removed or overwritten.
      */
-    public String getReplacedText() {
+    private String getReplacedText() {
 
         if (firstDeviation == -1) getFirstDeviation();
         if (lastDeviationOldText == -1) getLastDeviationOldText();
@@ -464,7 +439,7 @@ final class SubtractStrings {
             this.alteredText = alteredText;
         }
 
-        protected Item(Parcel in) {
+        private Item(Parcel in) {
             firstDeviation = in.readInt();
             lastDeviationOldText = in.readInt();
             lastDeviationNewText = in.readInt();
@@ -504,10 +479,7 @@ final class SubtractStrings {
         /**
          *
          * @return Deviation type in the form of an {@code int}. Value will correlate to
-         * {@link #ADDITION}. {@link #REPLACEMENT}, {@link #DELETION} or {@link #UNCHANGED}. For
-         * a {@link String} representation, use {@link #valueOfDeviation(int)}
-         *
-         * @see #valueOfDeviation(int)
+         * {@link #ADDITION}. {@link #REPLACEMENT}, {@link #DELETION} or {@link #UNCHANGED}.
          */
         public int getDeviationType() {
             return deviationType;

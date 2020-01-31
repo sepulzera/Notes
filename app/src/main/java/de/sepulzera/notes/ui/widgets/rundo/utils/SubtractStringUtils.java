@@ -3,8 +3,7 @@ package de.sepulzera.notes.ui.widgets.rundo.utils;
 import java.util.Arrays;
 
 /**
- * Static methods which operate on {@code char[]}, predominantly for use with
- * {@link de.sepulzera.notes.ui.widgets.rundo.SubtractStrings}
+ * Static methods which operate on {@code char[]}
  */
 public final class SubtractStringUtils {
 
@@ -69,7 +68,7 @@ public final class SubtractStringUtils {
      * @param omissionEnd End index of section to remove.
      * @return The array arr, less the section between omissionStart and omissionEnd.
      */
-    public static char[] omitCharArrayEntriesAtIndexes(char[] arr, int omissionStart, int omissionEnd) {
+    private static char[] omitCharArrayEntriesAtIndexes(char[] arr, int omissionStart, int omissionEnd) {
 
         final int omissionLength = omissionEnd - omissionStart;
         char[] output = new char[arr.length - omissionLength];

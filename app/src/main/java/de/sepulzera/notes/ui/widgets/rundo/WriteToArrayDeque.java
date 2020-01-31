@@ -1,6 +1,6 @@
 package de.sepulzera.notes.ui.widgets.rundo;
 
-public interface WriteToArrayDeque {
+interface WriteToArrayDeque {
 
     String getNewString();
     String getOldString();

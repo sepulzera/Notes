@@ -1,7 +1,5 @@
 package de.sepulzera.notes.ui.widgets.rundo;
 
-import android.annotation.TargetApi;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.text.TextWatcher;
 import android.widget.EditText;
@@ -97,6 +95,7 @@ public interface RunDo extends TextWatcher, WriteToArrayDeque {
     /**
      * Implement to receive callbacks whenever {@link #undo()} or {@link #redo()} methods are called
      */
+    @SuppressWarnings("EmptyMethod")
     interface Callbacks {
 
         /**
@@ -139,35 +138,6 @@ public interface RunDo extends TextWatcher, WriteToArrayDeque {
     final class Factory {
 
         private Factory() { throw new AssertionError(); }
-
-        @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-        public static RunDo getInstance(@NonNull android.app.FragmentManager fm) {
-
-            return getInstance(fm, null);
-
-        }
-
-        @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-        public static RunDo getInstance(@NonNull android.app.FragmentManager fm, String ident) {
-
-            String tag = ident == null || ident.isEmpty() ? RunDo.TAG : RunDo.TAG + '_' + ident;
-
-            RunDoNative frag = (RunDoNative) fm.findFragmentByTag(tag);
-
-            if (frag == null) {
-                frag = RunDoNative.newInstance();
-                fm.beginTransaction().add(frag, tag).commit();
-            }
-
-            return frag;
-
-        }
-
-        public static RunDo getInstance(@NonNull android.support.v4.app.FragmentManager fm) {
-
-            return getInstance(fm, null);
-
-        }
 
         public static RunDo getInstance(@NonNull android.support.v4.app.FragmentManager fm, String ident) {
 
