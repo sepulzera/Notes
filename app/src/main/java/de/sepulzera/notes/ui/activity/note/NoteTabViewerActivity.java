@@ -412,6 +412,7 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
     }
   }
 
+  @SuppressWarnings("SameParameterValue")
   private void setMargins(View view, int left, int top, int right, int bottom) {
     if (view.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
       ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
