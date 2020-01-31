@@ -33,6 +33,7 @@ public class RunDoSupport extends Fragment implements RunDo {
     private FixedSizeArrayDeque<SubtractStrings.Item> mUndoQueue, mRedoQueue;
 
     private String mOldText, mNewText;
+    private int mOldSelectionStart, mOldSelectionEnd;
     private int trackingState;
 
     public RunDoSupport() {
@@ -147,6 +148,14 @@ public class RunDoSupport extends Fragment implements RunDo {
             startCountdownRunnable();
             trackingState = TRACKING_CURRENT;
 
+            int currentSelStart = mTextRef.getSelectionStart();
+            int currentSelEnd = mTextRef.getSelectionEnd();
+            // Store selection to properly set the cursor on undo/redo
+            // this is bit awkward, but not my bugs
+            boolean isStartGiven = count > 1 && start + count == currentSelStart;
+            mOldSelectionStart = isStartGiven ? start : currentSelStart;
+            mOldSelectionEnd = isStartGiven ? start + count : currentSelEnd;
+
             if (mCallbacks != null && isQueueEmpty(mUndoQueue)) mCallbacks.undoAvailable();
         }
 
@@ -204,6 +213,8 @@ public class RunDoSupport extends Fragment implements RunDo {
             return;
         }
 
+        item.setOldSelection(mOldSelectionStart, mOldSelectionEnd);
+        item.setNewSelection(mTextRef.getSelectionStart(), mTextRef.getSelectionEnd());
         fillUndoQueue(item);
 
         mOldText = mTextRef.getText().toString();
@@ -318,7 +329,7 @@ public class RunDoSupport extends Fragment implements RunDo {
                     break;
             }
 
-            mTextRef.setSelection(temp.getFirstDeviation());
+            mTextRef.setSelection(temp.getOldSelectionStart(), temp.getOldSelectionEnd());
 
             fillRedoQueue(temp);
 
@@ -375,7 +386,7 @@ public class RunDoSupport extends Fragment implements RunDo {
 
             }
 
-            mTextRef.setSelection(temp.getFirstDeviation());
+            mTextRef.setSelection(temp.getNewSelectionStart(), temp.getNewSelectionEnd());
 
             fillUndoQueue(temp);
 

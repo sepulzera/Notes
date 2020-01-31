@@ -250,7 +250,6 @@ final class SubtractStrings {
      * @see #getDeviationType()
      */
     private int findDeviationType() {
-
         if (firstDeviation == -1) getFirstDeviation();
 
         int deviationType;
@@ -447,6 +446,7 @@ final class SubtractStrings {
 
         private final int firstDeviation, lastDeviationOldText, lastDeviationNewText, deviationType;
         private final String replacedText, alteredText;
+        private int oldSelectionStart, oldSelectionEnd, newSelectionStart, newSelectionEnd;
 
         Item(
                 int firstDeviation,
@@ -471,6 +471,10 @@ final class SubtractStrings {
             deviationType = in.readInt();
             replacedText = in.readString();
             alteredText = in.readString();
+            oldSelectionStart = in.readInt();
+            oldSelectionEnd = in.readInt();
+            newSelectionStart = in.readInt();
+            newSelectionEnd = in.readInt();
         }
 
         /**
@@ -525,6 +529,32 @@ final class SubtractStrings {
             return alteredText;
         }
 
+        public void setOldSelection(int selectionStart, int selectionEnd) {
+            this.oldSelectionStart = selectionStart;
+            this.oldSelectionEnd = selectionEnd;
+        }
+
+        public int getOldSelectionStart() {
+            return oldSelectionStart;
+        }
+
+        public int getOldSelectionEnd() {
+            return oldSelectionEnd;
+        }
+
+        public void setNewSelection(int selectionStart, int selectionEnd) {
+            this.newSelectionStart = selectionStart;
+            this.newSelectionEnd = selectionEnd;
+        }
+
+        public int getNewSelectionStart() {
+            return newSelectionStart;
+        }
+
+        public int getNewSelectionEnd() {
+            return newSelectionEnd;
+        }
+
         public static final Creator<Item> CREATOR = new Creator<Item>() {
             @Override
             public Item createFromParcel(Parcel in) {
@@ -550,6 +580,10 @@ final class SubtractStrings {
             dest.writeInt(deviationType);
             dest.writeString(replacedText);
             dest.writeString(alteredText);
+            dest.writeInt(oldSelectionStart);
+            dest.writeInt(oldSelectionEnd);
+            dest.writeInt(newSelectionStart);
+            dest.writeInt(newSelectionEnd);
         }
     }
 }

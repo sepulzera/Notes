@@ -36,6 +36,7 @@ public class RunDoNative extends Fragment implements RunDo {
     private FixedSizeArrayDeque<SubtractStrings.Item> mUndoQueue, mRedoQueue;
 
     private String mOldText, mNewText;
+    private int mOldSelectionStart, mOldSelectionEnd;
     private int trackingState;
 
     public RunDoNative() {
@@ -150,6 +151,14 @@ public class RunDoNative extends Fragment implements RunDo {
             startCountdownRunnable();
             trackingState = TRACKING_CURRENT;
 
+            int currentSelStart = mTextRef.getSelectionStart();
+            int currentSelEnd = mTextRef.getSelectionEnd();
+            // Store selection to properly set the cursor on undo/redo
+            // this is bit awkward, but not my bugs
+            boolean isStartGiven = count > 1 && start + count == currentSelStart;
+            mOldSelectionStart = isStartGiven ? start : currentSelStart;
+            mOldSelectionEnd = isStartGiven ? start + count : currentSelEnd;
+
             if (mCallbacks != null && isQueueEmpty(mUndoQueue)) mCallbacks.undoAvailable();
         }
 
@@ -200,16 +209,18 @@ public class RunDoNative extends Fragment implements RunDo {
     @Override
     public void notifyArrayDequeDataReady(SubtractStrings.Item item) {
 
+        trackingState = TRACKING_ENDED;
+
         if (item.getDeviationType() == SubtractStrings.UNCHANGED) {
             if (mCallbacks != null && isQueueEmpty(mUndoQueue)) mCallbacks.undoEmpty();
             return;
         }
 
+        item.setOldSelection(mOldSelectionStart, mOldSelectionEnd);
+        item.setNewSelection(mTextRef.getSelectionStart(), mTextRef.getSelectionEnd());
         fillUndoQueue(item);
 
         mOldText = mTextRef.getText().toString();
-
-        trackingState = TRACKING_ENDED;
 
         if (undoRequested) {
             undo();
@@ -321,7 +332,7 @@ public class RunDoNative extends Fragment implements RunDo {
                     break;
             }
 
-            mTextRef.setSelection(temp.getFirstDeviation());
+            mTextRef.setSelection(temp.getOldSelectionStart(), temp.getOldSelectionEnd());
 
             fillRedoQueue(temp);
 
@@ -378,7 +389,7 @@ public class RunDoNative extends Fragment implements RunDo {
 
             }
 
-            mTextRef.setSelection(temp.getFirstDeviation());
+            mTextRef.setSelection(temp.getNewSelectionStart(), temp.getNewSelectionEnd());
 
             fillUndoQueue(temp);
 
