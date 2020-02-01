@@ -186,7 +186,15 @@ public class NoteEditFragment extends Fragment implements EditTextSelectable.Sel
   public void duplicateSelectedLines() {
     String msgCopiedLine = StringUtil.duplicateLines(getMsg(), mEditMsg.getSelectionStart(), mEditMsg.getSelectionEnd());
 
+    int selStart = mEditMsg.getSelectionStart();
+    int selEnd   = mEditMsg.getSelectionEnd();
+
     setMsg(msgCopiedLine);
+    int len = msgCopiedLine.length();
+
+    selStart = (selStart > len? len : selStart);
+    selEnd = (selEnd > len? len : selEnd);
+    mEditMsg.setSelection(selStart, selEnd);
   }
 
   public void moveSelectedLinesUp() {
