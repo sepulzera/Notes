@@ -125,7 +125,6 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
         mShowToolbarEdit = true;
         hideFloatingActionButton(mFabShowTbEdit);
         showFloatingActionButton(mFabHideTbEdit);
-        setEditToolbarVisibility(View.VISIBLE);
         invalidateOptionsMenu();
       }
     });
@@ -137,7 +136,6 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
         mShowToolbarEdit = false;
         hideFloatingActionButton(mFabHideTbEdit);
         showFloatingActionButton(mFabShowTbEdit);
-        setEditToolbarVisibility(View.GONE);
         invalidateOptionsMenu();
       }
     });
@@ -370,12 +368,14 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
         if ((item = bottomMenu.findItem(R.id.om_detail_note_line_down))      != null) { mItemLineDown = item; }
       }
     }
-    setEditToolbarVisibility(mShowToolbarEdit && frag.isEditable()? View.VISIBLE : View.GONE);
+    int priorEditToolbarVisibility = mEditToolbar.getVisibility();
+    int newEditToolbarVisibility   = mShowToolbarEdit && frag.isEditable()? View.VISIBLE : View.GONE;
+    setEditToolbarVisibility(newEditToolbarVisibility);
 
     if (mShowToolbarEdit && frag.isEditable()) {
       mCanUndo = frag.canUndo();
       mCanRedo = frag.canRedo();
-      setEditToolbarEnabled(frag.getMsg(), frag.hasFocus(), frag.getSelectionStart(), frag.getSelectionEnd());
+      setEditToolbarEnabled(priorEditToolbarVisibility != newEditToolbarVisibility, frag.getMsg(), frag.hasFocus(), frag.getSelectionStart(), frag.getSelectionEnd());
     }
   }
 
@@ -384,29 +384,29 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
     setMargins(mFabSave, 0, 0, 12, visibility == View.VISIBLE ? 50 : 12);
   }
 
-  private void setEditToolbarEnabled(String msg, boolean hasFocus, int selStart, int selEnd) {
+  private void setEditToolbarEnabled(boolean force, String msg, boolean hasFocus, int selStart, int selEnd) {
     if (!hasFocus || msg.isEmpty()) {
-      if (mItemDeleteLine != null)    { setItemEnabled(mItemDeleteLine    , false); }
-      if (mItemDuplicateLine != null) { setItemEnabled(mItemDuplicateLine , false); }
+      if (mItemDeleteLine != null)    { setItemEnabled(mItemDeleteLine    , false, force); }
+      if (mItemDuplicateLine != null) { setItemEnabled(mItemDuplicateLine , false, force); }
 
-      if (mItemLineUp != null)        { setItemEnabled(mItemLineUp        , false); }
-      if (mItemLineDown != null)      { setItemEnabled(mItemLineDown      , false); }
+      if (mItemLineUp != null)        { setItemEnabled(mItemLineUp        , false, force); }
+      if (mItemLineDown != null)      { setItemEnabled(mItemLineDown      , false, force); }
     } else {
-      if (mItemDeleteLine != null)    { setItemEnabled(mItemDeleteLine    , true); }
-      if (mItemDuplicateLine != null) { setItemEnabled(mItemDuplicateLine , true); }
+      if (mItemDeleteLine != null)    { setItemEnabled(mItemDeleteLine    , true, force); }
+      if (mItemDuplicateLine != null) { setItemEnabled(mItemDuplicateLine , true, force); }
 
       List<String> lines = StringUtil.getLines(msg);
       int[] selLines = StringUtil.getSelectedLines(msg, selStart, selEnd);
-      if (mItemLineUp != null)        { setItemEnabled(mItemLineUp   , selLines.length != 0 && selLines[0] != 0); }
-      if (mItemLineDown != null)      { setItemEnabled(mItemLineDown , selLines.length != 0 && selLines[selLines.length - 1] != lines.size() - 1); }
+      if (mItemLineUp != null)        { setItemEnabled(mItemLineUp   , selLines.length != 0 && selLines[0] != 0, force); }
+      if (mItemLineDown != null)      { setItemEnabled(mItemLineDown , selLines.length != 0 && selLines[selLines.length - 1] != lines.size() - 1, force); }
     }
 
-    if (mItemUndo != null) { setItemEnabled(mItemUndo , mCanUndo); }
-    if (mItemRedo != null) { setItemEnabled(mItemRedo , mCanRedo); }
+    if (mItemUndo != null) { setItemEnabled(mItemUndo , mCanUndo, force); }
+    if (mItemRedo != null) { setItemEnabled(mItemRedo , mCanRedo, force); }
   }
 
-  private static void setItemEnabled(MenuItem item, boolean enabled) {
-    if (item.isEnabled() != enabled) {
+  private static void setItemEnabled(MenuItem item, boolean enabled, boolean force) {
+    if (force || item.isEnabled() != enabled) {
       item.setEnabled(enabled);
       item.getIcon().setAlpha(enabled ? 255 : 130);
     }
@@ -820,7 +820,9 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
 
   @Override
   public void onTextChanged(String msg, boolean hasFocus, int selectionStart, int selectionEnd) {
-    setEditToolbarEnabled(msg, hasFocus, selectionStart, selectionEnd);
+    if (mShowToolbarEdit) {
+      setEditToolbarEnabled(false, msg, hasFocus, selectionStart, selectionEnd);
+    }
   }
 
   @Override
@@ -851,25 +853,25 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
   @Override
   public void undoEmpty() {
     mCanUndo = false;
-    if (mItemUndo != null) { setItemEnabled(mItemUndo , false); }
+    if (mItemUndo != null) { setItemEnabled(mItemUndo , false, false); }
   }
 
   @Override
   public void redoEmpty() {
     mCanRedo = false;
-    if (mItemUndo != null) { setItemEnabled(mItemUndo , false); }
+    if (mItemUndo != null) { setItemEnabled(mItemUndo , false, false); }
   }
 
   @Override
   public void undoAvailable() {
     mCanUndo = true;
-    if (mItemUndo != null) { setItemEnabled(mItemUndo , true); }
+    if (mItemUndo != null) { setItemEnabled(mItemUndo , true, false); }
   }
 
   @Override
   public void redoAvailable() {
     mCanRedo = true;
-    if (mItemUndo != null) { setItemEnabled(mItemUndo , true); }
+    if (mItemUndo != null) { setItemEnabled(mItemUndo , true, false); }
   }
 
   static class NoteFragmentPagerAdapter extends FragmentPagerAdapter {
