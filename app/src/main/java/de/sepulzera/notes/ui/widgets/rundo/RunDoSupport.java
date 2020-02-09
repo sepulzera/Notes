@@ -149,7 +149,7 @@ public class RunDoSupport extends Fragment implements RunDo {
             int currentSelEnd = mTextRef.getSelectionEnd();
             // Store selection to properly set the cursor on undo/redo
             // this is bit awkward, but not my bugs
-            boolean isStartGiven = count > 1 && start + count == currentSelStart;
+            boolean isStartGiven = count > 1 && start + count == currentSelStart && (start > 0 || count < currentSelStart);
             mOldSelectionStart = isStartGiven ? start : currentSelStart;
             mOldSelectionEnd = isStartGiven ? start + count : currentSelEnd;
 
