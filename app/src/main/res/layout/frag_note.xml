@@ -4,7 +4,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:focusableInTouchMode="true" >
+    android:focusableInTouchMode="true"
+    android:background="@color/colorNoteBg">
 
   <android.support.v4.widget.NestedScrollView
       android:id="@+id/scrollView"
@@ -21,7 +22,7 @@
         android:focusableInTouchMode="true"
         android:orientation="vertical">
 
-      <EditText
+      <de.sepulzera.notes.ui.widgets.EditTextSelectable
           android:id="@+id/note_msg"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
@@ -34,8 +35,9 @@
           android:hint="@string/hint_start_writing"
           android:textIsSelectable="true"
           android:inputType="textMultiLine"
+          android:importantForAutofill="no"
           android:textAppearance="?android:attr/textAppearanceMedium"
-          android:textColor="@drawable/edit_text_selector" />
+          android:textColor="@drawable/edit_text_selector"/>
 
     </LinearLayout>
 

@@ -18,6 +18,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Objects;
 
 import de.sepulzera.notes.R;
 import de.sepulzera.notes.bf.service.NoteService;
@@ -159,7 +160,7 @@ public class Helper {
     try {
       return preferences.getInt(key, defaultValue);
     } catch (ClassCastException e) {
-      return Integer.valueOf(preferences.getString(key, String.valueOf(defaultValue)));
+      return Integer.valueOf(Objects.requireNonNull(preferences.getString(key, String.valueOf(defaultValue))));
     }
   }
 

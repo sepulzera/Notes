@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import de.sepulzera.notes.R;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -105,9 +106,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     // Trigger the listener immediately with the preference's
     // current value.
     sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
-        PreferenceManager
+        Objects.requireNonNull(PreferenceManager
             .getDefaultSharedPreferences(preference.getContext())
-            .getString(preference.getKey(), ""));
+            .getString(preference.getKey(), "")));
   }
 
   @Override

@@ -20,18 +20,18 @@ public final class NoteContract {
     public static final String COL_CREADT    = "creadt";
     public static final String COL_LCHADT    = "lchadt";
 
-    public static final String PROJECTION[] = {
-          BaseColumns._ID
-          , NoteEntry.COL_IDENT
-          , NoteEntry.COL_REVISION
-          , NoteEntry.COL_CURR_REV
-          , NoteEntry.COL_DRAFT
-          , NoteEntry.COL_TITLE
-          , NoteEntry.COL_MSG
-          , NoteEntry.COL_DELDT
-          , NoteEntry.COL_CURR
-          , NoteEntry.COL_CREADT
-          , NoteEntry.COL_LCHADT
+    public static final String[] PROJECTION = {
+        BaseColumns._ID
+        , NoteEntry.COL_IDENT
+        , NoteEntry.COL_REVISION
+        , NoteEntry.COL_CURR_REV
+        , NoteEntry.COL_DRAFT
+        , NoteEntry.COL_TITLE
+        , NoteEntry.COL_MSG
+        , NoteEntry.COL_DELDT
+        , NoteEntry.COL_CURR
+        , NoteEntry.COL_CREADT
+        , NoteEntry.COL_LCHADT
     };
   }
 

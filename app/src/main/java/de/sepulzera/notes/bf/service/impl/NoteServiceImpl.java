@@ -127,7 +127,7 @@ public final class NoteServiceImpl implements NoteService {
 
   @Override
   public Note getDraft(@NonNull final Note note) {
-    final String[] selectionArgs = { String.valueOf(note.getIdent()), String.valueOf("1"), String.valueOf("1") };
+    final String[] selectionArgs = { String.valueOf(note.getIdent()), "1", "1"};
 
     final List<Note> drafts = mDb.find(NoteEntry.COL_IDENT + "=? AND "
         + NoteEntry.COL_CURR_REV + "=? AND " + NoteEntry.COL_DRAFT + "=?", selectionArgs);
@@ -140,7 +140,7 @@ public final class NoteServiceImpl implements NoteService {
 
   @Override
   public Note getCurrRevision(@NonNull final Note note) {
-    final String[] selectionArgs = { String.valueOf(note.getIdent()), String.valueOf("1"), String.valueOf("0") };
+    final String[] selectionArgs = { String.valueOf(note.getIdent()), "1", "0"};
 
     final List<Note> result = mDb.find(NoteEntry.COL_IDENT + "=? AND "
         + NoteEntry.COL_CURR_REV + "=? AND " + NoteEntry.COL_DRAFT + "=?", selectionArgs);
@@ -179,21 +179,21 @@ public final class NoteServiceImpl implements NoteService {
 
   @Override
   public List<Note> getAllCurrent() {
-    final String[] selectionArgs = { String.valueOf("1"), String.valueOf("1") };
+    final String[] selectionArgs = {"1", "1"};
 
     return mDb.find(NoteEntry.COL_CURR + "=? AND " + NoteEntry.COL_CURR_REV + "=?", selectionArgs);
   }
 
   @Override
   public List<Note> getAllDeleted() {
-    final String[] selectionArgs = { String.valueOf("0"), String.valueOf("1") };
+    final String[] selectionArgs = {"0", "1"};
 
     return mDb.find(NoteEntry.COL_CURR + "=? AND " + NoteEntry.COL_CURR_REV + "=?", selectionArgs);
   }
 
   @Override
   public List<Note> getAllNoteRevisions(@NonNull final Note note) {
-    final String[] selectionArgs = { String.valueOf(note.getIdent()), String.valueOf("1") };
+    final String[] selectionArgs = { String.valueOf(note.getIdent()), "1"};
 
     return mDb.find(NoteEntry.COL_IDENT + "=? AND " + NoteEntry.COL_CURR + " =?", selectionArgs
         , null, null, NoteEntry.COL_REVISION + " DESC", null);
@@ -533,14 +533,13 @@ public final class NoteServiceImpl implements NoteService {
 
     if (mPrefDeleteTrashedNotesDays == 0) {
       // delete instantly
-      mDb.delete(NoteEntry.COL_CURR + " = ?", new String[]{ String.valueOf("0") } );
+      mDb.delete(NoteEntry.COL_CURR + " = ?", new String[]{"0"} );
       return;
     }
 
     long now = Calendar.getInstance().getTime().getTime();
     mDb.delete(NoteEntry.COL_CURR + " = ? AND " + NoteEntry.COL_DELDT + " < ?"
-        , new String[]{ String.valueOf("0")
-            , String.valueOf(now - mPrefDeleteTrashedNotesDays * 24 * 60 * 60 * 1000) } );
+        , new String[]{"0", String.valueOf(now - mPrefDeleteTrashedNotesDays * 24 * 60 * 60 * 1000) } );
   }
 
   private NoteServiceImpl(@NonNull final Context context) {
