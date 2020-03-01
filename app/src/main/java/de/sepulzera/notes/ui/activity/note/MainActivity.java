@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -404,8 +405,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     if (null == backupFile) {
+      // android versions up to 9 do not support json as mimetype
+      String jsonMimeType = Build.VERSION.SDK_INT > Build.VERSION_CODES.P ? "application/json" : "application/octet-stream";
       Intent intent = new Intent()
-          .setType("application/octet-stream") // android does not support json as mimetype
+          .setType(jsonMimeType)
           .setAction(Intent.ACTION_GET_CONTENT);
 
       startActivityForResult(Intent.createChooser(intent
