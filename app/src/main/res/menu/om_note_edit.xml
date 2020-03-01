@@ -30,13 +30,13 @@
   <item
       android:id="@+id/om_detail_note_line_up"
       android:icon="@drawable/ic_arrow_upward_24px"
-      android:title="@string/om_detail_note_line_down"
+      android:title="@string/om_detail_note_line_up"
       app:showAsAction="always"
       tools:ignore="AlwaysShowAction" />
   <item
       android:id="@+id/om_detail_note_line_down"
       android:icon="@drawable/ic_arrow_downward_24px"
-      android:title="@string/om_detail_note_line_up"
+      android:title="@string/om_detail_note_line_down"
       app:showAsAction="always"
       tools:ignore="AlwaysShowAction" />
 
