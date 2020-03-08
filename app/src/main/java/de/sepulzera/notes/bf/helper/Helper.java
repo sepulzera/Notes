@@ -5,8 +5,8 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Environment;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatDelegate;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatDelegate;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -142,7 +142,7 @@ public class Helper {
     try {
       return preferences.getBoolean(key, defaultValue);
     } catch (ClassCastException e) {
-      return Boolean.valueOf(preferences.getString(key, String.valueOf(defaultValue)));
+      return Boolean.parseBoolean(preferences.getString(key, String.valueOf(defaultValue)));
     }
   }
 
@@ -160,7 +160,7 @@ public class Helper {
     try {
       return preferences.getInt(key, defaultValue);
     } catch (ClassCastException e) {
-      return Integer.valueOf(Objects.requireNonNull(preferences.getString(key, String.valueOf(defaultValue))));
+      return Integer.parseInt(Objects.requireNonNull(preferences.getString(key, String.valueOf(defaultValue))));
     }
   }
 
@@ -202,11 +202,14 @@ public class Helper {
   }
 
   private static void setNightMode(@NonNull final Context context) {
-    switch (Helper.getPreferenceAsInt(context, context.getResources().getString(R.string.PREF_DAY_NIGHT_MODE_KEY)
-        , Integer.valueOf(context.getResources().getString(R.string.pref_day_night_mode_default)))) {
-      case 0: AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO); break;
-      case 1: AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO); break;
-      case 2: AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES); break;
+    setNightMode(Helper.getPreferenceAsInt(context, context.getResources().getString(R.string.PREF_DAY_NIGHT_MODE_KEY)
+        , Integer.parseInt(context.getResources().getString(R.string.pref_day_night_mode_default))));
+  }
+
+  public static void setNightMode(int mode) {
+    switch (mode) {
+      case 0:  AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO); break;
+      case 1:  AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES); break;
       default: AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM); break;
     }
   }

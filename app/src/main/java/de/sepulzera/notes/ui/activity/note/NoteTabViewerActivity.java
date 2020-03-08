@@ -8,16 +8,16 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.ActionMenuView;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.NonNull;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.tabs.TabLayout;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.ActionMenuView;
+import androidx.appcompat.widget.Toolbar;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -26,9 +26,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
@@ -260,7 +260,7 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
 
   public static void readPreferences(@NonNull final Context context) {
     mOpenNotesReadonly = Helper.getPreferenceAsBool(context
-        , context.getResources().getString(R.string.PREF_NOTE_OPEN_READONLY_KEY), Boolean.valueOf(context.getResources().getString(R.string.pref_note_open_readonly_default)));
+        , context.getResources().getString(R.string.PREF_NOTE_OPEN_READONLY_KEY), Boolean.parseBoolean(context.getResources().getString(R.string.pref_note_open_readonly_default)));
   }
 
   private void invalidateFloatingActionButton(@NonNull final NoteEditFragment frag) {
@@ -879,7 +879,7 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
     private final List<String> mFragmentTitles = new ArrayList<>();
 
     NoteFragmentPagerAdapter(FragmentManager fm) {
-      super(fm);
+      super(fm, FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
     }
 
     void addFragment(@NonNull final NoteFrag noteFrag) {
@@ -888,7 +888,7 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
     }
 
     @Override
-    public Fragment getItem(int position) {
+    public @NonNull Fragment getItem(int position) {
       return mFragments.get(position);
     }
 
@@ -908,7 +908,7 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
     }
   }
 
-  private class NoteFragmentAdapter {
+  private static class NoteFragmentAdapter {
     private final List<NoteFrag> mNoteFrags;
 
     NoteFragmentAdapter() {
@@ -938,7 +938,7 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
     }
   }
 
-  private class NoteFrag {
+  private static class NoteFrag {
     private final Note mNote;
     private final NoteEditFragment mFrag;
     private final String mTitle;

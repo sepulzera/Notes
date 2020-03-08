@@ -12,19 +12,19 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.NonNull;
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -44,7 +44,7 @@ import de.sepulzera.notes.R;
 import de.sepulzera.notes.bf.helper.Helper;
 import de.sepulzera.notes.bf.service.NoteService;
 import de.sepulzera.notes.ds.model.Note;
-import de.sepulzera.notes.ui.activity.pref.SettingsActivity;
+import de.sepulzera.notes.ui.activity.settings.SettingsActivity;
 import de.sepulzera.notes.ui.adapter.NoteAdapter;
 import de.sepulzera.notes.ui.adapter.impl.NoteAdapterImpl;
 import de.sepulzera.notes.bf.service.impl.NoteServiceImpl;
@@ -162,7 +162,7 @@ public class MainActivity extends AppCompatActivity
 
   public static void readPreferences(@NonNull final Context context) {
     mListRefreshInterval = Helper.getPreferenceAsInt(context
-        , context.getResources().getString(R.string.PREF_LIST_REFRESH_INTERVAL_KEY), Integer.valueOf(context.getResources().getString(R.string.pref_list_refresh_interval_default)));
+        , context.getResources().getString(R.string.PREF_LIST_REFRESH_INTERVAL_KEY), Integer.parseInt(context.getResources().getString(R.string.pref_list_refresh_interval_default)));
   }
 
   @Override
@@ -431,6 +431,8 @@ public class MainActivity extends AppCompatActivity
 
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+
     if (resultCode == RESULT_OK) {
 
       switch (requestCode) {

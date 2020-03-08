@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
-          package="de.sepulzera.notes">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="de.sepulzera.notes">
 
-  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
   <application
       android:allowBackup="false"
@@ -12,37 +12,33 @@
       android:supportsRtl="true"
       android:theme="@style/AppThemeNoActionBar"
       tools:ignore="GoogleAppIndexingWarning">
-
-    <activity
-        android:name=".ui.activity.note.MainActivity" >
+    <activity android:name=".ui.activity.note.MainActivity">
       <intent-filter>
-        <action android:name="android.intent.action.MAIN"/>
+        <action android:name="android.intent.action.MAIN" />
 
-        <category android:name="android.intent.category.DEFAULT"/>
-        <category android:name="android.intent.category.LAUNCHER"/>
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
+
       <meta-data
           android:name="android.app.searchable"
-          android:resource="@xml/searchable">
-      </meta-data>
+          android:resource="@xml/searchable" />
     </activity>
-
     <activity
         android:name=".ui.activity.note.NoteTabViewerActivity"
         android:parentActivityName=".ui.activity.note.MainActivity"
         android:windowSoftInputMode="adjustResize">
       <meta-data
           android:name="android.support.PARENT_ACTIVITY"
-          android:value=".ui.activity.note.MainActivity"/>
+          android:value=".ui.activity.note.MainActivity" />
     </activity>
-
     <activity
         android:name=".ui.activity.note.NoteTrashActivity"
         android:label="@string/note_trash_title"
         android:parentActivityName=".ui.activity.note.MainActivity">
       <meta-data
           android:name="android.support.PARENT_ACTIVITY"
-          android:value=".ui.activity.note.MainActivity"/>
+          android:value=".ui.activity.note.MainActivity" />
     </activity>
     <activity
         android:name=".ui.activity.note.NoteViewDeletedActivity"
@@ -50,12 +46,15 @@
         android:windowSoftInputMode="adjustResize">
       <meta-data
           android:name="android.support.PARENT_ACTIVITY"
-          android:value=".ui.activity.note.NoteTrashActivity"/>
+          android:value=".ui.activity.note.NoteTrashActivity" />
     </activity>
     <activity
-        android:name=".ui.activity.pref.SettingsActivity"
-        android:label="@string/title_activity_note_preference"
+        android:name=".ui.activity.settings.SettingsActivity"
+        android:label="@string/title_activity_settings"
         android:theme="@style/AppThemeActionBar">
+      <meta-data
+          android:name="android.support.PARENT_ACTIVITY"
+          android:value=".ui.activity.note.MainActivity" />
     </activity>
   </application>
 

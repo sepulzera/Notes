@@ -1,6 +1,6 @@
 package de.sepulzera.notes.ds.model;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.json.JSONObject;
 

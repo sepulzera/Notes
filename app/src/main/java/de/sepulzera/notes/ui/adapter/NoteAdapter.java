@@ -1,6 +1,6 @@
 package de.sepulzera.notes.ui.adapter;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.widget.ListAdapter;
 
 import de.sepulzera.notes.ds.model.Note;
@@ -33,15 +33,6 @@ public interface NoteAdapter extends ListAdapter {
    * @param note Notiz
    */
   void put(@NonNull Note note);
-
-  /**
-   * <p>Löscht die Notiz mit der angegebenen ID.</p>
-   *
-   * <p>Ruft {@link NoteAdapter()#updateView} auf.</p>
-   *
-   * @param note Note.
-   */
-  void remove(@NonNull Note note);
 
   /**
    * <p>Aktualisiert den Adapter.

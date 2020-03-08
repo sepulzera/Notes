@@ -1,7 +1,7 @@
 package de.sepulzera.notes.ds.db;
 
 import android.content.ContentValues;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;

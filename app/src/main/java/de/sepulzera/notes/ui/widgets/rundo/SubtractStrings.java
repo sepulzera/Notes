@@ -204,9 +204,7 @@ final class SubtractStrings {
                 ? (tempLastDeviation + potentialOffsetSize)
                 : longestArray.length;
 
-        final int reverseDeviation = (tempLastDeviation < potentialOffsetSize)
-                ? potentialOffsetSize
-                : tempLastDeviation;
+        final int reverseDeviation = Math.max(tempLastDeviation, potentialOffsetSize);
 
         for (int i = reverseDeviation; i < maxValue; i++) {
 

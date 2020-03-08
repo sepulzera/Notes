@@ -2,7 +2,7 @@ package de.sepulzera.notes.ui.adapter.impl;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.text.Spannable;
 import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
@@ -65,13 +65,6 @@ public class NoteAdapterImpl extends BaseAdapter
 
     notifyDataSetChanged();
     mNotes.add(note);
-  }
-
-  @Override
-  public void remove(@NonNull final Note note) {
-    doRemove(note);
-
-    filter(mSearch);
   }
 
   private void doRemove(@NonNull final Note note) {

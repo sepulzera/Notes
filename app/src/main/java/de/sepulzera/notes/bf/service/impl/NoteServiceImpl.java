@@ -4,7 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Environment;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -387,9 +387,9 @@ public final class NoteServiceImpl implements NoteService {
   @Override
   public void readPreferences(@NonNull final Context context) {
       mPrefDeleteOldRevs = Helper.getPreferenceAsInt(context
-          , context.getResources().getString(R.string.PREF_REV_DELETE_OLD_NUM_KEY), Integer.valueOf(context.getResources().getString(R.string.pref_rev_delete_old_num_default)));
+          , context.getResources().getString(R.string.PREF_REV_DELETE_OLD_NUM_KEY), Integer.parseInt(context.getResources().getString(R.string.pref_rev_delete_old_num_default)));
     mPrefDeleteTrashedNotesDays = Helper.getPreferenceAsInt(context
-        , context.getResources().getString(R.string.PREF_NOTE_REMOVE_DELETED_DAYS_NUM_KEY), Integer.valueOf(context.getResources().getString(R.string.pref_note_remove_deleted_days_num_default)));
+        , context.getResources().getString(R.string.PREF_NOTE_REMOVE_DELETED_DAYS_NUM_KEY), Integer.parseInt(context.getResources().getString(R.string.pref_note_remove_deleted_days_num_default)));
   }
 
   @Override
@@ -456,7 +456,7 @@ public final class NoteServiceImpl implements NoteService {
     return !mDb.find(NoteEntry.COL_IDENT + "=?", selectionArgs).isEmpty();
   }
 
-  private final class IdentPair {
+  private static final class IdentPair {
     long key;
     long val;
 
