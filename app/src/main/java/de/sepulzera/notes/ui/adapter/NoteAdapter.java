@@ -35,6 +35,13 @@ public interface NoteAdapter extends ListAdapter {
   void put(@NonNull Note note);
 
   /**
+   * <p>Entfernt die übergebene Notiz aus der Liste.</p>
+   *
+   * @param note Notiz
+   */
+  void remove(@NonNull Note note);
+
+  /**
    * <p>Aktualisiert den Adapter.
    * Alle Items werden neu gelesen.</p>
    * <p>Der Aufruf ist sehr teuer und sollte mit bedacht getriggert werden!</p>

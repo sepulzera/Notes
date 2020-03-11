@@ -67,6 +67,13 @@ public class NoteAdapterImpl extends BaseAdapter
     mNotes.add(note);
   }
 
+  @Override
+  public void remove(@NonNull final Note note) {
+    doRemove(note);
+
+    notifyDataSetChanged();
+  }
+
   private void doRemove(@NonNull final Note note) {
     long id = note.getId();
     for (final Note nextNote : mNotes) {
