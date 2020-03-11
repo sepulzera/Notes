@@ -83,7 +83,12 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
 
   @Override
   public void onBackPressed() {
-    if (mRestoredNotes) {
+    if (mRestoredNotesCount > 0) {
+      if (mRestoreNote != null) {
+        final NoteService srv = NoteServiceImpl.getInstance();
+        srv.restore(mRestoreNote);
+        mRestoreNote = null;
+      }
       setResult(Activity.RESULT_OK, new Intent());
       finish();
     } else {
@@ -247,15 +252,43 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
 
   private void doRestore(@NonNull final Note note) {
     final NoteService srv = NoteServiceImpl.getInstance();
-    srv.restore(note);
-    mRestoredNotes = true;
-    mAdapter.refresh();
+
+    final Note revision = note.getDraft() ? srv.getCurrRevision(note) : note;
+    final Note draft    = note.getDraft() ? note : srv.getDraft(note);
+
+    // restore will restore both, the draft and the note.
+    // -> remove note and eventually draft from list.
+    if (revision != null) { mAdapter.remove(revision); }
+    if (draft != null)    { mAdapter.remove(draft);    }
+    ++mRestoredNotesCount;
+    mRestoreNote = note;
 
     fixAppBarInvisible();
     invalidateOptionsMenu();
 
-    Snackbar.make(mMainView, String.format(getResources().getString(R.string.snack_note_restored)
-        , note.getTitle()), Snackbar.LENGTH_LONG).show();
+    final Snackbar snack = Snackbar.make(mMainView, String.format(getResources().getString(R.string.snack_note_restored)
+        , note.getTitle()), Snackbar.LENGTH_LONG);
+    snack.setAction(R.string.snack_undo, new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        --mRestoredNotesCount;
+        mRestoreNote = null;
+        // undo -> add note again
+        // -> if the draft was restored, add the note again, too
+        if (revision != null) { mAdapter.put(revision); }
+        if (draft != null)    { mAdapter.put(draft);    }
+      }
+    });
+    snack.addCallback(new Snackbar.Callback() {
+      @Override
+      public void onDismissed(Snackbar snackbar, int event) {
+        if (event != DISMISS_EVENT_ACTION && mRestoreNote != null) {
+          srv.restore(mRestoreNote);
+          mRestoreNote = null;
+        }
+      }
+    });
+    snack.show();
   }
 
   private void fixAppBarInvisible() {
@@ -296,7 +329,8 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
   private NoteAdapter    mAdapter; // Adapter zu den Notiz-ListItems
   private ListView       mMainView;
 
-  private boolean        mRestoredNotes = false;
+  private int            mRestoredNotesCount = 0;
+  private Note           mRestoreNote;
 
   private static final int RQ_VIEW_NOTE_ACTION = 54011; // Single click (View)
 }

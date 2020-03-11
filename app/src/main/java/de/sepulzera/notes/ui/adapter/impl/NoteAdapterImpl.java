@@ -120,6 +120,10 @@ public class NoteAdapterImpl extends BaseAdapter
     });
   }
 
+  protected List<Note> getFilteredNotes() {
+    return mFilteredNotes;
+  }
+
   /**
    * <p>Gibt die Notiz mit der angegebenen ID zurück.</p>
    *
