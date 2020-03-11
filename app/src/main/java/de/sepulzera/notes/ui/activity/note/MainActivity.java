@@ -494,8 +494,23 @@ public class MainActivity extends AppCompatActivity
     srv.delete(note);
     mAdapter.refresh();
 
-    Snackbar.make(mMainView, String.format(getResources().getString(R.string.snack_note_moved_to_trash)
-        , note.getTitle()), Snackbar.LENGTH_LONG).show();
+    final Snackbar snack = Snackbar.make(mMainView, String.format(getResources().getString(R.string.snack_note_moved_to_trash)
+        , note.getTitle()), Snackbar.LENGTH_LONG);
+    snack.setAction(R.string.snack_undo, new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        // restore note again
+        srv.restore(note);
+        mAdapter.put(note);
+        if (!note.getDraft()) {
+          final Note draft = srv.getDraft(note);
+          if (draft != null) {
+            mAdapter.put(draft);
+          }
+        }
+      }
+    });
+    snack.show();
 
     fixAppbarPosition();
   }

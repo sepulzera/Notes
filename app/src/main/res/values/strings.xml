@@ -91,6 +91,7 @@
   <string name="dialog_restore_select_file_title">Select Backup File</string>
 
   <!-- Snacks -->
+  <string name="snack_undo">Undo</string>
   <string name="snack_note_deleted">Deleted \"%1$s\".</string>
   <string name="snack_note_moved_to_trash">Moved \"%1$s\" to Trash.</string>
   <string name="snack_note_restored">Restored \"%1$s\".</string>
