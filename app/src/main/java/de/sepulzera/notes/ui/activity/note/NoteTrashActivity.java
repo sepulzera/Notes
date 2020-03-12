@@ -218,7 +218,6 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
     if (note.getDraft()) {
       doDelete(note);
     } else {
-
       final AlertDialog.Builder builder = new AlertDialog.Builder(this);
       builder.setTitle(getResources().getString(R.string.dialog_trash_delete_note_title))
           .setMessage(String.format(getResources().getString(R.string.dialog_trash_delete_note_msg), note.getTitle()))
@@ -296,6 +295,7 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
             mAdapter.put(draft);
           }
         }
+        invalidateOptionsMenu();
       }
     });
     snack.addCallback(new Snackbar.Callback() {
@@ -336,6 +336,7 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
         // -> if the draft was restored, add the note again, too
         if (revision != null) { mAdapter.put(revision); }
         if (draft != null)    { mAdapter.put(draft);    }
+        invalidateOptionsMenu();
       }
     });
     snack.addCallback(new Snackbar.Callback() {

@@ -508,6 +508,9 @@ public class MainActivity extends AppCompatActivity
     }
     mDeleteNote = note;
 
+    fixAppbarPosition();
+    invalidateOptionsMenu();
+
     final Snackbar snack = Snackbar.make(mMainView, String.format(getResources().getString(R.string.snack_note_moved_to_trash)
         , note.getTitle()), Snackbar.LENGTH_LONG);
     snack.setAction(R.string.snack_undo, new View.OnClickListener() {
@@ -522,6 +525,7 @@ public class MainActivity extends AppCompatActivity
             mAdapter.put(draft);
           }
         }
+        invalidateOptionsMenu();
       }
     });
     snack.addCallback(new Snackbar.Callback() {
@@ -533,8 +537,6 @@ public class MainActivity extends AppCompatActivity
       }
     });
     snack.show();
-
-    fixAppbarPosition();
   }
 
   private void fixAppbarPosition() {
