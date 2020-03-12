@@ -69,7 +69,7 @@ public class NoteViewDeletedActivity extends AppCompatActivity {
         onBackPressed();
         return true;
 
-      case R.id.om_detail_note_delete:
+      case R.id.om_note_delete:
         deleteNote();
         return true;
 
