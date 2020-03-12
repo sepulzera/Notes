@@ -34,6 +34,12 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
     super.onCreate(savedInstanceState);
     setContentView(R.layout.act_note_trash);
 
+    if (null != savedInstanceState) {
+      restoreState(savedInstanceState);
+    } else {
+      createState();
+    }
+
     Toolbar toolbar = findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
     final ActionBar ab = getSupportActionBar();
@@ -41,8 +47,6 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
       throw new IllegalStateException("ActionBar not found!");
     }
     ab.setDisplayHomeAsUpEnabled(true);
-
-    mAdapter = new NoteTrashAdapterImpl(this);
 
     // Layout-Elemente suchen
     mMainView = findViewById(R.id.mainListView);
@@ -53,9 +57,6 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
     // Handler registrieren
     mMainView.setOnItemClickListener(this); // Single-Click: Notiz bearbeiten
     registerForContextMenu(mMainView); // Kontextmenü registrieren
-
-    // gespeicherten Zustand wiederherstellen
-    refreshList();
 
     mHandler = new Handler();
     mRunRefreshUi = new Runnable() {
@@ -68,10 +69,43 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
     mHandler.postDelayed(mRunRefreshUi, 60 * MainActivity.mListRefreshInterval * 1000 );
   }
 
+  private void createState() {
+    mAdapter = new NoteTrashAdapterImpl(this);
+
+    mRestoredNotesCount = 0;
+
+    // gespeicherten Zustand wiederherstellen
+    refreshList();
+  }
+
+  private void restoreState(@NonNull final Bundle outState) {
+    mAdapter = new NoteTrashAdapterImpl(this);
+
+    // gespeicherten Zustand wiederherstellen
+    refreshList();
+
+    mRestoredNotesCount  = outState.getInt(KEY_RESTORED_COUNT);
+  }
+
+  @Override
+  public void onSaveInstanceState(@NonNull final Bundle outState) {
+    super.onSaveInstanceState(outState);
+
+    outState.putInt(KEY_RESTORED_COUNT , mRestoredNotesCount);
+  }
+
   @Override
   public void onPause() {
     super.onPause();
+    finishPendlingActions();
     mHandler.removeCallbacks(mRunRefreshUi);
+  }
+
+  private void finishPendlingActions() {
+    final NoteService srv = NoteServiceImpl.getInstance();
+
+    finishDelete(srv);
+    finishRestore(srv);
   }
 
   @Override
@@ -84,11 +118,6 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
   @Override
   public void onBackPressed() {
     if (mRestoredNotesCount > 0) {
-      if (mRestoreNote != null) {
-        final NoteService srv = NoteServiceImpl.getInstance();
-        srv.restore(mRestoreNote);
-        mRestoreNote = null;
-      }
       setResult(Activity.RESULT_OK, new Intent());
       finish();
     } else {
@@ -249,6 +278,7 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
         mAdapter.remove(draft);
       }
     }
+    mDeleteNote = note;
     fixAppBarInvisible();
     invalidateOptionsMenu();
 
@@ -258,6 +288,7 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
       @Override
       public void onClick(View v) {
         // restore note again
+        mDeleteNote = null;
         mAdapter.put(note);
         if (!note.getDraft()) {
           final Note draft = srv.getDraft(note);
@@ -271,8 +302,7 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
       @Override
       public void onDismissed(Snackbar snackbar, int event) {
         if (event != DISMISS_EVENT_ACTION) {
-          // Now there is no way back. Delete!
-          srv.delete(note);
+          finishDelete(srv);
         }
       }
     });
@@ -311,9 +341,8 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
     snack.addCallback(new Snackbar.Callback() {
       @Override
       public void onDismissed(Snackbar snackbar, int event) {
-        if (event != DISMISS_EVENT_ACTION && mRestoreNote != null) {
-          srv.restore(mRestoreNote);
-          mRestoreNote = null;
+        if (event != DISMISS_EVENT_ACTION) {
+          finishRestore(srv);
         }
       }
     });
@@ -352,14 +381,31 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
     }
   }
 
+  private void finishDelete(@NonNull NoteService srv) {
+    if (mDeleteNote != null) {
+      srv.delete(mDeleteNote);
+      mDeleteNote = null;
+    }
+  }
+
+  private void finishRestore(@NonNull NoteService srv) {
+    if (mRestoreNote != null) {
+      srv.restore(mRestoreNote);
+      mRestoreNote = null;
+    }
+  }
+
   private Handler        mHandler;
   private Runnable       mRunRefreshUi;
 
   private NoteAdapter    mAdapter; // Adapter zu den Notiz-ListItems
   private ListView       mMainView;
 
-  private int            mRestoredNotesCount = 0;
+  private Note           mDeleteNote;
   private Note           mRestoreNote;
+  private int            mRestoredNotesCount;
+
+  private static final String KEY_RESTORED_COUNT          = "notetrashactivity_restoredcount";
 
   private static final int RQ_VIEW_NOTE_ACTION = 54011; // Single click (View)
 }

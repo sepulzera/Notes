@@ -139,7 +139,14 @@ public class MainActivity extends AppCompatActivity
   @Override
   public void onPause() {
     super.onPause();
+    finishPendlingActions();
     mHandler.removeCallbacks(mRunRefreshUi);
+  }
+
+  private void finishPendlingActions() {
+    final NoteService srv = NoteServiceImpl.getInstance();
+
+    finishDelete(srv);
   }
 
   @Override
@@ -489,10 +496,17 @@ public class MainActivity extends AppCompatActivity
   }
 
   private void deleteNote(@NonNull final Note note) {
-    note.setCurr(true); // workaround: service move to trash
     final NoteService srv = NoteServiceImpl.getInstance();
-    srv.delete(note);
-    mAdapter.refresh();
+
+    // Remove note and eventually draft from list.
+    mAdapter.remove(note);
+    if (!note.getDraft()) {
+      final Note draft = srv.getDraft(note);
+      if (draft != null) {
+        mAdapter.remove(draft);
+      }
+    }
+    mDeleteNote = note;
 
     final Snackbar snack = Snackbar.make(mMainView, String.format(getResources().getString(R.string.snack_note_moved_to_trash)
         , note.getTitle()), Snackbar.LENGTH_LONG);
@@ -500,13 +514,21 @@ public class MainActivity extends AppCompatActivity
       @Override
       public void onClick(View v) {
         // restore note again
-        srv.restore(note);
+        mDeleteNote = null;
         mAdapter.put(note);
         if (!note.getDraft()) {
           final Note draft = srv.getDraft(note);
           if (draft != null) {
             mAdapter.put(draft);
           }
+        }
+      }
+    });
+    snack.addCallback(new Snackbar.Callback() {
+      @Override
+      public void onDismissed(Snackbar snackbar, int event) {
+        if (event != DISMISS_EVENT_ACTION) {
+          finishDelete(srv);
         }
       }
     });
@@ -570,6 +592,14 @@ public class MainActivity extends AppCompatActivity
     }
   }
 
+  private void finishDelete(@NonNull NoteService srv) {
+    if (mDeleteNote != null) {
+      mDeleteNote.setCurr(true); // workaround: service move to trash
+      srv.delete(mDeleteNote);
+      mDeleteNote = null;
+    }
+  }
+
   private DrawerLayout   mDrawerLayout;
   private NoteAdapter    mAdapter; // Adapter zu den Notiz-ListItems
   private ListView       mMainView;
@@ -577,6 +607,8 @@ public class MainActivity extends AppCompatActivity
 
   private Handler        mHandler;
   private Runnable       mRunRefreshUi;
+
+  private Note           mDeleteNote;
 
   private static final int RQ_EDIT_NOTE_ACTION   = 40712; // Single click (Bearbeiten)
   private static final int RQ_CREATE_NOTE_ACTION = 40713;
