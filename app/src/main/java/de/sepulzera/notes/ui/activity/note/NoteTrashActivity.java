@@ -72,6 +72,7 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
   private void createState() {
     mAdapter = new NoteTrashAdapterImpl(this);
 
+    mEmptyTrashRequested = false;
     mRestoredNotesCount = 0;
 
     // gespeicherten Zustand wiederherstellen
@@ -105,6 +106,7 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
     final NoteService srv = NoteServiceImpl.getInstance();
 
     finishDelete(srv);
+    finishEmptyTrash(srv);
     finishRestore(srv);
   }
 
@@ -191,25 +193,40 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
           @Override
           public void onClick(DialogInterface dialog, int which) {
             // yes = delete
-            final NoteService srv = NoteServiceImpl.getInstance();
-            final List<Note> deletedNotes = srv.getAllDeleted();
-            for (final Note note : deletedNotes) {
-              // Note+Draft -> evtl. inzwischen mit gelöscht
-              if (srv.get(note.getId()) != null) {
-                srv.delete(note);
-              }
-            }
+            mEmptyTrashRequested = true;
 
-            mAdapter.refresh();
+            mAdapter.clear();
+            fixAppBarInvisible();
             invalidateOptionsMenu();
-            Snackbar.make(mMainView, getResources().getString(R.string.snack_trash_emptied)
-                , Snackbar.LENGTH_LONG).show();
+
+            final NoteService srv = NoteServiceImpl.getInstance();
+
+            final Snackbar snack = Snackbar.make(mMainView, getResources().getString(R.string.snack_trash_emptied)
+                , Snackbar.LENGTH_LONG);
+            snack.setAction(R.string.snack_undo, new View.OnClickListener() {
+              @Override
+              public void onClick(View v) {
+                // restore note again
+                mEmptyTrashRequested = false;
+                refreshList();
+                invalidateOptionsMenu();
+              }
+            });
+            snack.addCallback(new Snackbar.Callback() {
+              @Override
+              public void onDismissed(Snackbar snackbar, int event) {
+                if (event != DISMISS_EVENT_ACTION) {
+                  finishEmptyTrash(srv);
+                }
+              }
+            });
+            snack.show();
           }
         })
         .setNegativeButton(getResources().getString(R.string.dialog_btn_abort), new DialogInterface.OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
-            // no = abort
+            // no = aborts
           }
         }).show();
   }
@@ -389,6 +406,19 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
     }
   }
 
+  private void finishEmptyTrash(@NonNull NoteService srv) {
+    if (mEmptyTrashRequested) {
+      final List<Note> deletedNotes = srv.getAllDeleted();
+      for (final Note note : deletedNotes) {
+        // Note+Draft -> evtl. inzwischen mit gelöscht
+        if (srv.get(note.getId()) != null) {
+          srv.delete(note);
+        }
+      }
+      mEmptyTrashRequested = false;
+    }
+  }
+
   private void finishRestore(@NonNull NoteService srv) {
     if (mRestoreNote != null) {
       srv.restore(mRestoreNote);
@@ -403,6 +433,7 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
   private ListView       mMainView;
 
   private Note           mDeleteNote;
+  private boolean        mEmptyTrashRequested;
   private Note           mRestoreNote;
   private int            mRestoredNotesCount;
 
