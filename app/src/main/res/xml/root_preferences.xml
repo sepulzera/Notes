@@ -1,6 +1,8 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
-  <PreferenceCategory app:title="@string/appearance_header">
+  <PreferenceCategory
+      app:title="@string/appearance_header"
+      app:icon="@drawable/ic_color_lens">
 
     <ListPreference
         app:defaultValue="@string/pref_day_night_mode_default"
@@ -20,7 +22,9 @@
 
   </PreferenceCategory>
 
-  <PreferenceCategory app:title="@string/notes_header">
+  <PreferenceCategory
+      app:title="@string/notes_header"
+      app:icon="@drawable/ic_pref_edit">
 
     <SwitchPreference
         app:defaultValue="@string/pref_note_open_readonly_default"
@@ -31,7 +35,9 @@
 
   </PreferenceCategory>
 
-  <PreferenceCategory app:title="@string/storage_header">
+  <PreferenceCategory
+      app:title="@string/storage_header"
+      app:icon="@drawable/ic_sd_storage">
 
     <ListPreference
         app:defaultValue="@string/pref_rev_delete_old_num_default"

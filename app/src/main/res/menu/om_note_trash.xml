@@ -6,6 +6,5 @@
       android:id="@+id/om_trash_empty"
       android:title="@string/om_trash_empty"
       android:icon="@drawable/ic_delete_forever"
-      app:iconTint="@color/white"
       app:showAsAction="ifRoom" />
 </menu>

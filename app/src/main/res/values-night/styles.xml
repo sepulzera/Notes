@@ -11,6 +11,8 @@
 
     <!--To change the background of options menu-->
     <item name="android:itemBackground">@color/darkGray</item>
+
+    <item name="iconPreferenceColor">@color/colorAccent</item>
   </style>
 
   <!-- Base application theme with ActionBar -->
@@ -21,6 +23,8 @@
     <item name="colorAccent">@color/colorAccent</item>
     <item name="android:editTextColor">@color/colorTextEnabled</item>
     <item name="android:textViewStyle">@style/MyTextViewStyle</item>
+
+    <item name="iconPreferenceColor">@color/colorAccent</item>
   </style>
   
   <style name="MyTextViewStyle" parent="android:Widget.TextView">

@@ -29,7 +29,6 @@
         android:textColor="@color/white" />
 
     <TextView
-        android:id="@+id/tv_app_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -52,7 +51,7 @@
         android:layout_alignParentStart="true"
         android:text="@string/dialog_about_version"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textColor="@color/white" />
+        android:textColor="@color/whiteSmoke" />
 
     <!--suppress AndroidDomInspection -->
     <TextView
@@ -65,7 +64,7 @@
         android:paddingEnd="16dp"
         android:text="@string/app_version"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textColor="@color/white" />
+        android:textColor="@color/whiteSmoke" />
 
 
 
@@ -77,7 +76,7 @@
         android:layout_alignParentStart="true"
         android:text="@string/dialog_about_dev"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textColor="@color/white" />
+        android:textColor="@color/whiteSmoke" />
 
     <TextView
         android:id="@+id/tv_app_dev"
@@ -89,7 +88,7 @@
         android:paddingEnd="16dp"
         android:text="@string/app_dev"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textColor="@color/white" />
+        android:textColor="@color/whiteSmoke" />
 
   </RelativeLayout>
 
