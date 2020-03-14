@@ -111,7 +111,7 @@
 
   <!-- rev delete old -->
   <string name="pref_title_rev_delete_old_num">Delete old revisions</string>
-  <string name="pref_rev_delete_old_num_default">5</string>
+  <string name="pref_rev_delete_old_num_default">0</string>
   <string-array name="pref_rev_delete_old_num_titles">
     <item>Never</item>
     <item>Keep 1 revision</item>
