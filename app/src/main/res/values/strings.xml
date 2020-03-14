@@ -77,8 +77,8 @@
   <string name="dialog_about_version">Version:</string>
   <string name="dialog_about_dev">Developer:</string>
 
-  <string name="dialog_trash_delete_note_title">Delete Note From Trash</string>
-  <string name="dialog_trash_delete_note_msg">This note\n\"%1$s\"\nwill be permanently lost.</string>
+  <string name="dialog_trash_delete_note_title">Delete Permanently</string>
+  <string name="dialog_trash_delete_note_msg">Are you sure you want to permanently delete\n\"%1$s\"?</string>
   <string name="dialog_trash_delete_note_go_btn">Delete</string>
   <string name="dialog_empty_trash_title">Empty Trash</string>
   <string name="dialog_empty_trash_msg">All items in the Trash will be permanently deleted.</string>
