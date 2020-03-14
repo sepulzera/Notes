@@ -11,7 +11,11 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.ActionMode;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -235,9 +239,15 @@ public class NoteEditFragment extends Fragment implements EditTextSelectable.Sel
   public void setEditable(boolean editable) {
     mIsEditable = editable;
     if (editable) {
-      mEditMsg.setEnabled(true);
+      mEditMsg.setShowSoftInputOnFocus(true);
+      mEditMsg.setCustomSelectionActionModeCallback(null);
+      mEditMsg.setCustomInsertionActionModeCallback(null);
+      mEditMsg.setOnDragListener(null);
     } else {
-      mEditMsg.setEnabled(false);
+      mEditMsg.setShowSoftInputOnFocus(false);
+      mEditMsg.setCustomSelectionActionModeCallback(new CustomSelectionActionModeCallback());
+      mEditMsg.setCustomInsertionActionModeCallback(new CustomInsertionActionModeCallback());
+      mEditMsg.setOnDragListener(new DragListener());
     }
 
     if (editable && mRunDo == null) {
@@ -249,6 +259,66 @@ public class NoteEditFragment extends Fragment implements EditTextSelectable.Sel
     }
 
     mView.setBackgroundColor(getResources().getColor(editable? R.color.colorNoteBg : R.color.colorNoteBgReadonly, null));
+  }
+
+  protected static class CustomSelectionActionModeCallback implements ActionMode.Callback {
+
+    @Override
+    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+      return true;
+    }
+
+    @Override
+    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+      try {
+        MenuItem copyItem = menu.findItem(android.R.id.copy);
+        CharSequence title = copyItem.getTitle();
+        menu.clear();
+        menu.add(0, android.R.id.copy, 0, title);
+      }
+      catch (Exception e) {
+        // ignored
+      }
+      return true;
+    }
+
+    @Override
+    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+      return false;
+    }
+
+    @Override
+    public void onDestroyActionMode(ActionMode mode) {
+    }
+  }
+
+  protected static class CustomInsertionActionModeCallback implements ActionMode.Callback {
+
+    @Override
+    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+      return false;
+    }
+
+    @Override
+    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+      return false;
+    }
+
+    @Override
+    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+      return false;
+    }
+
+    @Override
+    public void onDestroyActionMode(ActionMode mode) {
+    }
+  }
+
+  protected static class DragListener implements View.OnDragListener {
+    @Override
+    public boolean onDrag(View view, DragEvent dragEvent) {
+      return true;
+    }
   }
 
   public boolean isChanged() {
