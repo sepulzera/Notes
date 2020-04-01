@@ -140,7 +140,7 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
       }
     });
 
-    invalidateFloatingActionButton(true, mNoteFrags.get(0).getFragment().isEditable());
+    invalidateFloatingActionButton(mNoteFrags.get(0).getFragment());
     invalidateOptionsMenu();
   }
 
@@ -173,7 +173,7 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
       final NoteService srv = NoteServiceImpl.getInstance();
       mDraft = srv.getDraft(mNote);
       if (null != mDraft) {
-        if (!mDraft.getCurr()) {
+        if (mNote.getCurr() && !mDraft.getCurr()) {
           mDraft = null;
         } else {
           mNoteFrags.add(mDraft, getResources().getString(R.string.tab_viewer_draft_title));
@@ -264,7 +264,7 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
   }
 
   private void invalidateFloatingActionButton(@NonNull final NoteEditFragment frag) {
-    final boolean isCurrRev = mDisplayedNote != null && mDisplayedNote.getCurrRev();
+    final boolean isCurrRev = mDisplayedNote != null && mDisplayedNote.getCurrRev() && mDisplayedNote.getCurr();
     invalidateFloatingActionButton(isCurrRev, frag.isEditable());
   }
 
@@ -326,6 +326,7 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
   public boolean onCreateOptionsMenu(Menu menu) {
     getMenuInflater().inflate(R.menu.om_note_view, menu);
 
+    final boolean isCurr     = mDisplayedNote != null && mDisplayedNote.getCurr();
     final boolean isCurrRev  = mDisplayedNote != null && mDisplayedNote.getCurrRev();
     final boolean isNewNote  = mDisplayedNote != null && mDisplayedNote.getId() == 0L;
     final NoteEditFragment frag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
@@ -336,8 +337,11 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
     if ((item = menu.findItem(R.id.om_detail_note_rename))         != null) { item.setVisible(isCurrRev && !isNewNote && isEditable); }
     if ((item = menu.findItem(R.id.om_detail_note_clear))          != null) { item.setVisible(isCurrRev && isEditable && !frag.getMsg().isEmpty()); }
     if ((item = menu.findItem(R.id.om_detail_note_revert))         != null) { item.setVisible(isCurrRev && !isNewNote && isEditable && frag.isChanged()); }
-    if ((item = menu.findItem(R.id.om_detail_note_delete))         != null) { item.setVisible(isCurrRev && isEditable && !mDisplayedNote.getDraft()); }
-    if ((item = menu.findItem(R.id.om_detail_draft_discard))       != null) { item.setVisible(isCurrRev && isEditable && mDisplayedNote.getDraft()); }
+    if ((item = menu.findItem(R.id.om_detail_note_delete))         != null) { item.setVisible(isCurr && isCurrRev && isEditable && !mDisplayedNote.getDraft()); }
+    if ((item = menu.findItem(R.id.om_detail_draft_discard))       != null) { item.setVisible(isCurr && isCurrRev && isEditable && mDisplayedNote.getDraft()); }
+
+    if ((item = menu.findItem(R.id.om_detail_note_delete_perma))   != null) { item.setVisible(!isCurr); }
+    if ((item = menu.findItem(R.id.om_detail_note_restore))        != null) { item.setVisible(!isCurr); }
 
     onCreateToolbarMenu(frag);
 
@@ -466,9 +470,17 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
 
       case R.id.om_detail_note_delete:
       case R.id.om_detail_draft_discard:
+      case R.id.om_detail_note_delete_perma:
         noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
         if (noteFrag != null) {
           deleteNote(noteFrag);
+        }
+        return true;
+
+      case R.id.om_detail_note_restore:
+        noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
+        if (noteFrag != null) {
+          restoreNote(noteFrag);
         }
         return true;
 
@@ -666,6 +678,12 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
       note.setMsg(frag.getMsg());
     }
     note.setCurr(false);
+    executeDone(note);
+  }
+
+  private void restoreNote(@NonNull final NoteEditFragment frag) {
+    final Note note = frag.getNote();
+    note.setCurr(true);
     executeDone(note);
   }
 

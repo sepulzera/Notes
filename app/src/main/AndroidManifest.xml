@@ -28,9 +28,6 @@
         android:name=".ui.activity.note.NoteTabViewerActivity"
         android:parentActivityName=".ui.activity.note.MainActivity"
         android:windowSoftInputMode="adjustResize">
-      <meta-data
-          android:name="android.support.PARENT_ACTIVITY"
-          android:value=".ui.activity.note.MainActivity" />
     </activity>
     <activity
         android:name=".ui.activity.note.NoteTrashActivity"
@@ -39,14 +36,6 @@
       <meta-data
           android:name="android.support.PARENT_ACTIVITY"
           android:value=".ui.activity.note.MainActivity" />
-    </activity>
-    <activity
-        android:name=".ui.activity.note.NoteViewDeletedActivity"
-        android:parentActivityName=".ui.activity.note.NoteTrashActivity"
-        android:windowSoftInputMode="adjustResize">
-      <meta-data
-          android:name="android.support.PARENT_ACTIVITY"
-          android:value=".ui.activity.note.NoteTrashActivity" />
     </activity>
     <activity
         android:name=".ui.activity.settings.SettingsActivity"

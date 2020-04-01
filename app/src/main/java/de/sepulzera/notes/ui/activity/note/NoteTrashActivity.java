@@ -349,6 +349,7 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
       public void onClick(View v) {
         --mRestoredNotesCount;
         mRestoreNote = null;
+        note.setCurr(false);
         // undo -> add note again
         // -> if the draft was restored, add the note again, too
         if (revision != null) { mAdapter.put(revision); }
@@ -386,8 +387,8 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
    */
   private void startActivityViewNote(Note note) {
     final NoteService srv = NoteServiceImpl.getInstance();
-    this.startActivityForResult(new Intent(this, NoteViewDeletedActivity.class)
-        .putExtra(Note.TAG_NOTE, srv.clone(note))
+    this.startActivityForResult(new Intent(this, NoteTabViewerActivity.class)
+            .putExtra(Note.TAG_NOTE, srv.clone(note))
         , RQ_VIEW_NOTE_ACTION);
   }
 

@@ -193,9 +193,9 @@ public final class NoteServiceImpl implements NoteService {
 
   @Override
   public List<Note> getAllNoteRevisions(@NonNull final Note note) {
-    final String[] selectionArgs = { String.valueOf(note.getIdent()), "1"};
+    final String[] selectionArgs = { String.valueOf(note.getIdent())};
 
-    return mDb.find(NoteEntry.COL_IDENT + "=? AND " + NoteEntry.COL_CURR + " =?", selectionArgs
+    return mDb.find(NoteEntry.COL_IDENT + "=?", selectionArgs
         , null, null, NoteEntry.COL_REVISION + " DESC", null);
   }
 
