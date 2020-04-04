@@ -175,7 +175,10 @@ public class MainActivity extends AppCompatActivity
   @Override
   public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
     final Note note = (Note)mAdapter.getItem(position);
+    openNote(note);
+  }
 
+  private void openNote(@NonNull final Note note) {
     final NoteService srv = NoteServiceImpl.getInstance();
 
     this.startActivityForResult(new Intent(this, NoteTabViewerActivity.class)
@@ -431,7 +434,7 @@ public class MainActivity extends AppCompatActivity
       Snackbar.make(mMainView, "Error parsing a note: " + e.getMessage(), Snackbar.LENGTH_LONG).show();
       return;
     }
-    restoreState();
+    invalidateList();
 
     Snackbar.make(mMainView, getResources().getString(R.string.snack_restore_completed), Snackbar.LENGTH_LONG).show();
   }
@@ -446,10 +449,18 @@ public class MainActivity extends AppCompatActivity
 
         case RQ_CREATE_NOTE_ACTION:
         case RQ_EDIT_NOTE_ACTION:
-          if (!data.hasExtra(Note.TAG_NOTE)) {
-            break;
+          if (data.hasExtra(Note.TAG_NOTE)) {
+            saveNote((Note)(data.getSerializableExtra(Note.TAG_NOTE)));
           }
-          saveNote((Note)(data.getSerializableExtra(Note.TAG_NOTE)));
+          if (data.hasExtra(RQ_EXTRA_INVALIDATE_LIST)) {
+            invalidateList();
+          }
+          if (data.hasExtra(RQ_EXTRA_FOLLOWUP_ID)) {
+            final long noteId = data.getLongExtra(RQ_EXTRA_FOLLOWUP_ID, 0L);
+            final NoteService srv = NoteServiceImpl.getInstance();
+            final Note note = srv.get(noteId);
+            openNote(note);
+          }
           break;
 
         case RQ_RESTORE_FILECHOOSE:
@@ -464,10 +475,12 @@ public class MainActivity extends AppCompatActivity
           break;
 
         case RQ_TRASH:
-          restoreState();
+          if (data.hasExtra(RQ_EXTRA_INVALIDATE_LIST)) {
+            invalidateList();
+          }
           break;
 
-        default: // unbekannter requestCode -> ignorieren
+        default: // unknown request code -> ignore
           break;
       }
 
@@ -551,6 +564,10 @@ public class MainActivity extends AppCompatActivity
   }
 
   private void restoreState() {
+    invalidateList();
+  }
+
+  private void invalidateList() {
     mAdapter.clear();
     final NoteService srv = NoteServiceImpl.getInstance();
     for (final Note note : srv.getAllCurrent()) {
@@ -620,4 +637,7 @@ public class MainActivity extends AppCompatActivity
 
   private static final int PERMISSION_REQUEST_CODE_BACKUP_STORAGE = 123;
   private static final int PERMISSION_REQUEST_CODE_RESTORE_STORAGE = 223;
+
+  public  static final String RQ_EXTRA_INVALIDATE_LIST     = "invalide_list";
+  public  static final String RQ_EXTRA_FOLLOWUP_ID         = "followup_note_id";
 }

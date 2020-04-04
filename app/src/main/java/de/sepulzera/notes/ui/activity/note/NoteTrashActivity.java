@@ -120,7 +120,8 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
   @Override
   public void onBackPressed() {
     if (mRestoredNotesCount > 0) {
-      setResult(Activity.RESULT_OK, new Intent());
+      setResult(Activity.RESULT_OK, new Intent()
+          .putExtra(MainActivity.RQ_EXTRA_INVALIDATE_LIST, true));
       finish();
     } else {
       super.onBackPressed();
@@ -262,18 +263,20 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
       switch (requestCode) {
 
         case RQ_VIEW_NOTE_ACTION:
-          if (!data.hasExtra(Note.TAG_NOTE)) {
-            break;
-          }
-          final Note note = (Note)(data.getSerializableExtra(Note.TAG_NOTE));
-          if (null == note) {
-            throw new IllegalArgumentException("note must not be null");
-          }
+          if (data.hasExtra(Note.TAG_NOTE)) {
+            final Note note = (Note)(data.getSerializableExtra(Note.TAG_NOTE));
+            if (null == note) {
+              throw new IllegalArgumentException("note must not be null");
+            }
 
-          if (!note.getCurr()) {
-            deleteNote(note);
-          } else {
-            doRestore(note);
+            if (!note.getCurr()) {
+              deleteNote(note);
+            } else {
+              doRestore(note);
+            }
+          }
+          if (data.hasExtra(MainActivity.RQ_EXTRA_INVALIDATE_LIST)) {
+            ++mRestoredNotesCount;
           }
           break;
 

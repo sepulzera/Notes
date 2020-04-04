@@ -27,6 +27,7 @@
   <string name="cm_send_as_msg">Send As Message</string>
 
   <!-- Optionsmenü -->
+  <string name="checkout">Check out</string>
   <string name="copy_to_clipboard">Copy</string>
   <string name="om_search">Search</string>
   <string name="om_trash_empty">Empty Trash</string>
@@ -41,6 +42,7 @@
 
   <!-- Note -->
   <string name="copy_name_add">Copy</string> <!-- wird bei Kopie an Titel angehängt -->
+  <string name="checkout_name">%1$s (Rev: %2$d)</string> <!-- wird bei Kopie an Titel angehängt -->
 
   <!-- NoteListActivity -->
   <string name="note_item_empty_content">(no content)</string>
@@ -92,6 +94,8 @@
 
   <!-- Snacks -->
   <string name="snack_undo">Undo</string>
+  <string name="snack_goto">Switch Note</string>
+  <string name="snack_note_checked_out">Revision checked out.</string>
   <string name="snack_note_deleted">Deleted \"%1$s\".</string>
   <string name="snack_note_moved_to_trash">Moved \"%1$s\" to Trash.</string>
   <string name="snack_note_restored">Restored \"%1$s\".</string>
