@@ -125,7 +125,7 @@ public class NoteEditFragment extends Fragment implements EditTextSelectable.Sel
   public int getIndex() { return mIndex; }
 
   public void copyToClipboard() {
-    ClipboardManager cman = ((ClipboardManager) Objects.requireNonNull(getActivity()).getSystemService(Context.CLIPBOARD_SERVICE));
+    ClipboardManager cman = ((ClipboardManager) requireActivity().getSystemService(Context.CLIPBOARD_SERVICE));
     if (cman != null) {
       cman.setPrimaryClip(
           ClipData.newPlainText("notes_" + mNote.getTitle(), getMsg()));
