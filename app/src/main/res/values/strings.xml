@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
   <string name="app_name">Notes</string>
   <!-- <string name="app_version">DECLARED IN GRADLE.BUILD</string> -->
   <string name="app_slogan">Record your thoughts.</string>
@@ -16,13 +16,10 @@
   <!-- Kontextmenü -->
   <string name="clear">Clear Content</string>
   <string name="revert">Revert Changes</string>
-  <string name="cm_copy_note">Copy</string>
-  <string name="cm_copy_draft">Copy</string>
-  <string name="cm_delete_note">Delete</string>
+  <string name="cm_copy">Copy</string>
+  <string name="cm_delete">Delete</string>
   <string name="cm_delete_permanently">Delete Permanently</string>
-  <string name="cm_draft_discard">Discard</string>
-  <string name="cm_rename_note">Rename</string>
-  <string name="cm_rename_draft">Rename</string>
+  <string name="cm_rename">Rename</string>
   <string name="cm_note_restore">Restore</string>
   <string name="cm_send_as_msg">Send As Message</string>
 
@@ -98,6 +95,7 @@
   <string name="snack_note_checked_out">Revision checked out.</string>
   <string name="snack_note_deleted">Deleted \"%1$s\".</string>
   <string name="snack_note_moved_to_trash">Moved \"%1$s\" to Trash.</string>
+  <string name="snack_notes_moved_to_trash" tools:ignore="PluralsCandidate">Moved %1$d items to Trash.</string>
   <string name="snack_note_restored">Restored \"%1$s\".</string>
   <string name="snack_backup_created">Backup saved to \"%1$s\"!</string>
   <string name="snack_backup_storage_not_writeable">Backup failed, storage is not writable!</string>

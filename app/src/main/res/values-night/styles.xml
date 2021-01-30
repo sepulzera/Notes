@@ -13,6 +13,9 @@
     <item name="android:itemBackground">@color/darkGray</item>
 
     <item name="iconPreferenceColor">@color/colorAccent</item>
+
+    <!-- To enable contextual action bar for longclicks -->
+    <item name="windowActionModeOverlay">true</item>
   </style>
 
   <!-- Base application theme with ActionBar -->

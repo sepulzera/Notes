@@ -16,7 +16,7 @@
       android:title="@string/om_detail_note_show_revisions" />
   <item
       android:id="@+id/om_detail_note_rename"
-      android:title="@string/cm_rename_note" />
+      android:title="@string/cm_rename" />
   <item
       android:id="@+id/om_detail_note_clear"
       android:title="@string/clear" />
@@ -25,10 +25,10 @@
       android:title="@string/revert" />
   <item
       android:id="@+id/om_detail_note_delete"
-      android:title="@string/cm_delete_note"/>
+      android:title="@string/cm_delete"/>
   <item
       android:id="@+id/om_detail_draft_discard"
-      android:title="@string/cm_draft_discard"/>
+      android:title="@string/cm_delete"/>
   <item
       android:id="@+id/om_detail_note_delete_perma"
       android:title="@string/cm_delete_permanently"

@@ -3,6 +3,8 @@ package de.sepulzera.notes.ui.adapter;
 import androidx.annotation.NonNull;
 import android.widget.ListAdapter;
 
+import java.util.List;
+
 import de.sepulzera.notes.ds.model.Note;
 
 public interface NoteAdapter extends ListAdapter {
@@ -60,4 +62,43 @@ public interface NoteAdapter extends ListAdapter {
    * @see NoteAdapter#refresh()
    */
   void updateView();
+
+
+
+  /* SELECTION */
+
+  /**
+   * Selects the item at the given position.
+   *
+   * @param position Item's position, that should be selected.
+   */
+  void setNewSelection(int position);
+
+  /**
+   * Returns if the item at the given position is selected.
+   *
+   * @param position Item's position to check.
+   *
+   * @return {@code true}: Item is selected - {@code false}: not.
+   */
+  boolean isPositionChecked(int position);
+
+  /**
+   * Get all currently selected items.
+   *
+   * @return List with all selected items, asc sorted.
+   */
+  List<Note> getCheckedItems();
+
+  /**
+   * Removes the selection for the given position.
+   *
+   * @param position Item's position, that should be unselected.
+   */
+  void removeSelection(int position);
+
+  /**
+   * Removes all selections.
+   */
+  void clearSelection();
 }

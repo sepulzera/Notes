@@ -18,8 +18,10 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
+import androidx.core.content.ContextCompat;
 import de.sepulzera.notes.R;
 import de.sepulzera.notes.bf.helper.DateUtil;
 import de.sepulzera.notes.bf.helper.StringUtil;
@@ -114,6 +116,44 @@ public class NoteAdapterImpl extends BaseAdapter
     this.notifyDataSetChanged();
     sort();
   }
+
+  /* SELECTION */
+
+  @Override
+  public void setNewSelection(int position) {
+    mSelection.put(position, true);
+    notifyDataSetChanged();
+  }
+
+  @Override
+  public boolean isPositionChecked(int position) {
+    Boolean result = mSelection.get(position);
+    return result == null ? false : result;
+  }
+
+  @Override
+  public List<Note> getCheckedItems() {
+    List<Note> checkedItems = new ArrayList<>();
+    for (Integer pos : mSelection.keySet()) {
+      Note nextNote = (Note)getItem(pos);
+      checkedItems.add(nextNote);
+    }
+    return checkedItems;
+  }
+
+  @Override
+  public void removeSelection(int position) {
+    mSelection.remove(position);
+    notifyDataSetChanged();
+  }
+
+  @Override
+  public void clearSelection() {
+    mSelection = new HashMap<>();
+    notifyDataSetChanged();
+  }
+
+  /* /SELECTION */
 
   /**
    * <p>Sortiert die Notizen absteigend nach dem LCHADT.</p>
@@ -218,6 +258,9 @@ public class NoteAdapterImpl extends BaseAdapter
       holder.msg.setText(StringUtil.isBlank(content)? mEmptyContent : content);
     }
 
+    convertView.setBackgroundColor(ContextCompat.getColor(convertView.getContext(),
+        mSelection.get(position) != null ? R.color.colorNoteBgSelected : android.R.color.transparent));
+
     return convertView;
   }
 
@@ -287,6 +330,7 @@ public class NoteAdapterImpl extends BaseAdapter
 
   private   final List<Note>     mNotes;
   private         List<Note>     mFilteredNotes;
+  private HashMap<Integer, Boolean> mSelection = new HashMap<>();
 
   private   final LayoutInflater mInflater;
 

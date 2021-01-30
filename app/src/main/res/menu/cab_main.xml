@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+  <item
+      android:id="@+id/cm_delete"
+      android:title="@string/cm_delete"
+      android:icon="@android:drawable/ic_menu_delete" />
+
+  <item
+      android:id="@+id/cm_share"
+      android:title="@string/cm_send_as_msg"
+      android:icon="@android:drawable/ic_menu_share" />
+
+  <item
+      android:id="@+id/cm_copy"
+      android:title="@string/cm_copy"
+      android:showAsAction="never"
+      tools:ignore="AppCompatResource" />
+  <item
+      android:id="@+id/cm_rename"
+      android:title="@string/cm_rename"
+      android:showAsAction="never"
+      tools:ignore="AppCompatResource" />
+
+</menu>

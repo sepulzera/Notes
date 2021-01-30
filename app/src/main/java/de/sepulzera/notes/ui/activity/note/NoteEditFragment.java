@@ -21,7 +21,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import java.util.List;
-import java.util.Objects;
 
 import de.sepulzera.notes.R;
 import de.sepulzera.notes.bf.helper.StringUtil;
