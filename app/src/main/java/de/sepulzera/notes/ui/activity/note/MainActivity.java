@@ -98,6 +98,9 @@ public class MainActivity extends AppCompatActivity
     mMainView.setNestedScrollingEnabled(true);
     mMainView.setEmptyView(findViewById(R.id.empty_text));
     mMainView.setAdapter(mAdapter);
+
+    /* CONTEXTUAL ACTION BAR */
+
     mMainView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
 
     mMainView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
@@ -190,6 +193,7 @@ public class MainActivity extends AppCompatActivity
       }
     });
 
+    /* /CONTEXTUAL ACTION BAR */
 
     final FloatingActionButton mFab = findViewById(R.id.fab);
 
@@ -552,7 +556,7 @@ public class MainActivity extends AppCompatActivity
     return savedNote;
   }
 
-  private void deleteNotes(final List<Note> notes) {
+  private void deleteNotes(@NonNull final List<Note> notes) {
     if (notes.size() < 1) throw new IllegalArgumentException("notes may not be empty");
     final NoteService srv = NoteServiceImpl.getInstance();
 
@@ -571,11 +575,10 @@ public class MainActivity extends AppCompatActivity
     fixAppbarPosition();
     invalidateOptionsMenu();
 
-    final Snackbar snack = notes.size() == 1
-        ? (Snackbar.make(mMainView, String.format(getResources().getString(R.string.snack_note_moved_to_trash)
-            , notes.iterator().next().getTitle()), Snackbar.LENGTH_LONG))
-        : (Snackbar.make(mMainView, String.format(getResources().getString(R.string.snack_notes_moved_to_trash)
-            , notes.size()), Snackbar.LENGTH_LONG));
+    String msg = notes.size() == 1
+        ? String.format(getResources().getString(R.string.snack_note_moved_to_trash), notes.iterator().next().getTitle())
+        : String.format(getResources().getString(R.string.snack_notes_moved_to_trash), notes.size());
+    final Snackbar snack = Snackbar.make(mMainView, msg, Snackbar.LENGTH_LONG);
     snack.setAction(R.string.snack_undo, new View.OnClickListener() {
       @Override
       public void onClick(View v) {

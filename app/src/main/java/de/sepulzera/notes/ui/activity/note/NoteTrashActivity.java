@@ -12,13 +12,17 @@ import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import android.view.ContextMenu;
+
+import android.view.ActionMode;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.sepulzera.notes.R;
@@ -54,9 +58,88 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
     mMainView.setEmptyView(findViewById(R.id.empty_text));
     mMainView.setAdapter(mAdapter);
 
+    /* CONTEXTUAL ACTION BAR */
+
+    mMainView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+
+    mMainView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
+      private int nr = 0;
+
+      @Override
+      public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+        return false;
+      }
+
+      @Override
+      public void onDestroyActionMode(ActionMode mode) {
+        mAdapter.clearSelection();
+      }
+
+      @Override
+      public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+        nr = 0;
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.cab_trash, menu);
+        return true;
+      }
+
+      @Override
+      public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+        List<Note> checkedItems = mAdapter.getCheckedItems();
+        if (checkedItems.size() == 0) return true;
+
+        switch (item.getItemId()) {
+          case R.id.cm_delete:
+            deleteNotes(checkedItems);
+            break;
+
+          case R.id.cm_restore:
+            doRestore(checkedItems);
+            break;
+
+        }
+
+        invalidateOptionsMenu();
+
+        mAdapter.clearSelection();
+        nr = 0;
+
+        mode.finish();
+        return true;
+      }
+
+      @Override
+      public void onItemCheckedStateChanged(ActionMode mode, int position,
+                                            long id, boolean checked) {
+        if (checked) {
+          nr++;
+          mAdapter.setNewSelection(position);
+        } else {
+          nr--;
+          mAdapter.removeSelection(position);
+        }
+        mode.setTitle(String.valueOf(nr));
+
+        MenuItem item;
+        if ((item = mode.getMenu().findItem(R.id.cm_rename)) != null) { item.setVisible(nr == 1); }
+        if ((item = mode.getMenu().findItem(R.id.cm_share))  != null) { item.setVisible(nr == 1); }
+      }
+    });
+
+    mMainView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+      @Override
+      public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
+                                     int position, long arg3) {
+        mMainView.setItemChecked(position, !mAdapter.isPositionChecked(position));
+        return false;
+      }
+    });
+
+    /* /CONTEXTUAL ACTION BAR */
+
     // Handler registrieren
     mMainView.setOnItemClickListener(this); // Single-Click: Notiz bearbeiten
-    registerForContextMenu(mMainView); // Kontextmenü registrieren
 
     mHandler = new Handler();
     mRunRefreshUi = new Runnable() {
@@ -135,32 +218,6 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
   }
 
   @Override
-  public void onCreateContextMenu(ContextMenu menu, View view,
-                                  ContextMenu.ContextMenuInfo menuInfo) {
-    super.onCreateContextMenu(menu, view, menuInfo);
-    getMenuInflater().inflate(R.menu.cm_note_trash, menu);
-  }
-
-  @Override
-  public boolean onContextItemSelected(MenuItem item) {
-    AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-    final Note note = (Note) mAdapter.getItem(info.position);
-
-    switch (item.getItemId()) {
-      case R.id.cm_delete_note:
-        deleteNote(note);
-        return true;
-
-      case R.id.cm_restore_note:
-        doRestore(note);
-        return true;
-
-      default:
-        return super.onContextItemSelected(item);
-    }
-  }
-
-  @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     getMenuInflater().inflate(R.menu.om_note_trash, menu);
 
@@ -232,18 +289,31 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
         }).show();
   }
 
-  private void deleteNote(@NonNull final Note note) {
-    if (note.getDraft()) {
-      doDelete(note);
+  private void deleteNotes(@NonNull final List<Note> notes) {
+    if (notes.size() < 1) throw new IllegalArgumentException("notes may not be empty");
+
+    int numOfNotes = 0;
+    for (Note note : notes) {
+      if (!note.getDraft()) {
+        ++numOfNotes;
+      }
+    }
+
+    if (numOfNotes == 0) {
+      doDelete(notes);
     } else {
+      String msg = notes.size() == 1
+          ? String.format(getResources().getString(R.string.dialog_trash_delete_note_msg), notes.get(0).getTitle())
+          : String.format(getResources().getString(R.string.dialog_trash_delete_notes_msg), notes.size());
+
       final AlertDialog.Builder builder = new AlertDialog.Builder(this);
       builder.setTitle(getResources().getString(R.string.dialog_trash_delete_note_title))
-          .setMessage(String.format(getResources().getString(R.string.dialog_trash_delete_note_msg), note.getTitle()))
+          .setMessage(msg)
           .setPositiveButton(getResources().getString(R.string.dialog_trash_delete_note_go_btn), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
               // yes = delete
-              doDelete(note);
+              doDelete(notes);
             }
           })
           .setNegativeButton(getResources().getString(R.string.dialog_btn_abort), new DialogInterface.OnClickListener() {
@@ -269,10 +339,13 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
               throw new IllegalArgumentException("note must not be null");
             }
 
+            List<Note> notesList = new ArrayList<>(1);
+            notesList.add(note);
+
             if (!note.getCurr()) {
-              deleteNote(note);
+              deleteNotes(notesList);
             } else {
-              doRestore(note);
+              doRestore(notesList);
             }
           }
           if (data.hasExtra(MainActivity.RQ_EXTRA_INVALIDATE_LIST)) {
@@ -286,33 +359,40 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
     }
   }
 
-  private void doDelete(@NonNull final Note note) {
+  private void doDelete(@NonNull final List<Note> notes) {
+    if (notes.size() < 1) throw new IllegalArgumentException("notes may not be empty");
     final NoteService srv = NoteServiceImpl.getInstance();
 
     // Remove note and eventually draft from list.
-    mAdapter.remove(note);
-    if (!note.getDraft()) {
-      final Note draft = srv.getDraft(note);
-      if (draft != null) {
-        mAdapter.remove(draft);
+    for (Note nextNote : notes) {
+      mAdapter.remove(nextNote);
+      if (!nextNote.getDraft()) {
+        final Note draft = srv.getDraft(nextNote);
+        if (draft != null) {
+          mAdapter.remove(draft);
+        }
       }
     }
-    mDeleteNote = note;
+    mDeleteNotes = notes;
     fixAppBarInvisible();
     invalidateOptionsMenu();
 
-    final Snackbar snack = Snackbar.make(mMainView, String.format(getResources().getString(R.string.snack_note_deleted)
-        , note.getTitle()), Snackbar.LENGTH_LONG);
+    String msg = notes.size() == 1
+        ? String.format(getResources().getString(R.string.snack_note_deleted), notes.get(0).getTitle())
+        : String.format(getResources().getString(R.string.snack_notes_deleted), notes.size());
+    final Snackbar snack = Snackbar.make(mMainView, msg, Snackbar.LENGTH_LONG);
     snack.setAction(R.string.snack_undo, new View.OnClickListener() {
       @Override
       public void onClick(View v) {
         // restore note again
-        mDeleteNote = null;
-        mAdapter.put(note);
-        if (!note.getDraft()) {
-          final Note draft = srv.getDraft(note);
-          if (draft != null) {
-            mAdapter.put(draft);
+        mDeleteNotes = null;
+        for (Note nextNote : notes) {
+          mAdapter.put(nextNote);
+          if (!nextNote.getDraft()) {
+            final Note draft = srv.getDraft(nextNote);
+            if (draft != null) {
+              mAdapter.put(draft);
+            }
           }
         }
         invalidateOptionsMenu();
@@ -329,34 +409,50 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
     snack.show();
   }
 
-  private void doRestore(@NonNull final Note note) {
+  private void doRestore(@NonNull final List<Note> notes) {
+    if (notes.size() < 1) throw new IllegalArgumentException("notes may not be empty");
     final NoteService srv = NoteServiceImpl.getInstance();
 
-    final Note revision = note.getDraft() ? srv.getCurrRevision(note) : note;
-    final Note draft    = note.getDraft() ? note : srv.getDraft(note);
+    final List<Note> deletedDraftsAndRevisions = new ArrayList<>();
+    for (Note nextNote : notes) {
+      final Note revision = nextNote.getDraft() ? srv.getCurrRevision(nextNote) : nextNote;
+      final Note draft    = nextNote.getDraft() ? nextNote : srv.getDraft(nextNote);
 
-    // restore will restore both, the draft and the note.
-    // -> remove note and eventually draft from list.
-    if (revision != null) { mAdapter.remove(revision); }
-    if (draft != null)    { mAdapter.remove(draft);    }
-    ++mRestoredNotesCount;
-    mRestoreNote = note;
+      // restore will restore both, the draft and the note.
+      // -> remove note and eventually draft from list.
+      if (revision != null) {
+        mAdapter.remove(revision);
+        deletedDraftsAndRevisions.add(revision);
+      }
+      if (draft != null) {
+        mAdapter.remove(draft);
+        deletedDraftsAndRevisions.add(draft);
+      }
+      ++mRestoredNotesCount;
+    }
+    mRestoreNotes = notes;
 
     fixAppBarInvisible();
     invalidateOptionsMenu();
 
-    final Snackbar snack = Snackbar.make(mMainView, String.format(getResources().getString(R.string.snack_note_restored)
-        , note.getTitle()), Snackbar.LENGTH_LONG);
+    String msg = notes.size() == 1
+        ? String.format(getResources().getString(R.string.snack_note_restored), notes.get(0).getTitle())
+        : String.format(getResources().getString(R.string.snack_notes_restored), notes.size());
+    final Snackbar snack = Snackbar.make(mMainView, msg, Snackbar.LENGTH_LONG);
     snack.setAction(R.string.snack_undo, new View.OnClickListener() {
       @Override
       public void onClick(View v) {
         --mRestoredNotesCount;
-        mRestoreNote = null;
-        note.setCurr(false);
-        // undo -> add note again
-        // -> if the draft was restored, add the note again, too
-        if (revision != null) { mAdapter.put(revision); }
-        if (draft != null)    { mAdapter.put(draft);    }
+        mRestoreNotes = null;
+        for (Note nextNote : notes) {
+          nextNote.setCurr(false);
+        }
+
+        for (Note nextDraft : deletedDraftsAndRevisions) {
+          // undo -> add note again
+          // -> if the draft was restored, add the note again, too
+          mAdapter.put(nextDraft);
+        }
         invalidateOptionsMenu();
       }
     });
@@ -404,9 +500,11 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
   }
 
   private void finishDelete(@NonNull NoteService srv) {
-    if (mDeleteNote != null) {
-      srv.delete(mDeleteNote);
-      mDeleteNote = null;
+    if (mDeleteNotes != null) {
+      for (Note note : mDeleteNotes) {
+        srv.delete(note);
+        mDeleteNotes = null;
+      }
     }
   }
 
@@ -424,9 +522,11 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
   }
 
   private void finishRestore(@NonNull NoteService srv) {
-    if (mRestoreNote != null) {
-      srv.restore(mRestoreNote);
-      mRestoreNote = null;
+    if (mRestoreNotes != null) {
+      for (Note note : mRestoreNotes) {
+        srv.restore(note);
+      }
+      mRestoreNotes = null;
     }
   }
 
@@ -436,9 +536,9 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
   private NoteAdapter    mAdapter; // Adapter zu den Notiz-ListItems
   private ListView       mMainView;
 
-  private Note           mDeleteNote;
+  private List<Note>     mDeleteNotes;
   private boolean        mEmptyTrashRequested;
-  private Note           mRestoreNote;
+  private List<Note>     mRestoreNotes;
   private int            mRestoredNotesCount;
 
   private static final String KEY_RESTORED_COUNT          = "notetrashactivity_restoredcount";

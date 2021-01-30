@@ -78,6 +78,7 @@
 
   <string name="dialog_trash_delete_note_title">Delete Permanently</string>
   <string name="dialog_trash_delete_note_msg">Are you sure you want to permanently delete\n\"%1$s\"?</string>
+  <string name="dialog_trash_delete_notes_msg" tools:ignore="PluralsCandidate">Are you sure you want to permanently delete\nthe %1$d selected items"?</string>
   <string name="dialog_trash_delete_note_go_btn">Delete</string>
   <string name="dialog_empty_trash_title">Empty Trash</string>
   <string name="dialog_empty_trash_msg">All items in the Trash will be permanently deleted.</string>
@@ -94,9 +95,11 @@
   <string name="snack_goto">Switch Note</string>
   <string name="snack_note_checked_out">Revision checked out.</string>
   <string name="snack_note_deleted">Deleted \"%1$s\".</string>
+  <string name="snack_notes_deleted" tools:ignore="PluralsCandidate">Deleted %1$d items.</string>
   <string name="snack_note_moved_to_trash">Moved \"%1$s\" to Trash.</string>
   <string name="snack_notes_moved_to_trash" tools:ignore="PluralsCandidate">Moved %1$d items to Trash.</string>
   <string name="snack_note_restored">Restored \"%1$s\".</string>
+  <string name="snack_notes_restored" tools:ignore="PluralsCandidate">Restored %1$d items.</string>
   <string name="snack_backup_created">Backup saved to \"%1$s\"!</string>
   <string name="snack_backup_storage_not_writeable">Backup failed, storage is not writable!</string>
   <string name="snack_restore_completed">Backup restored.</string>

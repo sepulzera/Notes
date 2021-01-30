@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-  <item
-      android:id="@+id/cm_delete_note"
-      android:title="@string/cm_delete_permanently"/>
-  <item
-      android:id="@+id/cm_restore_note"
-      android:title="@string/cm_note_restore"/>
-</menu>
