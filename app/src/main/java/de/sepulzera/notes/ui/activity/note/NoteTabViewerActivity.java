@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -459,11 +458,12 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
         }
         return true;
 
-      case R.id.om_detail_note_send_as_msg:
+      case R.id.om_detail_note_share:
         noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
         if (noteFrag != null) {
-          startActivity(new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:"))
-              .putExtra("sms_body", NoteServiceImpl.getInstance().toNoteTitle(noteFrag.getNote().getTitle()) + ": " + noteFrag.getMsg()));
+          Note note = noteFrag.getNote();
+          Intent intent = Helper.createShareIntent(note.getTitle(), note.getTitle() + ": " + note.getMsg());
+          startActivity(Intent.createChooser(intent, getString(R.string.share)));
         }
         return true;
 

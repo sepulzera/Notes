@@ -6,8 +6,8 @@
       android:id="@+id/om_detail_note_copy_to_clipboard"
       android:title="@string/copy_to_clipboard"/>
   <item
-      android:id="@+id/om_detail_note_send_as_msg"
-      android:title="@string/cm_send_as_msg"/>
+      android:id="@+id/om_detail_note_share"
+      android:title="@string/cm_share"/>
   <item
       android:id="@+id/om_detail_note_checkout"
       android:title="@string/checkout"/>

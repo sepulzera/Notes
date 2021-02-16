@@ -21,7 +21,8 @@
   <string name="cm_delete_permanently">Delete Permanently</string>
   <string name="cm_rename">Rename</string>
   <string name="cm_note_restore">Restore</string>
-  <string name="cm_send_as_msg">Send As Message</string>
+  <string name="cm_share">Share</string>
+  <string name="share">Share</string>
 
   <!-- Optionsmenü -->
   <string name="checkout">Check out</string>

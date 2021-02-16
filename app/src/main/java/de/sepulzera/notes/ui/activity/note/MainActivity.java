@@ -149,9 +149,7 @@ public class MainActivity extends AppCompatActivity
             if (checkedItems.size() != 1) {
               throw new IllegalArgumentException("Share can only be used with a single note.");
             }
-            Note note = checkedItems.iterator().next();
-            startActivity(new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:"))
-                .putExtra("sms_body", note.getTitle() + ": " + note.getMsg()));
+            shareNote(checkedItems.iterator().next());
             break;
         }
 
@@ -326,6 +324,11 @@ public class MainActivity extends AppCompatActivity
       final Note savedNote = srv.save(copyNote);
       mAdapter.put(savedNote);
     }
+  }
+
+  private void shareNote(@NonNull final Note note) {
+    Intent intent = Helper.createShareIntent(note.getTitle(), note.getTitle() + ": " + note.getMsg());
+    startActivity(Intent.createChooser(intent, getString(R.string.share)));
   }
 
   @Override

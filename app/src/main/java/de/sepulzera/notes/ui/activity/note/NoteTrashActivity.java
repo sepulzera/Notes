@@ -119,10 +119,6 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
           mAdapter.removeSelection(position);
         }
         mode.setTitle(String.valueOf(nr));
-
-        MenuItem item;
-        if ((item = mode.getMenu().findItem(R.id.cm_rename)) != null) { item.setVisible(nr == 1); }
-        if ((item = mode.getMenu().findItem(R.id.cm_share))  != null) { item.setVisible(nr == 1); }
       }
     });
 
