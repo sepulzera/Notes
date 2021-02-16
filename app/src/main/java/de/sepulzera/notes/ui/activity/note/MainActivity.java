@@ -560,6 +560,9 @@ public class MainActivity extends AppCompatActivity
     if (notes.size() < 1) throw new IllegalArgumentException("notes may not be empty");
     final NoteService srv = NoteServiceImpl.getInstance();
 
+    // Execute previous delete, if any
+    finishDelete(srv);
+
     // Remove note and eventually draft from list.
     for (Note nextNote : notes) {
       mAdapter.remove(nextNote);

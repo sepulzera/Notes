@@ -363,6 +363,9 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
     if (notes.size() < 1) throw new IllegalArgumentException("notes may not be empty");
     final NoteService srv = NoteServiceImpl.getInstance();
 
+    // Execute previous delete, if any
+    finishDelete(srv);
+
     // Remove note and eventually draft from list.
     for (Note nextNote : notes) {
       mAdapter.remove(nextNote);
@@ -412,6 +415,9 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
   private void doRestore(@NonNull final List<Note> notes) {
     if (notes.size() < 1) throw new IllegalArgumentException("notes may not be empty");
     final NoteService srv = NoteServiceImpl.getInstance();
+
+    // Execute previous restore, if any
+    finishRestore(srv);
 
     final List<Note> deletedDraftsAndRevisions = new ArrayList<>();
     for (Note nextNote : notes) {
