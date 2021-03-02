@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Environment;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
 import android.util.Log;
