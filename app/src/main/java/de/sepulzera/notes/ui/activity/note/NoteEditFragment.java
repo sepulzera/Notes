@@ -89,10 +89,7 @@ public class NoteEditFragment extends Fragment implements EditTextSelectable.Sel
     mMsg        = savedInstanceState.getString(KEY_MSG);
     mIsEditable = savedInstanceState.getBoolean(KEY_EDITABLE, true);
 
-    FragmentManager fragmentManager = getFragmentManager();
-    if (fragmentManager == null) {
-      throw new IllegalStateException("No FragmentManager!");
-    }
+    FragmentManager fragmentManager = getChildFragmentManager();
     final List<Fragment> frags = fragmentManager.getFragments();
     if (frags.size() == 0) {
       throw new IllegalStateException("RunDo Fragment is lost");
@@ -250,10 +247,7 @@ public class NoteEditFragment extends Fragment implements EditTextSelectable.Sel
     }
 
     if (editable && mRunDo == null) {
-      FragmentManager fragmentManager = getFragmentManager();
-      if (fragmentManager == null) {
-        throw new IllegalStateException("No FragmentManager!");
-      }
+      FragmentManager fragmentManager = getChildFragmentManager();
       mRunDo = RunDo.Factory.getInstance(fragmentManager, String.valueOf(mIndex));
     }
 
