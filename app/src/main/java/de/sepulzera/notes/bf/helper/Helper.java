@@ -87,7 +87,7 @@ public class Helper {
 
       return blder.toString();
     } catch (IOException e) {
-      Log.d("notes", e.getMessage());
+      Log.d("notes", "Exception while reading a file: " + e.getMessage());
       return null;
     }
   }

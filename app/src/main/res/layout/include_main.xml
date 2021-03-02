@@ -49,6 +49,7 @@
       android:src="@drawable/ic_add"
       android:layout_margin="@dimen/activity_horizontal_margin"
       android:layout_gravity="end|bottom"
-      app:backgroundTint="@color/colorAccentDark" />
+      app:backgroundTint="@color/colorAccentDark"
+      android:contentDescription="@string/add" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

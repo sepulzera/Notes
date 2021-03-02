@@ -56,7 +56,8 @@
       android:src="@drawable/ic_save"
       android:visibility="visible"
       android:layout_gravity="end|bottom"
-      app:backgroundTint="@color/colorAccentDark" />
+      app:backgroundTint="@color/colorAccentDark"
+      android:contentDescription="@string/save" />
 
   <com.google.android.material.floatingactionbutton.FloatingActionButton
       android:id="@+id/fab_edit"
@@ -66,7 +67,8 @@
       android:src="@drawable/ic_edit"
       android:layout_gravity="end|bottom"
       android:visibility="gone"
-      app:backgroundTint="@color/colorAccentDark" />
+      app:backgroundTint="@color/colorAccentDark"
+      android:contentDescription="@string/edit" />
 
   <com.google.android.material.floatingactionbutton.FloatingActionButton
       android:id="@+id/fab_show_toolbar_edit"
@@ -79,7 +81,8 @@
       android:src="@drawable/ic_keyboard_arrow_up"
       app:backgroundTint="@color/colorAccent"
       app:layout_anchor="@id/appbar"
-      app:layout_anchorGravity="end|bottom" />
+      app:layout_anchorGravity="end|bottom"
+      android:contentDescription="@string/expand" />
 
   <com.google.android.material.floatingactionbutton.FloatingActionButton
       android:id="@+id/fab_hide_toolbar_edit"
@@ -92,6 +95,7 @@
       android:src="@drawable/ic_keyboard_arrow_down"
       app:backgroundTint="@color/colorAccent"
       app:layout_anchor="@id/appbar"
-      app:layout_anchorGravity="end|bottom" />
+      app:layout_anchorGravity="end|bottom"
+      android:contentDescription="@string/hide" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

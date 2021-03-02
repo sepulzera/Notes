@@ -84,7 +84,7 @@ public class JsonUtil {
    *
    * @return Wert des Tags oder defaultIfNotFound, falls der Tag nicht vorhanden ist.
    */
-  public static String getStringD(@NonNull final JSONObject json, @NonNull String tag, @Nullable String defaultIfNotFound) {
+  public static String getStringD(@NonNull final JSONObject json, @NonNull String tag, @NonNull String defaultIfNotFound) {
     if (!json.isNull(tag)) {
       return json.optString(tag, defaultIfNotFound);
     }
@@ -113,7 +113,7 @@ public class JsonUtil {
    * @param key Key. Darf null sein.
    * @param value Datum. Darf null sein.
    */
-  public static void putDateIfPresent(@NonNull final JSONObject json, @Nullable String key, @Nullable final Date value) {
+  public static void putDateIfPresent(@NonNull final JSONObject json, @NonNull String key, @Nullable final Date value) {
     if (!StringUtil.isBlank(key) && value != null) {
       try {
         json.put(key, DateUtil.formatDate(value));
@@ -130,7 +130,7 @@ public class JsonUtil {
    * @param key Key. Darf null sein.
    * @param value Wert.
    */
-  public static void putLong(@NonNull final JSONObject json, @Nullable String key, final long value) {
+  public static void putLong(@NonNull final JSONObject json, @NonNull String key, final long value) {
     try {
       json.put(key, value);
     } catch (JSONException e) {
@@ -145,7 +145,7 @@ public class JsonUtil {
    * @param key Key. Darf null sein.
    * @param value Wert. Darf null sein.
    */
-  public static void putStringIfPresent(@NonNull final JSONObject json, @Nullable String key, @Nullable String value) {
+  public static void putStringIfPresent(@NonNull final JSONObject json, @NonNull String key, @Nullable String value) {
     if (!StringUtil.isBlank(key) && !StringUtil.isEmpty(value)) {
       try {
         json.put(key, value);

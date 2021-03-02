@@ -5,6 +5,7 @@ import org.junit.Test;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Objects;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -25,6 +26,7 @@ public class DateUtilTest {
   public void parseFormat_Test() {
     final Date date = GregorianCalendar.getInstance().getTime();
     final DateFormat df = DateUtil.getDefaultDateFormatter();
-    assertEquals(df.format(date), df.format(DateUtil.parseDate(DateUtil.formatDate(date))));
+    Date parsedDate = Objects.requireNonNull(DateUtil.parseDate(DateUtil.formatDate(date)));
+    assertEquals(df.format(date), df.format(parsedDate));
   }
 }

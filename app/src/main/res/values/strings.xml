@@ -16,6 +16,11 @@
   <!-- Kontextmenü -->
   <string name="clear">Clear Content</string>
   <string name="revert">Revert Changes</string>
+  <string name="save">Save</string>
+  <string name="edit">Edit</string>
+  <string name="hide">Hide</string>
+  <string name="expand">Expand</string>
+  <string name="add">Add</string>
   <string name="cm_copy">Copy</string>
   <string name="cm_delete">Delete</string>
   <string name="cm_delete_permanently">Delete Permanently</string>

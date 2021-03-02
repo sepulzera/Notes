@@ -44,6 +44,7 @@ import android.widget.ListView;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import de.sepulzera.notes.R;
 import de.sepulzera.notes.bf.helper.Helper;
@@ -448,9 +449,10 @@ public class MainActivity extends AppCompatActivity
 
     final NoteService srv = NoteServiceImpl.getInstance();
     final File backupFile = srv.saveBackup(getResources().getString(R.string.backup_file_name) + ".json");
+    final File parentFile = backupFile.getParentFile();
 
     Snackbar.make(mMainView, String.format(getResources().getString(R.string.snack_backup_created)
-        , backupFile.getParentFile().getName() + "/" + backupFile.getName()), Snackbar.LENGTH_LONG).show();
+        , (parentFile != null ? (parentFile.getName() + "/") : "") + backupFile.getName()), Snackbar.LENGTH_LONG).show();
   }
 
   private void doNavRestore(final Uri backupFile) {
@@ -499,7 +501,7 @@ public class MainActivity extends AppCompatActivity
         case RQ_CREATE_NOTE_ACTION:
         case RQ_EDIT_NOTE_ACTION:
           if (data.hasExtra(Note.TAG_NOTE)) {
-            saveNote((Note)(data.getSerializableExtra(Note.TAG_NOTE)));
+            saveNote((Note)(Objects.requireNonNull(data.getSerializableExtra(Note.TAG_NOTE))));
           }
           if (data.hasExtra(RQ_EXTRA_INVALIDATE_LIST)) {
             invalidateList();

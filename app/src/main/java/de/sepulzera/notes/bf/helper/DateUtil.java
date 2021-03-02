@@ -72,7 +72,7 @@ public class DateUtil {
    * @return Das formatierte Datum oder leer, falls date == null.
    */
   public static String formatDate(@Nullable final Date date) {
-    return (date == null)? "" : df_iso8601.format(date);
+    return (date == null) ? "" : df_iso8601.format(date);
   }
 
   /**
