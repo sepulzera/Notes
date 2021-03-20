@@ -571,27 +571,27 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
     final String newTitle = getTitle().toString();
 
     if (mDraft == null) {
-      // Nur Note
-        // unverändert -> Zurück
-        //   verändert -> Save Draft
+      // Note only
+        // unchanged -> back
+        //   changed -> save Draft
       final NoteEditFragment frag = mNoteFrags.get(0).getFragment();
       if (frag.isChanged() || !StringUtil.equals(frag.getNote().getTitle(), newTitle)) {
         draft(frag);
       }
     } else if (mNote == null) {
-      // Nur Draft
-      // unverändert -> Zurück
-      //   verändert -> Update Draft
+      // Draft only
+      // unchanged -> back
+      //   changed -> update Draft
       final NoteEditFragment frag = mNoteFrags.get(0).getFragment();
       if (frag.isChanged() || (!StringUtil.isEmpty(frag.getNote().getTitle()) && !StringUtil.equals(frag.getNote().getTitle(), newTitle))) {
         draft(frag);
       }
     } else {
-      // Note und Draft
-        // Note unverändert , Draft unverändert -> Zurück
-        // Note unverändert , Draft   verändert -> Update Draft
-        // Note   verändert , Draft unverändert -> Override Draft
-        // Note   verändert , Draft   verändert -> KONFLIKT -> Dialog
+      // Note and Draft
+        // Note unchanged , Draft unchanged -> back
+        // Note unchanged , Draft   changed -> update Draft
+        // Note   changed , Draft unchanged -> override Draft
+        // Note   changed , Draft   changed -> CONFLICT -> open dialog
 
       final NoteEditFragment draftFrag = mNoteFrags.get(0).getFragment();
       // noteFrag is always right of draftFrag
@@ -602,10 +602,10 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
 
       if (!noteChanged && !draftChanged) {
         if (!StringUtil.equals(draftFrag.getNote().getTitle(), newTitle)) {
-          // Nur rename
+          // just rename it
           draft(draftFrag);
         }
-        // Zurück
+        // back
         executeDone();
       } else if (!noteChanged) { // && draftChanged
         // Update Draft
@@ -614,7 +614,7 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
         // Override Draft
         draft(noteFrag);
       } else { // noteChanged && draftChanged
-        // KONFLIKT -> Dialog
+        // CONFLICT -> open dialog
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(getResources().getString(R.string.dialog_back_unsaved_conflict_title))
             .setMessage(getResources().getString(R.string.dialog_back_unsaved_conflict_msg))
@@ -983,7 +983,7 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
     void add(@NonNull final Note note, @NonNull final String fragmentTitle) {
       final NoteEditFragment frag = new NoteEditFragment();
       frag.initialize(mNoteFrags.size(), note);
-      // Fragmente anweisen, sich nicht vollständig zu zerstören (wegen Referenzen)
+      // The fragment's instances should not be destroyed to not invalidate the references to them
       frag.setRetainInstance(true);
 
       mNoteFrags.add(new NoteFrag(note, frag, fragmentTitle));

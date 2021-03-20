@@ -56,14 +56,13 @@ import de.sepulzera.notes.ui.adapter.impl.NoteAdapterImpl;
 import de.sepulzera.notes.bf.service.impl.NoteServiceImpl;
 
 /**
- * NotizListActivity der NotizApp.
- * <p>
- * <p>Schnittstelle zum User.</p>
- * <p>
+ * <p>Main ListActivity for notes.</p>
+ *
  * <ul>
- * <li>Kontextmenü für Operationen auf Notizebene.</li>
- * <li>Optionsmneu für Operationen auf Appebene.</li>
- * <li>Create-Button zum Anlegen neuer Notizen.</li>
+ *   <li>Drawer to switch to other main activites.</li>
+ *   <li>CM for note-targeted actions.</li>
+ *   <li>OM for app-wide actions.</li>
+ *   <li>FAB to create new notes.</li>
  * </ul>
  */
 public class MainActivity extends AppCompatActivity
@@ -74,6 +73,8 @@ public class MainActivity extends AppCompatActivity
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.act_main);
+
+    // SETUP APPLICATION
 
     Helper.localize(getApplicationContext());
     Helper.updatePreferences(this);
@@ -94,7 +95,8 @@ public class MainActivity extends AppCompatActivity
 
     mAdapter = new NoteAdapterImpl(this);
 
-    // Layout-Elemente suchen
+    // SETUP VIEWS
+
     mMainView = findViewById(R.id.mainListView);
     mMainView.setNestedScrollingEnabled(true);
     mMainView.setEmptyView(findViewById(R.id.empty_text));
@@ -196,8 +198,9 @@ public class MainActivity extends AppCompatActivity
 
     final FloatingActionButton mFab = findViewById(R.id.fab);
 
-    // Handler registrieren
-    mMainView.setOnItemClickListener(this); // Single-Click: Notiz bearbeiten
+    // REGISTER HANDLERS AND LISTENERS
+
+    mMainView.setOnItemClickListener(this); // single click: edit note
 
     mFab.setOnClickListener(new View.OnClickListener() {
       @Override
@@ -206,7 +209,8 @@ public class MainActivity extends AppCompatActivity
       }
     });
 
-    // gespeicherten Zustand wiederherstellen
+    // RESTORE PREVIOUS STATE
+
     restoreState();
 
     NoteService srv = NoteServiceImpl.getInstance();
@@ -226,9 +230,7 @@ public class MainActivity extends AppCompatActivity
   }
 
   /**
-   * Verarbeitet Input des Add-Buttons.
-   * Legt eine neue Notiz mit dem im EditText angegebenen Namen an,
-   * und öffnet die neue Notiz zum Bearbeiten.
+   * Starts the activity to create a new note.
    */
   private void onAddNote() {
     this.startActivityForResult(new Intent(this, NoteTabViewerActivity.class), RQ_CREATE_NOTE_ACTION);
@@ -382,7 +384,6 @@ public class MainActivity extends AppCompatActivity
         new NavigationView.OnNavigationItemSelectedListener() {
           @Override
           public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-            //menuItem.setChecked(true);
             mDrawerLayout.closeDrawers();
             return onNavigationItemSelectedHandle(menuItem);
           }
@@ -686,7 +687,7 @@ public class MainActivity extends AppCompatActivity
   }
 
   private DrawerLayout   mDrawerLayout;
-  private NoteAdapter    mAdapter; // Adapter zu den Notiz-ListItems
+  private NoteAdapter    mAdapter;
   private ListView       mMainView;
   private SearchView     mSearchView;
 

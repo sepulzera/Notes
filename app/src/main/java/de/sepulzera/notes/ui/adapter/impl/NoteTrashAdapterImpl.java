@@ -48,9 +48,9 @@ public class NoteTrashAdapterImpl extends NoteAdapterImpl {
   }
 
   /**
-   * <p>Sortiert die Notizen absteigend nach dem DELDT.</p>
-   * <p>Drafts werden immer über den Revisions angezeigt.
-   * (Drafts und Revisions haben das selbe DELDT.)</p>
+   * <p>Sorts the notes descending by DELDT.</p>
+   * <p>Drafts are always displayed above their corresponding revision.
+   * (The DELDT for drafts and their revisions are equal.)</p>
    */
   @Override
   protected void sort() {

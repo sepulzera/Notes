@@ -30,7 +30,7 @@ import de.sepulzera.notes.ui.activity.note.NoteTabViewerActivity;
 @SuppressWarnings("WeakerAccess")
 public class Helper {
   /**
-   *  Checks if external storage is available for read and write
+   * Checks if external storage is available for read and write.
    */
   public static boolean isExternalStorageWritable() {
     String state = Environment.getExternalStorageState();
@@ -38,7 +38,7 @@ public class Helper {
   }
 
   /**
-   *  Checks if external storage is available to at least read
+   * Checks if external storage is available for read.
    */
   public static boolean isExternalStorageReadable() {
     String state = Environment.getExternalStorageState();
@@ -47,7 +47,7 @@ public class Helper {
   }
 
   /**
-   * Lokalisiert die Anwendung.
+   * Needs to be called as initialization to provide proper localization.
    *
    * @param context Context.
    */
@@ -57,20 +57,34 @@ public class Helper {
     NoteServiceImpl.createInstance(context);
   }
 
-
-  public static String makePlaceholders(int len) {
-    if (len < 1) {
+  /**
+   * Creates {@code amount} number of placeholders for query-selections.
+   *
+   * @param amount Number of placeholders.
+   *
+   * @return 0: "(empty string)"; 1: "?"; 2: "?, ?" ...
+   */
+  public static String makePlaceholders(int amount) {
+    if (amount < 1) {
       return "";
     } else {
-      StringBuilder sb = new StringBuilder(len * 2 - 1);
+      StringBuilder sb = new StringBuilder(amount * 2 - 1);
       sb.append("?");
-      for (int i = 1; i < len; i++) {
+      for (int i = 1; i < amount; i++) {
         sb.append(",?");
       }
       return sb.toString();
     }
   }
 
+  /**
+   * Reads the file from disk.
+   *
+   * @param context ...
+   * @param uri ...
+   *
+   * @return Content of the file or null on error.
+   */
   public static String readFile(@NonNull final Context context, @NonNull final Uri uri) {
     try (InputStream inputStream = context.getContentResolver().openInputStream(uri)) {
       if (inputStream == null) {
@@ -93,19 +107,19 @@ public class Helper {
   }
 
   /**
-   * <p>Schreibt den angegebenene Inhalt in die Datei.
-   * Die Datei wird im {@link Context#MODE_PRIVATE} geöffnet, also ggf. überschrieben.</p>
-   * <p>Wirf eine {@link IllegalArgumentException}, falls die Datei nicht zum Schreiben geöffnet werden konnte.</p>
+   * Writes the {@code content} into the given file on disk.
    *
-   * @param path File pathname.
-   * @param content Der zu schreibende Inhalt.
-   * @param doReplace Replace file if exists?
+   * @param path File pathname (URI).
+   * @param content ...
+   * @param doReplace True: the file will be replaced. False: the content will be appended, if the file already exists.
+   *
+   * @throws IllegalArgumentException File could not be opened (access error, permissions error).
    */
   public static void writeFile(@NonNull final String path, @NonNull String content, boolean doReplace) {
     File file = new File(path);
 
     if (doReplace && file.exists()) {
-      // vorherigen save aufräumen
+      // clean up the previous file
       if (!file.delete()) {
         throw new IllegalArgumentException("file could not been deleted!");
       }
@@ -113,7 +127,6 @@ public class Helper {
 
     FileOutputStream fos = null;
     try {
-      // Datei öffnen
       fos =  new FileOutputStream(file);
       fos.write(content.getBytes(Charset.forName(mUtf8)));
     } catch (IOException e) {
@@ -130,13 +143,13 @@ public class Helper {
   }
 
   /**
-   * Gibt die Preferenz zum angegebenen key als boolean zurück.
+   * Returns the preference as boolean.
    *
-   * @param context Kontext.
-   * @param key Key.
-   * @param defaultValue Value, falls key nicht gefunden oder kein boolean.
+   * @param context ...
+   * @param key Key of the preference.
+   * @param defaultValue Returned if the preference was not found or it's value is no boolean.
    *
-   * @return Preference zum Key oder defaultValue, falls {@code null} oder kein boolean.
+   * @return Preference's value of {@code key} or {@code defaultValue} if preference is missing oder no boolean.
    */
   public static boolean getPreferenceAsBool(@NonNull final Context context, @NonNull String key, boolean defaultValue) {
     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -148,13 +161,13 @@ public class Helper {
   }
 
   /**
-   * Gibt die Preferenz zum angegebenen key als int zurück.
+   * Returns the preference as integer.
    *
-   * @param context Kontext.
-   * @param key Key.
-   * @param defaultValue Value, falls key nicht gefunden oder kein int.
+   * @param context ...
+   * @param key Key of the preference.
+   * @param defaultValue Returned if the preference was not found or it's value is no integer.
    *
-   * @return Preference zum Key oder defaultValue, falls {@code null} oder kein int.
+   * @return Preference's value of {@code key} or {@code defaultValue} if preference is missing oder no integer.
    */
   public static int getPreferenceAsInt(@NonNull final Context context, @NonNull String key, int defaultValue) {
     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -166,13 +179,13 @@ public class Helper {
   }
 
   /**
-   * Gibt die Preferenz zum angegebenen key als long zurück.
+   * Returns the preference as Long.
    *
-   * @param context Kontext.
-   * @param key Key.
-   * @param defaultValue Value, falls key nicht gefunden oder kein long.
+   * @param context ...
+   * @param key Key of the preference.
+   * @param defaultValue Returned if the preference was not found or it's value is no Long.
    *
-   * @return Preference zum Key oder defaultValue, falls {@code null} oder kein long.
+   * @return Preference's value of {@code key} or {@code defaultValue} if preference is missing oder no Long.
    */
   public static long getPreferenceAsLong(@NonNull final Context context, @NonNull String key, long defaultValue) {
     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -180,18 +193,24 @@ public class Helper {
   }
 
   /**
-   * Setzt die Preferenz zum angegebene Key.
-   * Ggf. alte Werte werden überschrieben.
+   * Stores the {@code value} to the preference with the given {@code key}.
    *
-   * @param context Kontext.
-   * @param key Key der Preferenz.
-   * @param value Neuer Wert der Preferenz.
+   * @param context ...
+   * @param key Key of the preference.
+   * @param value New value for the preference.
    */
   public static void putPreference(@NonNull final Context context, @NonNull String key, final long value) {
     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
     preferences.edit().putLong(key, value).apply();
   }
 
+  /**
+   * Manually triggers the activities to update their preference-based values.
+   *
+   * Should be called after finishing to update the settings, e. g. after closing the SettingsActivity.
+   *
+   * @param context ...
+   */
   public static void updatePreferences(@NonNull final Context context) {
     setNightMode(context);
 
@@ -207,6 +226,13 @@ public class Helper {
         , Integer.parseInt(context.getResources().getString(R.string.pref_day_night_mode_default))));
   }
 
+  /**
+   * Toggles the displayed night mode.
+   *
+   * Should be called after the user changed the associated preference.
+   *
+   * @param mode {@code AppCompatDelegate.MODE_NIGHT_NO}, {@code AppCompatDelegate.MODE_NIGHT_YES} or {@code AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM}
+   */
   public static void setNightMode(int mode) {
     switch (mode) {
       case 0:  AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO); break;
@@ -215,6 +241,13 @@ public class Helper {
     }
   }
 
+  /**
+   * Runs the daily tasks.
+   *
+   * Can be called more than once per day, but will only be executed once (seriously).
+   *
+   * @param context ...
+   */
   public static void dailyTask(@NonNull final Context context) {
     long dailyTaskTick = Helper.getPreferenceAsLong(context, PREF_DAILY_TASK_TICK_KEY, 0L);
     if (0L == dailyTaskTick) {
@@ -226,6 +259,16 @@ public class Helper {
     }
   }
 
+  /**
+   * Creates the share intent and passes {@code title} and {@code body}.
+   *
+   * The user can then pick their app of choice to share the data with, e. g. Signal Messenger or SMS.
+   *
+   * @param title Subject of the shared message.
+   * @param body Text of the shared message.
+   *
+   * @return Intent to call startActivity with.
+   */
   public static Intent createShareIntent(@NonNull String title, @NonNull String body) {
     Intent intent = new Intent(android.content.Intent.ACTION_SEND);
     intent.setType("text/plain");

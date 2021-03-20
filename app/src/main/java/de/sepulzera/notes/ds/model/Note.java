@@ -13,9 +13,6 @@ import de.sepulzera.notes.bf.helper.DateUtil;
 import de.sepulzera.notes.bf.helper.JsonUtil;
 import de.sepulzera.notes.bf.helper.StringUtil;
 
-/**
- * Repräsentiert eine Notiz.
- */
 public class Note implements Serializable {
   public  static final String TAG_NOTE     = "note";
 
@@ -52,9 +49,6 @@ public class Note implements Serializable {
   private Date mDeldt, mCreadt, mLchadt;
   private boolean mCurr;
 
-  /**
-   * General purpose Konstruktor.
-   */
   public Note() {
     this.mId        = ID_DEFAULT;
     this.mIdent     = IDENT_DEFAULT;
@@ -117,11 +111,9 @@ public class Note implements Serializable {
         + ",ident=" + getIdent() + ",rev=" + getRevision() + ",draft=" + getDraft()
         + ",currRev=" + getCurrRev() + ",curr=" + getCurr()
         + ",title=" + getTitle() + ",msg=" + getMsg()
-        + ",deldt=" + DateUtil.formatDate(getDeldt())
-        + ",creadt=" + DateUtil.formatDate(getCreadt()) + ",lchadt=" + DateUtil.formatDate(getLchadt());
+        + ",deldt=" + DateUtil.toISO8601(getDeldt())
+        + ",creadt=" + DateUtil.toISO8601(getCreadt()) + ",lchadt=" + DateUtil.toISO8601(getLchadt());
   }
-
-  // typ. Getter und Setter
 
   public long    getId()       { return this.mId; }
   public long    getIdent()    { return this.mIdent; }

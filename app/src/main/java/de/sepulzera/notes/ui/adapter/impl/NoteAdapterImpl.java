@@ -30,9 +30,6 @@ import de.sepulzera.notes.bf.service.impl.NoteServiceImpl;
 import de.sepulzera.notes.ds.model.Note;
 import de.sepulzera.notes.ui.adapter.NoteAdapter;
 
-/**
- * Adapter Liste von Notizen.
- */
 @SuppressWarnings("WeakerAccess")
 public class NoteAdapterImpl extends BaseAdapter
     implements NoteAdapter, Filterable {
@@ -156,7 +153,7 @@ public class NoteAdapterImpl extends BaseAdapter
   /* /SELECTION */
 
   /**
-   * <p>Sortiert die Notizen absteigend nach dem LCHADT.</p>
+   * Sorts the notes descending by LCHADT.
    */
   protected void sort() {
     Collections.sort(mFilteredNotes, new Comparator<Note>() {
@@ -172,10 +169,11 @@ public class NoteAdapterImpl extends BaseAdapter
   }
 
   /**
-   * <p>Gibt die Notiz mit der angegebenen ID zurück.</p>
+   * Returns the note with the given {@code id}.
    *
-   * @param id ID der gesuchten Notiz.
-   * @return Notiz mit der angegebenen ID oder null wenn nicht gefunden.
+   * @param id ID of the requested note.
+   *
+   * @return Note with the given {@code id} or {@code null} if missing.
    */
   protected Note get(long id) {
     for (Note note : mNotes) {
@@ -211,18 +209,15 @@ public class NoteAdapterImpl extends BaseAdapter
   @Override
   public View getView(int position, View convertView, ViewGroup parent) {
     ViewHolder holder;
-    // falls nötig, convertView bauen
     if (convertView == null) {
-      // Layoutdatei entfalten
       convertView = mInflater.inflate(R.layout.item_note, parent, false);
-      // Holder erzeugen
+
       holder = new ViewHolder();
       holder.title = convertView.findViewById(R.id.title);
       holder.msg   = convertView.findViewById(R.id.msg);
       holder.timestamp = convertView.findViewById(R.id.timestamp);
       convertView.setTag(holder);
     } else {
-      // Holder bereits vorhanden
       holder = (ViewHolder) convertView.getTag();
     }
 

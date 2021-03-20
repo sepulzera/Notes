@@ -370,7 +370,7 @@ public final class NoteServiceImpl implements NoteService {
   }
 
   private void invalidateRevision(@NonNull final Note note) {
-    // oldNote invalidieren
+    // invalidate oldNote
     note.setCurrRev(false);
     mDb.update(note);
   }
@@ -507,8 +507,8 @@ public final class NoteServiceImpl implements NoteService {
     File file = new File(Environment.getExternalStoragePublicDirectory(
         Environment.DIRECTORY_DOWNLOADS).toURI());
 
-    // SubjectList in JSONArray konvertieren.
-    // Das JSONArray wird dann serialisiert.
+    // Convert SubjectList into JSONArray.
+    // The JSONArray will be serialized.
     final JSONArray arr = new JSONArray();
     for (final Note note : allNotes) {
       arr.put(note.toJson());

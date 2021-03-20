@@ -38,6 +38,8 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
     super.onCreate(savedInstanceState);
     setContentView(R.layout.act_note_trash);
 
+    // SETUP APPLICATION
+
     if (null != savedInstanceState) {
       restoreState(savedInstanceState);
     } else {
@@ -52,7 +54,8 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
     }
     ab.setDisplayHomeAsUpEnabled(true);
 
-    // Layout-Elemente suchen
+    // SETUP VIEWS
+
     mMainView = findViewById(R.id.mainListView);
     mMainView.setNestedScrollingEnabled(true);
     mMainView.setEmptyView(findViewById(R.id.empty_text));
@@ -134,8 +137,9 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
 
     /* /CONTEXTUAL ACTION BAR */
 
-    // Handler registrieren
-    mMainView.setOnItemClickListener(this); // Single-Click: Notiz bearbeiten
+    // REGISTER HANDLERS AND LISTENERS
+
+    mMainView.setOnItemClickListener(this); // single click: open note
 
     mHandler = new Handler();
     mRunRefreshUi = new Runnable() {
@@ -154,14 +158,14 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
     mEmptyTrashRequested = false;
     mRestoredNotesCount = 0;
 
-    // gespeicherten Zustand wiederherstellen
+    // RESTORE PREVIOUS STATE
     refreshList();
   }
 
   private void restoreState(@NonNull final Bundle outState) {
     mAdapter = new NoteTrashAdapterImpl(this);
 
-    // gespeicherten Zustand wiederherstellen
+    // RESTORE PREVIOUS STATE
     refreshList();
 
     mRestoredNotesCount  = outState.getInt(KEY_RESTORED_COUNT);
@@ -349,7 +353,7 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
           }
           break;
 
-        default: // unbekannter requestCode -> ignorieren
+        default: // unknown requestCode -> ignore
           break;
       }
     }
@@ -481,10 +485,9 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
   }
 
   /**
-   * Startet die Activity zum Bearbeiten der übergebenen Notiz.
-   * Die Notiz wird mit startActivityForResult aufgerufen.
+   * Starts the activity to view a note.
    *
-   * @param note Zu bearbeitende Notiz
+   * @param note The note to display.
    */
   private void startActivityViewNote(Note note) {
     final NoteService srv = NoteServiceImpl.getInstance();
@@ -514,7 +517,7 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
     if (mEmptyTrashRequested) {
       final List<Note> deletedNotes = srv.getAllDeleted();
       for (final Note note : deletedNotes) {
-        // Note+Draft -> evtl. inzwischen mit gelöscht
+        // Note+Draft -> perhaps already deleted by the service
         if (srv.get(note.getId()) != null) {
           srv.delete(note);
         }
@@ -535,7 +538,7 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
   private Handler        mHandler;
   private Runnable       mRunRefreshUi;
 
-  private NoteAdapter    mAdapter; // Adapter zu den Notiz-ListItems
+  private NoteAdapter    mAdapter;
   private ListView       mMainView;
 
   private List<Note>     mDeleteNotes;
