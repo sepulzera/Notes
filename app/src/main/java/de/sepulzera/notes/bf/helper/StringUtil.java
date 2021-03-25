@@ -281,13 +281,7 @@ public class StringUtil {
    * @see StringUtil#toString(List)
    */
   public static List<String> getLines(@NonNull String str) {
-    List<String> lines = new ArrayList<>(Arrays.asList(str.split(LINE_ENDING)));
-
-    if (str.charAt(str.length() - 1) == '\n') {
-      lines.add("");
-    }
-
-    return lines;
+    return new ArrayList<>(Arrays.asList(str.split(LINE_ENDING, -1)));
   }
 
   /**
