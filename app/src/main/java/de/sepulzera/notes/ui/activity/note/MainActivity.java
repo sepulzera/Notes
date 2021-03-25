@@ -547,8 +547,19 @@ public class MainActivity extends AppCompatActivity
     Note savedNote = doSaveNote(note);
 
     if (deleted) {
+      Note deleteNote;
+      if (oldId == 0L) {
+        deleteNote = savedNote;
+      } else if (!note.getDraft()) {
+        deleteNote = note;
+      } else {
+        // Get the original note. Perhaps it is not a draft.
+        final NoteService srv = NoteServiceImpl.getInstance();
+        deleteNote = srv.get(note.getId());
+      }
+
       List<Note> deleteNotesList = new ArrayList<>();
-      deleteNotesList.add(oldId != 0L? note : savedNote);
+      deleteNotesList.add(deleteNote);
       deleteNotes(deleteNotesList);
     }
   }
