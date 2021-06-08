@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.sepulzera.notes.R;
+import de.sepulzera.notes.bf.helper.vlog.VLog;
 import de.sepulzera.notes.bf.service.NoteService;
 import de.sepulzera.notes.bf.service.impl.NoteServiceImpl;
 import de.sepulzera.notes.ds.model.Note;
@@ -37,6 +38,8 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.act_note_trash);
+
+    VLog.d(ACTIVITY_IDENT, "Creating activity.");
 
     // SETUP APPLICATION
 
@@ -549,4 +552,6 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
   private static final String KEY_RESTORED_COUNT          = "notetrashactivity_restoredcount";
 
   private static final int RQ_VIEW_NOTE_ACTION = 54011; // Single click (View)
+
+  private static final String ACTIVITY_IDENT = "NoteTrashActivity";
 }

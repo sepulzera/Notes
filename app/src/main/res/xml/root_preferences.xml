@@ -57,4 +57,18 @@
 
   </PreferenceCategory>
 
+  <PreferenceCategory
+      app:title="@string/debug_header"
+      app:icon="@android:drawable/ic_lock_idle_low_battery">
+
+    <SwitchPreference
+        app:defaultValue="@string/pref_debugging_mode_default"
+        app:key="@string/PREF_DEBUGGING_MODE_KEY"
+        app:summaryOff="@string/pref_description_debugging_mode_off"
+        app:summaryOn="@string/pref_description_debugging_mode_on"
+        app:title="@string/pref_title_debugging_mode" />
+
+
+  </PreferenceCategory>
+
 </PreferenceScreen>

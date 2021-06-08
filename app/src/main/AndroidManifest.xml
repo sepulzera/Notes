@@ -27,8 +27,7 @@
     <activity
         android:name=".ui.activity.note.NoteTabViewerActivity"
         android:parentActivityName=".ui.activity.note.MainActivity"
-        android:windowSoftInputMode="adjustResize">
-    </activity>
+        android:windowSoftInputMode="adjustResize"></activity>
     <activity
         android:name=".ui.activity.note.NoteTrashActivity"
         android:label="@string/note_trash_title"
@@ -41,6 +40,14 @@
         android:name=".ui.activity.settings.SettingsActivity"
         android:label="@string/title_activity_settings"
         android:theme="@style/AppThemeActionBar">
+      <meta-data
+          android:name="android.support.PARENT_ACTIVITY"
+          android:value=".ui.activity.note.MainActivity" />
+    </activity>
+    <activity
+        android:name=".ui.activity.debug.DebugActivity"
+        android:label="@string/title_activity_debug"
+        android:parentActivityName=".ui.activity.note.MainActivity">
       <meta-data
           android:name="android.support.PARENT_ACTIVITY"
           android:value=".ui.activity.note.MainActivity" />

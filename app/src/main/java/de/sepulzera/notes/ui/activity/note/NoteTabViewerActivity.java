@@ -41,6 +41,7 @@ import java.util.List;
 import de.sepulzera.notes.R;
 import de.sepulzera.notes.bf.helper.Helper;
 import de.sepulzera.notes.bf.helper.StringUtil;
+import de.sepulzera.notes.bf.helper.vlog.VLog;
 import de.sepulzera.notes.bf.service.NoteService;
 import de.sepulzera.notes.bf.service.impl.NoteServiceImpl;
 import de.sepulzera.notes.ds.model.Note;
@@ -54,6 +55,8 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.act_note_tab_viewer);
+
+    VLog.d(ACTIVITY_IDENT, "Creating activity.");
 
     Toolbar toolbar = findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
@@ -158,31 +161,36 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
       }
     }
 
+    final NoteService srv = NoteServiceImpl.getInstance();
+
     if (mNote.getDraft()) {
       mDraft = mNote;
-      mNoteFrags.add(mNote, getResources().getString(R.string.tab_viewer_draft_title));
-      mDisplayedNote = mNote;
-
-      final NoteService srv = NoteServiceImpl.getInstance();
+      mDisplayedNote = mDraft;
       mNote = srv.getCurrRevision(mNote);
-      if (null != mNote) {
-        mNoteFrags.add(mNote, getResources().getString(R.string.tab_viewer_note_title));
-      }
     } else {
-      final NoteService srv = NoteServiceImpl.getInstance();
       mDraft = srv.getDraft(mNote);
       if (null != mDraft) {
         if (mNote.getCurr() && !mDraft.getCurr()) {
           mDraft = null;
         } else {
-          mNoteFrags.add(mDraft, getResources().getString(R.string.tab_viewer_draft_title));
           mDisplayedNote = mDraft;
         }
       }
-      mNoteFrags.add(mNote, getResources().getString(R.string.tab_viewer_note_title));
       if (mDisplayedNote == null) {
         mDisplayedNote = mNote;
       }
+    }
+
+    if (mDisplayedNote == null) {
+      throw new IllegalArgumentException("DisplayedNote must not be null.");
+    }
+    if (mDraft != null) {
+      VLog.d(ACTIVITY_IDENT, "Draft=\"" + mDraft.toString() + "\"");
+      mNoteFrags.add(mDraft, getResources().getString(R.string.tab_viewer_draft_title));
+    }
+    if (mNote != null) {
+      VLog.d(ACTIVITY_IDENT, "Note=\"" + mNote.toString() + "\"");
+      mNoteFrags.add(mNote, getResources().getString(R.string.tab_viewer_note_title));
     }
 
     // set ActionBar title
@@ -739,10 +747,13 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
     final String newTitle = getTitle().toString();
     if (!note.getDraft()
         && StringUtil.equals(newMsg, note.getMsg()) && StringUtil.equals(newTitle, note.getTitle())) {
+      VLog.d(ACTIVITY_IDENT,  "Closing note=\"" + note.toString() + "\". (no changes)");
       // no changes made -> just go back
       executeDone();
       return;
     }
+
+    VLog.d(ACTIVITY_IDENT,  "Saving note=\"" + note.toString() + "\". (title=\"" + newTitle + "\", msg=\"" + newMsg + "\"");
 
     final Note saveNote = NoteServiceImpl.getInstance().clone(note);
     saveNote.setMsg(newMsg);
@@ -804,6 +815,7 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
 
     Intent result = new Intent();
     if (note != null) {
+      VLog.d(ACTIVITY_IDENT,  "ExecuteDone note=\"" + note.toString() + "\"");
       result.putExtra(Note.TAG_NOTE, note);
     }
     if (mInvalidateList) {
@@ -1101,4 +1113,6 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
 
   private static final String KEY_CAN_UNDO = "notetabvieweract_canundo";
   private static final String KEY_CAN_REDO = "notetabvieweract_canredo";
+
+  private static final String ACTIVITY_IDENT = "NoteTabViewerActivity";
 }

@@ -14,6 +14,10 @@
         android:id="@+id/nav_preferences"
         android:icon="@drawable/ic_settings"
         android:title="@string/nav_preferences" />
+    <item
+        android:id="@+id/nav_debug_log"
+        android:icon="@android:drawable/ic_lock_idle_low_battery"
+        android:title="@string/nav_debug_log" />
   </group>
 
   <item android:title="@string/nav_commands">

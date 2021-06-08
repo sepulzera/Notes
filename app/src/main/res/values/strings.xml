@@ -8,6 +8,7 @@
   <string name="nav_home">Notes</string>
   <string name="nav_trash">Trash</string>
   <string name="nav_preferences">Preferences</string>
+  <string name="nav_debug_log">Debug Log</string>
   <string name="nav_commands">Commands</string>
   <string name="nav_backup">Backup</string>
   <string name="nav_restore">Restore</string>
@@ -119,6 +120,7 @@
   <string name="appearance_header">Appearance</string>
   <string name="notes_header">Editor</string>
   <string name="storage_header">Storage</string>
+  <string name="debug_header">Debugging</string>
 
   <!-- rev delete old -->
   <string name="pref_title_rev_delete_old_num">Delete old revisions</string>
@@ -207,6 +209,14 @@
     <item>1</item>
   </string-array>
 
+  <!-- debugging mode -->
+  <string name="pref_description_debugging_mode_off">Debugging disabled.</string>
+  <string name="pref_description_debugging_mode_on">Debugging enabled. Disable to reduce power consumption.</string>
+  <string name="pref_title_debugging_mode">Enable debugging mode</string>
+  <string name="pref_debugging_mode_default">false</string>
+
+  <!-- debug -->
+  <string name="title_activity_debug">Debug</string>
 
   <!-- constants, DO NOT CHANGE -->
   <string name="PREF_LIST_REFRESH_INTERVAL_KEY">pref_list_refresh_interval_key</string>
@@ -214,5 +224,6 @@
   <string name="PREF_NOTE_OPEN_READONLY_KEY">pref_note_open_readonly_key</string>
   <string name="PREF_REV_DELETE_OLD_NUM_KEY">pref_rev_delete_old_num_key</string>
   <string name="PREF_NOTE_REMOVE_DELETED_DAYS_NUM_KEY">pref_note_remove_deleted_days_num_key</string>
+  <string name="PREF_DEBUGGING_MODE_KEY">pref_debugging_mode</string>
 
 </resources>

@@ -26,8 +26,8 @@
         android:layout_height="32dp"
         android:background="@color/colorPrimaryBar"
         app:tabBackground="@color/colorPrimaryBar"
-        app:tabMaxWidth="0dp"
-        app:tabGravity="fill"/>
+        app:tabGravity="fill"
+        app:tabMaxWidth="0dp" />
 
   </com.google.android.material.appbar.AppBarLayout>
 

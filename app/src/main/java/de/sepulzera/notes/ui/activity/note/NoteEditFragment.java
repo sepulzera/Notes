@@ -24,6 +24,7 @@ import java.util.List;
 
 import de.sepulzera.notes.R;
 import de.sepulzera.notes.bf.helper.StringUtil;
+import de.sepulzera.notes.bf.helper.vlog.VLog;
 import de.sepulzera.notes.ds.model.Note;
 import de.sepulzera.notes.ui.widgets.EditTextSelectable;
 import de.sepulzera.notes.ui.widgets.rundo.RunDo;
@@ -35,6 +36,8 @@ public class NoteEditFragment extends Fragment implements EditTextSelectable.Sel
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     super.onCreateView(inflater, container, savedInstanceState);
+
+    VLog.d(ACTIVITY_IDENT, "Creating view.");
 
     final View view = (container == null)? getView() : inflater.inflate(R.layout.frag_note, container, false);
     if (view == null) {
@@ -410,4 +413,6 @@ public class NoteEditFragment extends Fragment implements EditTextSelectable.Sel
   private static final String KEY_INDEX    = "noteEditFrag_index";
   private static final String KEY_MSG      = "noteEditFrag_msg";
   private static final String KEY_EDITABLE = "noteEditFrag_editable";
+
+  private static final String ACTIVITY_IDENT = "NoteEditFragment";
 }

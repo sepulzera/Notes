@@ -48,8 +48,10 @@ import java.util.Objects;
 
 import de.sepulzera.notes.R;
 import de.sepulzera.notes.bf.helper.Helper;
+import de.sepulzera.notes.bf.helper.vlog.VLog;
 import de.sepulzera.notes.bf.service.NoteService;
 import de.sepulzera.notes.ds.model.Note;
+import de.sepulzera.notes.ui.activity.debug.DebugActivity;
 import de.sepulzera.notes.ui.activity.settings.SettingsActivity;
 import de.sepulzera.notes.ui.adapter.NoteAdapter;
 import de.sepulzera.notes.ui.adapter.impl.NoteAdapterImpl;
@@ -68,6 +70,7 @@ import de.sepulzera.notes.bf.service.impl.NoteServiceImpl;
 public class MainActivity extends AppCompatActivity
     implements AdapterView.OnItemClickListener, SearchView.OnQueryTextListener {
   public static int mListRefreshInterval = 5;
+  public static boolean mDebugMode = false;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +78,8 @@ public class MainActivity extends AppCompatActivity
     setContentView(R.layout.act_main);
 
     // SETUP APPLICATION
+
+    VLog.d(ACTIVITY_IDENT, "Creating activity.");
 
     Helper.localize(getApplicationContext());
     Helper.updatePreferences(this);
@@ -91,7 +96,8 @@ public class MainActivity extends AppCompatActivity
 
     mDrawerLayout = findViewById(R.id.drawer_layout);
 
-    setupDrawerContent((NavigationView)findViewById(R.id.nav_view));
+    mDrawerMenu = findViewById(R.id.nav_view);
+    setupDrawerContent(mDrawerMenu);
 
     mAdapter = new NoteAdapterImpl(this);
 
@@ -239,11 +245,11 @@ public class MainActivity extends AppCompatActivity
   @Override
   public void onPause() {
     super.onPause();
-    finishPendlingActions();
+    finishPendingActions();
     mHandler.removeCallbacks(mRunRefreshUi);
   }
 
-  private void finishPendlingActions() {
+  private void finishPendingActions() {
     final NoteService srv = NoteServiceImpl.getInstance();
 
     finishDelete(srv);
@@ -270,6 +276,8 @@ public class MainActivity extends AppCompatActivity
   public static void readPreferences(@NonNull final Context context) {
     mListRefreshInterval = Helper.getPreferenceAsInt(context
         , context.getResources().getString(R.string.PREF_LIST_REFRESH_INTERVAL_KEY), Integer.parseInt(context.getResources().getString(R.string.pref_list_refresh_interval_default)));
+    mDebugMode = Helper.getPreferenceAsBool(context
+        , context.getResources().getString(R.string.PREF_DEBUGGING_MODE_KEY), false);
   }
 
   @Override
@@ -279,6 +287,8 @@ public class MainActivity extends AppCompatActivity
   }
 
   private void openNote(@NonNull final Note note) {
+    VLog.d(ACTIVITY_IDENT, "Open note '" + note.getTitle() + "' (ID: " + note.getId() + ")");
+
     final NoteService srv = NoteServiceImpl.getInstance();
 
     this.startActivityForResult(new Intent(this, NoteTabViewerActivity.class)
@@ -379,6 +389,7 @@ public class MainActivity extends AppCompatActivity
     if (null == navigationView) { return; }
 
     navigationView.setCheckedItem(R.id.nav_home);
+    setupDrawerMenuItems(navigationView);
 
     navigationView.setNavigationItemSelectedListener(
         new NavigationView.OnNavigationItemSelectedListener() {
@@ -388,6 +399,13 @@ public class MainActivity extends AppCompatActivity
             return onNavigationItemSelectedHandle(menuItem);
           }
         });
+  }
+
+  private void setupDrawerMenuItems(NavigationView navigationView)  {
+    MenuItem item = navigationView.getMenu().findItem(R.id.nav_debug_log);
+    if (item != null) {
+      item.setVisible(mDebugMode);
+    }
   }
 
   private boolean onNavigationItemSelectedHandle(@NonNull final MenuItem item) {
@@ -403,6 +421,11 @@ public class MainActivity extends AppCompatActivity
 
       case R.id.nav_preferences:
         startActivityForResult(new Intent(MainActivity.this, SettingsActivity.class), RQ_SETTINGS);
+        // do not check nav button
+        return false;
+
+      case R.id.nav_debug_log:
+        startActivityForResult(new Intent(MainActivity.this, DebugActivity.class), RQ_DEBUG);
         // do not check nav button
         return false;
 
@@ -439,30 +462,38 @@ public class MainActivity extends AppCompatActivity
   }
 
   private void doNavBackup() {
+    VLog.d(ACTIVITY_IDENT, "Creating a backup...");
     if (!Helper.isExternalStorageWritable()) {
+      VLog.d(ACTIVITY_IDENT, "Backup failed: External storage is not writable.");
       Snackbar.make(mMainView, getResources().getString(R.string.snack_backup_storage_not_writeable)
           , Snackbar.LENGTH_LONG).show();
       return;
     }
     if (!requestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, PERMISSION_REQUEST_CODE_BACKUP_STORAGE)) {
+      VLog.d(ACTIVITY_IDENT, "Backup failed: Permission not granted.");
       return;
     }
 
     final NoteService srv = NoteServiceImpl.getInstance();
     final File backupFile = srv.saveBackup(getResources().getString(R.string.backup_file_name) + ".json");
     final File parentFile = backupFile.getParentFile();
+    final String parentFilePath = (parentFile != null ? (parentFile.getName() + "/") : "") + backupFile.getName();
 
+    VLog.d(ACTIVITY_IDENT, "Backup saved to \"" + parentFilePath + "\"");
     Snackbar.make(mMainView, String.format(getResources().getString(R.string.snack_backup_created)
-        , (parentFile != null ? (parentFile.getName() + "/") : "") + backupFile.getName()), Snackbar.LENGTH_LONG).show();
+        , parentFilePath), Snackbar.LENGTH_LONG).show();
   }
 
   private void doNavRestore(final Uri backupFile) {
+    VLog.d(ACTIVITY_IDENT, "Restoring a backup...");
     if (!Helper.isExternalStorageReadable()) {
+      VLog.d(ACTIVITY_IDENT, "Restore failed: External storage is not readable.");
       Snackbar.make(mMainView, getResources().getString(R.string.snack_restore_storage_not_readable)
           , Snackbar.LENGTH_LONG).show();
       return;
     }
     if (!requestPermission(Manifest.permission.READ_EXTERNAL_STORAGE, PERMISSION_REQUEST_CODE_RESTORE_STORAGE)) {
+      VLog.d(ACTIVITY_IDENT, "Restore failed: Permission not granted.");
       return;
     }
 
@@ -482,6 +513,7 @@ public class MainActivity extends AppCompatActivity
       NoteService srv = NoteServiceImpl.getInstance();
       srv.restoreBackup(this, backupFile);
     } catch (IllegalArgumentException e) {
+      VLog.d(ACTIVITY_IDENT, "Restore failed: There was an error parsing a note: " + e.getMessage());
       Log.e("nav restore", "Error parsing a note: " + e.getMessage(), e);
       Snackbar.make(mMainView, "Error parsing a note: " + e.getMessage(), Snackbar.LENGTH_LONG).show();
       return;
@@ -524,12 +556,18 @@ public class MainActivity extends AppCompatActivity
           if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
           }
+          setupDrawerMenuItems(mDrawerMenu);
+
           break;
 
         case RQ_TRASH:
           if (data.hasExtra(RQ_EXTRA_INVALIDATE_LIST)) {
             invalidateList();
           }
+          break;
+
+        case RQ_DEBUG:
+          // do nothing
           break;
 
         default: // unknown request code -> ignore
@@ -701,6 +739,7 @@ public class MainActivity extends AppCompatActivity
   private NoteAdapter    mAdapter;
   private ListView       mMainView;
   private SearchView     mSearchView;
+  private NavigationView mDrawerMenu;
 
   private Handler        mHandler;
   private Runnable       mRunRefreshUi;
@@ -711,6 +750,7 @@ public class MainActivity extends AppCompatActivity
   private static final int RQ_CREATE_NOTE_ACTION = 40713;
   private static final int RQ_SETTINGS           = 53771;
   private static final int RQ_TRASH              = 16454; // 7xxxx > 16 bit = error
+  private static final int RQ_DEBUG              = 63846;
   private static final int RQ_RESTORE_FILECHOOSE = 1123;
 
   private static final int PERMISSION_REQUEST_CODE_BACKUP_STORAGE = 123;
@@ -718,4 +758,6 @@ public class MainActivity extends AppCompatActivity
 
   public  static final String RQ_EXTRA_INVALIDATE_LIST     = "invalide_list";
   public  static final String RQ_EXTRA_FOLLOWUP_ID         = "followup_note_id";
+
+  private static final String ACTIVITY_IDENT = "MainActivity";
 }
