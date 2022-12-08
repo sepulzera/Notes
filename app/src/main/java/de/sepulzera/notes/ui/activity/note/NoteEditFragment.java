@@ -62,12 +62,9 @@ public class NoteEditFragment extends Fragment implements EditTextSelectable.Sel
       public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
       public void onTextChanged(CharSequence s, int start, int before, int count) {}
     });
-    mEditMsg.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-      @Override
-      public void onFocusChange(View view, boolean hasFocus) {
-        if (mEditMsg.hasFocus()) {
-          mListener.onTextChanged(getMsg(), true, mEditMsg.getSelectionStart(), mEditMsg.getSelectionEnd());
-        }
+    mEditMsg.setOnFocusChangeListener((view1, hasFocus) -> {
+      if (mEditMsg.hasFocus()) {
+        mListener.onTextChanged(getMsg(), true, mEditMsg.getSelectionStart(), mEditMsg.getSelectionEnd());
       }
     });
     mEditMsg.addSelectionChangedListener(this);
@@ -388,8 +385,7 @@ public class NoteEditFragment extends Fragment implements EditTextSelectable.Sel
     if (context instanceof NoteEditFragmentListener ) {
       mListener = (NoteEditFragmentListener)context;
     } else {
-      throw new RuntimeException(context.toString()
-          + " must implement TeamCreateFragmentListener");
+      throw new RuntimeException(context + " must implement TeamCreateFragmentListener");
     }
   }
 

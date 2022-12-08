@@ -3,13 +3,17 @@ package de.sepulzera.notes.bf.service.impl;
 import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
+import android.provider.MediaStore;
+
 import androidx.annotation.NonNull;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.File;
+import java.nio.file.FileStore;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -21,6 +25,7 @@ import java.util.List;
 import java.util.Locale;
 
 import de.sepulzera.notes.R;
+import de.sepulzera.notes.bf.helper.DateUtil;
 import de.sepulzera.notes.bf.helper.Helper;
 import de.sepulzera.notes.bf.helper.StringUtil;
 import de.sepulzera.notes.bf.helper.vlog.VLog;
@@ -88,7 +93,7 @@ public final class NoteServiceImpl implements NoteService {
   public void delete(@NonNull final Note note) {
     final Note oldNote = get(note.getId());
     if (oldNote == null) {
-      throw new IllegalArgumentException("note does not exist! (" + note.toString() + ")");
+      throw new IllegalArgumentException("note does not exist! (" + note + ")");
     }
 
     if (oldNote.getCurr() && mPrefDeleteTrashedNotesDays != 0) {
@@ -231,7 +236,7 @@ public final class NoteServiceImpl implements NoteService {
 
     Note savedNote;
     try {
-      VLog.d(LOGGER_ID, "[Insert] note=\"" + note.toString() + "\"");
+      VLog.d(LOGGER_ID, "[Insert] note=\"" + note + "\"");
       savedNote = mDb.add(note);
     } catch (SQLIntegrityConstraintViolationException e) {
       VLog.d(LOGGER_ID, "[Insert] Constraint collision: " + e.getMessage());
@@ -245,7 +250,7 @@ public final class NoteServiceImpl implements NoteService {
     if (!note.getCurrRev()) {
       throw new IllegalArgumentException("Old revisions can not be updated!");
     }
-    VLog.d(LOGGER_ID, "[Update] note=\"" + note.toString() + "\"");
+    VLog.d(LOGGER_ID, "[Update] note=\"" + note + "\"");
 
     final Note oldNote = mDb.get(note.getId());
     note.setLchadt(Calendar.getInstance().getTime());
@@ -295,7 +300,7 @@ public final class NoteServiceImpl implements NoteService {
   }
 
   private Note createDraft(@NonNull final Note note) {
-    VLog.d(LOGGER_ID, "[CreateDraft] draft=\"" + note.toString() + "\"");
+    VLog.d(LOGGER_ID, "[CreateDraft] draft=\"" + note + "\"");
     discardOldDraft(note);
 
     final Note draft = clone(note);
@@ -311,14 +316,14 @@ public final class NoteServiceImpl implements NoteService {
   private void discardOldDraft(@NonNull final Note note) {
     final Note draft = getDraft(note);
     if (draft != null) {
-      VLog.d(LOGGER_ID, "[DiscardOldDraft] draft=\"" + draft.toString() + "\"");
+      VLog.d(LOGGER_ID, "[DiscardOldDraft] draft=\"" + draft + "\"");
       draft.setCurr(false);
       doDelete(draft);
     }
   }
 
   private Note upgradeDraft(@NonNull final Note draft) {
-    VLog.d(LOGGER_ID, "[UpgradeDraft] draft=\"" + draft.toString() + "\"");
+    VLog.d(LOGGER_ID, "[UpgradeDraft] draft=\"" + draft + "\"");
     final Note savedNote = mDb.update(draft);
     if (null != savedNote) {
       final Note oldRevision = getRevision(draft, draft.getRevision() - 1);
@@ -334,7 +339,7 @@ public final class NoteServiceImpl implements NoteService {
     discardOldDraft(note);
 
     if (mPrefDeleteOldRevs == -1) {
-      VLog.d(LOGGER_ID, "[UpgradeNote] overwrite note=\"" + note.toString() + "\"");
+      VLog.d(LOGGER_ID, "[UpgradeNote] overwrite note=\"" + note + "\"");
       return updateNote(note);
     }
 
@@ -344,7 +349,7 @@ public final class NoteServiceImpl implements NoteService {
     note.setRevision(newRev);
     note.setCurrRev(true);
     try {
-      VLog.d(LOGGER_ID, "[UpgradeNote] new revision=\"" + note.toString() + "\"");
+      VLog.d(LOGGER_ID, "[UpgradeNote] new revision=\"" + note + "\"");
       newRevision = mDb.add(note);
     } catch (SQLIntegrityConstraintViolationException e) {
       throw new IllegalArgumentException("Constraint collision!", e);
@@ -365,18 +370,18 @@ public final class NoteServiceImpl implements NoteService {
   }
 
   private Note updateDraft(@NonNull final Note draft) {
-    VLog.d(LOGGER_ID, "[UpdateDraft] draft=\"" + draft.toString() + "\"");
+    VLog.d(LOGGER_ID, "[UpdateDraft] draft=\"" + draft + "\"");
     return mDb.update(draft);
   }
 
   private Note updateNote(@NonNull final Note note) {
-    VLog.d(LOGGER_ID, "[UpdateNote] update note=\"" + note.toString() + "\"");
+    VLog.d(LOGGER_ID, "[UpdateNote] update note=\"" + note + "\"");
     final Note savedNote = mDb.update(note);
     if (savedNote != null) {
       final Note draft = getDraft(savedNote);
       if (draft != null && !StringUtil.equals(savedNote.getTitle(), draft.getTitle())) {
         draft.setTitle(savedNote.getTitle());
-        VLog.d(LOGGER_ID, "[UpdateNote] update draft=\"" + draft.toString() + "\"");
+        VLog.d(LOGGER_ID, "[UpdateNote] update draft=\"" + draft + "\"");
         mDb.update(draft);
       }
     }
@@ -387,7 +392,7 @@ public final class NoteServiceImpl implements NoteService {
   private void invalidateRevision(@NonNull final Note note) {
     // invalidate oldNote
     note.setCurrRev(false);
-    VLog.d(LOGGER_ID, "[InvalidateRevision] note=\"" + note.toString() + "\"");
+    VLog.d(LOGGER_ID, "[InvalidateRevision] note=\"" + note + "\"");
     mDb.update(note);
   }
 
@@ -397,7 +402,8 @@ public final class NoteServiceImpl implements NoteService {
       return title.trim();
     }
 
-    return mDf.format(GregorianCalendar.getInstance().getTime());
+    final DateFormat df = DateFormat.getDateTimeInstance(DateFormat.DEFAULT, DateFormat.DEFAULT, Locale.getDefault());
+    return df.format(GregorianCalendar.getInstance().getTime());
   }
 
   @Override
@@ -510,6 +516,7 @@ public final class NoteServiceImpl implements NoteService {
       return result;
     }
 
+    @NonNull
     @Override
     public String toString() {
       return "IdentPair [key=" + key + ", val=" + val + "]";
@@ -517,11 +524,8 @@ public final class NoteServiceImpl implements NoteService {
   }
 
   @Override
-  public File saveBackup(@NonNull final String fileName) {
+  public String getSaveBackup() {
     final List<Note> allNotes = mDb.find(null, null);
-
-    File file = new File(Environment.getExternalStoragePublicDirectory(
-        Environment.DIRECTORY_DOWNLOADS).toURI());
 
     // Convert SubjectList into JSONArray.
     // The JSONArray will be serialized.
@@ -529,15 +533,14 @@ public final class NoteServiceImpl implements NoteService {
     for (final Note note : allNotes) {
       arr.put(note.toJson());
     }
-
+    final String content;
     try {
-      file = new File(file, fileName);
-      Helper.writeFile(file.getPath(), arr.toString(2), true);
+      content = arr.toString(2);
     } catch (JSONException e) {
       throw new IllegalArgumentException("JSONException!", e);
     }
 
-    return file;
+    return content;
   }
 
   @Override
@@ -555,7 +558,7 @@ public final class NoteServiceImpl implements NoteService {
 
     long now = Calendar.getInstance().getTime().getTime();
     mDb.delete(NoteEntry.COL_CURR + " = ? AND " + NoteEntry.COL_DELDT + " < ?"
-        , new String[]{"0", String.valueOf(now - mPrefDeleteTrashedNotesDays * 24 * 60 * 60 * 1000) } );
+        , new String[]{"0", String.valueOf(now - (24L * 60 * 60 * 1000 * mPrefDeleteTrashedNotesDays)) } );
   }
 
   private NoteServiceImpl(@NonNull final Context context) {
@@ -575,8 +578,6 @@ public final class NoteServiceImpl implements NoteService {
 
   private static NoteServiceImpl mInstance = null;
   private static NoteDatabase mDb = null;
-
-  private final static DateFormat mDf = DateFormat.getDateTimeInstance(DateFormat.DEFAULT, DateFormat.DEFAULT, Locale.getDefault());
 
   private static long mLastIdent;
 

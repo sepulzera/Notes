@@ -5,12 +5,12 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import androidx.annotation.NonNull;
 import com.google.android.material.appbar.AppBarLayout;
@@ -43,10 +43,12 @@ import android.widget.ListView;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
 import de.sepulzera.notes.R;
+import de.sepulzera.notes.bf.helper.DateUtil;
 import de.sepulzera.notes.bf.helper.Helper;
 import de.sepulzera.notes.bf.helper.vlog.VLog;
 import de.sepulzera.notes.bf.service.NoteService;
@@ -138,28 +140,21 @@ public class MainActivity extends AppCompatActivity
         List<Note> checkedItems = mAdapter.getCheckedItems();
         if (checkedItems.size() == 0) return true;
 
-        switch (item.getItemId()) {
-          case R.id.cm_delete:
-            deleteNotes(checkedItems);
-            break;
-
-          case R.id.cm_rename:
-            if (checkedItems.size() != 1) {
-              throw new IllegalArgumentException("Rename can only be used with a single note.");
-            }
-            renameNote(checkedItems.iterator().next());
-            break;
-
-          case R.id.cm_copy:
-            copyNotes(checkedItems);
-            break;
-
-          case R.id.cm_share:
-            if (checkedItems.size() != 1) {
-              throw new IllegalArgumentException("Share can only be used with a single note.");
-            }
-            shareNote(checkedItems.iterator().next());
-            break;
+        int itemId = item.getItemId();
+        if (R.id.cm_delete == itemId) {
+          deleteNotes(checkedItems);
+        } else if (R.id.cm_rename == itemId) {
+          if (checkedItems.size() != 1) {
+            throw new IllegalArgumentException("Rename can only be used with a single note.");
+          }
+          renameNote(checkedItems.iterator().next());
+        } else if (R.id.cm_copy == itemId) {
+          copyNotes(checkedItems);
+        } else if (R.id.cm_share == itemId) {
+          if (checkedItems.size() != 1) {
+            throw new IllegalArgumentException("Share can only be used with a single note.");
+          }
+          shareNote(checkedItems.iterator().next());
         }
 
         mSearchView.setIconified(true);
@@ -190,14 +185,9 @@ public class MainActivity extends AppCompatActivity
       }
     });
 
-    mMainView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-
-      @Override
-      public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
-                                     int position, long arg3) {
-        mMainView.setItemChecked(position, !mAdapter.isPositionChecked(position));
-        return false;
-      }
+    mMainView.setOnItemLongClickListener((arg0, arg1, position, arg3) -> {
+      mMainView.setItemChecked(position, !mAdapter.isPositionChecked(position));
+      return false;
     });
 
     /* /CONTEXTUAL ACTION BAR */
@@ -208,12 +198,7 @@ public class MainActivity extends AppCompatActivity
 
     mMainView.setOnItemClickListener(this); // single click: edit note
 
-    mFab.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        onAddNote();
-      }
-    });
+    mFab.setOnClickListener(v -> onAddNote());
 
     // RESTORE PREVIOUS STATE
 
@@ -229,10 +214,10 @@ public class MainActivity extends AppCompatActivity
       @Override
       public void run() {
         mAdapter.updateView();
-        mHandler.postDelayed( this, 60 * mListRefreshInterval * 1000 );
+        mHandler.postDelayed( this, 60L * mListRefreshInterval * 1000 );
       }
     };
-    mHandler.postDelayed(mRunRefreshUi, 60 * mListRefreshInterval * 1000 );
+    mHandler.postDelayed(mRunRefreshUi, 60L * mListRefreshInterval * 1000 );
   }
 
   /**
@@ -259,7 +244,7 @@ public class MainActivity extends AppCompatActivity
   public void onResume() {
     super.onResume();
     mAdapter.updateView();
-    mHandler.postDelayed(mRunRefreshUi, 60 * mListRefreshInterval * 1000 );
+    mHandler.postDelayed(mRunRefreshUi, 60L * mListRefreshInterval * 1000 );
 
     Helper.dailyTask(this);
   }
@@ -306,20 +291,12 @@ public class MainActivity extends AppCompatActivity
     input.setSelectAllOnFocus(true);
     builder.setView(input);
 
-    builder.setPositiveButton(getResources().getString(R.string.dialog_rename_note_rename_btn), new DialogInterface.OnClickListener() {
-      @Override
-      public void onClick(DialogInterface dialog, int which) {
-        final NoteService srv = NoteServiceImpl.getInstance();
-        note.setTitle(input.getText().toString());
-        srv.save(note);
-        mAdapter.refresh(); // old revisions, draft etc.
-      }
-    }).setNegativeButton(getResources().getString(R.string.dialog_btn_abort), new DialogInterface.OnClickListener() {
-      @Override
-      public void onClick(DialogInterface dialog, int which) {
-        dialog.cancel();
-      }
-    });
+    builder.setPositiveButton(getResources().getString(R.string.dialog_rename_note_rename_btn), (dialog, which) -> {
+      final NoteService srv = NoteServiceImpl.getInstance();
+      note.setTitle(input.getText().toString());
+      srv.save(note);
+      mAdapter.refresh(); // old revisions, draft etc.
+    }).setNegativeButton(getResources().getString(R.string.dialog_btn_abort), (dialog, which) -> dialog.cancel());
     AlertDialog dialog = builder.create();
     Window dialogWindow = dialog.getWindow();
     if (null != dialogWindow) {
@@ -392,12 +369,9 @@ public class MainActivity extends AppCompatActivity
     setupDrawerMenuItems(navigationView);
 
     navigationView.setNavigationItemSelectedListener(
-        new NavigationView.OnNavigationItemSelectedListener() {
-          @Override
-          public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-            mDrawerLayout.closeDrawers();
-            return onNavigationItemSelectedHandle(menuItem);
-          }
+        menuItem -> {
+          mDrawerLayout.closeDrawers();
+          return onNavigationItemSelectedHandle(menuItem);
         });
   }
 
@@ -409,43 +383,36 @@ public class MainActivity extends AppCompatActivity
   }
 
   private boolean onNavigationItemSelectedHandle(@NonNull final MenuItem item) {
-    switch (item.getItemId()) {
-      case R.id.nav_home:
-        // nothing to do
-        return true;
-
-      case R.id.nav_trash:
-        startActivityForResult(new Intent(MainActivity.this, NoteTrashActivity.class), RQ_TRASH);
-        // do not check nav button
-        return false;
-
-      case R.id.nav_preferences:
-        startActivityForResult(new Intent(MainActivity.this, SettingsActivity.class), RQ_SETTINGS);
-        // do not check nav button
-        return false;
-
-      case R.id.nav_debug_log:
-        startActivityForResult(new Intent(MainActivity.this, DebugActivity.class), RQ_DEBUG);
-        // do not check nav button
-        return false;
-
-      case R.id.nav_backup:
-        doNavBackup();
-        // do not check nav button
-        return false;
-
-      case R.id.nav_restore:
-        doNavRestore(null);
-        // do not check nav button
-        return false;
-
-      case R.id.nav_about:
-        doNavAbout();
-        // do not check nav button
-        return false;
-
-      default:
-        return false;
+    int itemId = item.getItemId();
+    if (R.id.nav_home == itemId) {
+      // nothing to do
+      return true;
+    } else if (R.id.nav_trash == itemId) {
+      startActivityForResult(new Intent(MainActivity.this, NoteTrashActivity.class), RQ_TRASH);
+      // do not check nav button
+      return false;
+    } else if (R.id.nav_preferences == itemId) {
+      startActivityForResult(new Intent(MainActivity.this, SettingsActivity.class), RQ_SETTINGS);
+      // do not check nav button
+      return false;
+    } else if (R.id.nav_debug_log == itemId) {
+      startActivityForResult(new Intent(MainActivity.this, DebugActivity.class), RQ_DEBUG);
+      // do not check nav button
+      return false;
+    } else if (R.id.nav_backup == itemId) {
+      doNavBackup();
+      // do not check nav button
+      return false;
+    } else if (R.id.nav_restore == itemId) {
+      doNavRestore(null);
+      // do not check nav button
+      return false;
+    } else if (R.id.nav_about == itemId) {
+      doNavAbout();
+      // do not check nav button
+      return false;
+    } else {
+      return false;
     }
   }
 
@@ -462,42 +429,101 @@ public class MainActivity extends AppCompatActivity
   }
 
   private void doNavBackup() {
-    VLog.d(ACTIVITY_IDENT, "Creating a backup...");
     if (!Helper.isExternalStorageWritable()) {
       VLog.d(ACTIVITY_IDENT, "Backup failed: External storage is not writable.");
       Snackbar.make(mMainView, getResources().getString(R.string.snack_backup_storage_not_writeable)
           , Snackbar.LENGTH_LONG).show();
       return;
     }
+
+    // Google, why is this so hard?
+    // https://developer.android.com/training/data-storage/shared/documents-files#java
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+      saveBackupPreQ();
+    } else {
+      saveBackupPostQ(null);
+    }
+  }
+
+  private void saveBackupPreQ() {
     if (!requestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, PERMISSION_REQUEST_CODE_BACKUP_STORAGE)) {
-      VLog.d(ACTIVITY_IDENT, "Backup failed: Permission not granted.");
       return;
     }
 
-    final NoteService srv = NoteServiceImpl.getInstance();
-    final File backupFile = srv.saveBackup(getResources().getString(R.string.backup_file_name) + ".json");
-    final File parentFile = backupFile.getParentFile();
-    final String parentFilePath = (parentFile != null ? (parentFile.getName() + "/") : "") + backupFile.getName();
+    VLog.d(ACTIVITY_IDENT, "Creating a backup (Pre Q)...");
+
+    String backupContent;
+    try {
+      final NoteService srv = NoteServiceImpl.getInstance();
+      backupContent = srv.getSaveBackup();
+    } catch (IllegalArgumentException e) {
+      VLog.d(ACTIVITY_IDENT, "Backup failed: " + e.getMessage());
+      Snackbar.make(mMainView, getResources().getString(R.string.snack_backup_failed), Snackbar.LENGTH_LONG).show();
+      return;
+    }
+
+    File dir = new File(Environment.getExternalStoragePublicDirectory(
+        Environment.DIRECTORY_DOWNLOADS).toURI());
+
+    String nowString = DateUtil.formatDatetime(new Date());
+    String fileName = getResources().getString(R.string.backup_file_name) + '-' + nowString +  ".json";
+    File backupFile = new File(dir, fileName);
+    Helper.writeFile(backupFile.getPath(), backupContent);
+
+    File parentFile = backupFile.getParentFile();
+    String parentFilePath = (parentFile != null ? (parentFile.getName() + "/") : "") + backupFile.getName();
 
     VLog.d(ACTIVITY_IDENT, "Backup saved to \"" + parentFilePath + "\"");
-    Snackbar.make(mMainView, String.format(getResources().getString(R.string.snack_backup_created)
+    Snackbar.make(mMainView, String.format(getResources().getString(R.string.snack_backup_created_path)
         , parentFilePath), Snackbar.LENGTH_LONG).show();
   }
 
+  private void saveBackupPostQ(final Uri backupFile) {
+    if (backupFile == null) {
+      String nowString = DateUtil.formatDatetime(new Date());
+      String fileName = getResources().getString(R.string.backup_file_name) + '-' + nowString +  ".json";
+
+      VLog.d(ACTIVITY_IDENT, "Creating a backup: Intent to choose a file.");
+      Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT)
+          .addCategory(Intent.CATEGORY_OPENABLE)
+          .setType("application/json")
+          .putExtra(Intent.EXTRA_TITLE, fileName);
+
+      startActivityForResult(Intent.createChooser(intent
+          , getResources().getString(R.string.dialog_restore_select_file_title)), RQ_BACKUP_FILECHOOSE);
+      return;
+    }
+
+    String backupContent;
+    try {
+      final NoteService srv = NoteServiceImpl.getInstance();
+      backupContent = srv.getSaveBackup();
+    } catch (IllegalArgumentException e) {
+      VLog.d(ACTIVITY_IDENT, "Backup failed: " + e.getMessage());
+      Snackbar.make(mMainView, getResources().getString(R.string.snack_backup_failed), Snackbar.LENGTH_LONG).show();
+      return;
+    }
+
+    Helper.writeFile(this, backupFile, backupContent);
+
+    VLog.d(ACTIVITY_IDENT, "Backup saved.");
+    Snackbar.make(mMainView, getResources().getString(R.string.snack_backup_created), Snackbar.LENGTH_LONG).show();
+  }
+
   private void doNavRestore(final Uri backupFile) {
-    VLog.d(ACTIVITY_IDENT, "Restoring a backup...");
     if (!Helper.isExternalStorageReadable()) {
       VLog.d(ACTIVITY_IDENT, "Restore failed: External storage is not readable.");
       Snackbar.make(mMainView, getResources().getString(R.string.snack_restore_storage_not_readable)
           , Snackbar.LENGTH_LONG).show();
       return;
     }
-    if (!requestPermission(Manifest.permission.READ_EXTERNAL_STORAGE, PERMISSION_REQUEST_CODE_RESTORE_STORAGE)) {
-      VLog.d(ACTIVITY_IDENT, "Restore failed: Permission not granted.");
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R
+        && !requestPermission(Manifest.permission.READ_EXTERNAL_STORAGE, PERMISSION_REQUEST_CODE_RESTORE_STORAGE)) {
       return;
     }
 
     if (null == backupFile) {
+      VLog.d(ACTIVITY_IDENT, "Restoring a backup: Intent to choose a file.");
       // android versions up to 9 do not support json as mimetype
       String jsonMimeType = Build.VERSION.SDK_INT > Build.VERSION_CODES.P ? "application/json" : "application/octet-stream";
       Intent intent = new Intent()
@@ -508,6 +534,8 @@ public class MainActivity extends AppCompatActivity
           , getResources().getString(R.string.dialog_restore_select_file_title)), RQ_RESTORE_FILECHOOSE);
       return;
     }
+
+    VLog.d(ACTIVITY_IDENT, "Restoring backup " + backupFile);
 
     try {
       NoteService srv = NoteServiceImpl.getInstance();
@@ -545,6 +573,10 @@ public class MainActivity extends AppCompatActivity
             final Note note = srv.get(noteId);
             openNote(note);
           }
+          break;
+
+        case RQ_BACKUP_FILECHOOSE:
+          saveBackupPostQ(data.getData());
           break;
 
         case RQ_RESTORE_FILECHOOSE:
@@ -637,22 +669,19 @@ public class MainActivity extends AppCompatActivity
         ? String.format(getResources().getString(R.string.snack_note_moved_to_trash), notes.iterator().next().getTitle())
         : String.format(getResources().getString(R.string.snack_notes_moved_to_trash), notes.size());
     final Snackbar snack = Snackbar.make(mMainView, msg, Snackbar.LENGTH_LONG);
-    snack.setAction(R.string.snack_undo, new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        // restore note again
-        mDeleteNotes = null;
-        for (Note note : notes) {
-          mAdapter.put(note);
-          if (!note.getDraft()) {
-            final Note draft = srv.getDraft(note);
-            if (draft != null) {
-              mAdapter.put(draft);
-            }
+    snack.setAction(R.string.snack_undo, v -> {
+      // restore note again
+      mDeleteNotes = null;
+      for (Note note : notes) {
+        mAdapter.put(note);
+        if (!note.getDraft()) {
+          final Note draft = srv.getDraft(note);
+          if (draft != null) {
+            mAdapter.put(draft);
           }
         }
-        invalidateOptionsMenu();
       }
+      invalidateOptionsMenu();
     });
     snack.addCallback(new Snackbar.Callback() {
       @Override
@@ -709,13 +738,17 @@ public class MainActivity extends AppCompatActivity
     switch (requestCode) {
       case PERMISSION_REQUEST_CODE_BACKUP_STORAGE:
         if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-          doNavBackup();
+          saveBackupPreQ();
+        } else {
+          VLog.d(ACTIVITY_IDENT, "Backup failed: Permission not granted.");
         }
         break;
 
       case PERMISSION_REQUEST_CODE_RESTORE_STORAGE:
         if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
           doNavRestore(null);
+        } else {
+          VLog.d(ACTIVITY_IDENT, "Backup failed: Permission not granted.");
         }
         break;
 
@@ -752,6 +785,7 @@ public class MainActivity extends AppCompatActivity
   private static final int RQ_TRASH              = 16454; // 7xxxx > 16 bit = error
   private static final int RQ_DEBUG              = 63846;
   private static final int RQ_RESTORE_FILECHOOSE = 1123;
+  private static final int RQ_BACKUP_FILECHOOSE  = 1126;
 
   private static final int PERMISSION_REQUEST_CODE_BACKUP_STORAGE = 123;
   private static final int PERMISSION_REQUEST_CODE_RESTORE_STORAGE = 223;

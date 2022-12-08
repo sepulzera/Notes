@@ -107,8 +107,10 @@
   <string name="snack_notes_moved_to_trash" tools:ignore="PluralsCandidate">Moved %1$d items to Trash.</string>
   <string name="snack_note_restored">Restored \"%1$s\".</string>
   <string name="snack_notes_restored" tools:ignore="PluralsCandidate">Restored %1$d items.</string>
-  <string name="snack_backup_created">Backup saved to \"%1$s\"!</string>
+  <string name="snack_backup_created">Backup saved.</string>
+  <string name="snack_backup_created_path">Backup saved to \"%1$s\".</string>
   <string name="snack_backup_storage_not_writeable">Backup failed, storage is not writable!</string>
+  <string name="snack_backup_failed">Backup failed, there was an error!</string>
   <string name="snack_restore_completed">Backup restored.</string>
 
   <string name="snack_restore_storage_not_readable">Restore failed, storage is not readable!</string>

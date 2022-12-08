@@ -3,8 +3,6 @@ package de.sepulzera.notes.ui.adapter.impl;
 import android.content.Context;
 import androidx.annotation.NonNull;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -54,15 +52,12 @@ public class NoteTrashAdapterImpl extends NoteAdapterImpl {
    */
   @Override
   protected void sort() {
-    Collections.sort(getFilteredNotes(), new Comparator<Note>() {
-      @Override
-      public int compare(Note note1, Note note2) {
-        if (note1.getIdent() == note2.getIdent()) {
-          if (note1.getDraft() && note2.getDraft()) return 0;
-          return note1.getDraft() ? -1 : 1;
-        }
-        return DateUtil.compare(getTimestamp(note2), getTimestamp(note1));
+    getFilteredNotes().sort((note1, note2) -> {
+      if (note1.getIdent() == note2.getIdent()) {
+        if (note1.getDraft() && note2.getDraft()) return 0;
+        return note1.getDraft() ? -1 : 1;
       }
+      return DateUtil.compare(getTimestamp(note2), getTimestamp(note1));
     });
   }
 }

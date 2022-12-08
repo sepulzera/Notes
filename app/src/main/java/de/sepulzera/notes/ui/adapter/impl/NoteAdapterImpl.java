@@ -15,8 +15,6 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -125,7 +123,8 @@ public class NoteAdapterImpl extends BaseAdapter
   @Override
   public boolean isPositionChecked(int position) {
     Boolean result = mSelection.get(position);
-    return result == null ? false : result;
+    // return result == null ? false : result;
+    return result != null && result;
   }
 
   @Override
@@ -156,12 +155,7 @@ public class NoteAdapterImpl extends BaseAdapter
    * Sorts the notes descending by LCHADT.
    */
   protected void sort() {
-    Collections.sort(mFilteredNotes, new Comparator<Note>() {
-      @Override
-      public int compare(Note note1, Note note2) {
-        return DateUtil.compare(getTimestamp(note2), getTimestamp(note1));
-      }
-    });
+    mFilteredNotes.sort((note1, note2) -> DateUtil.compare(getTimestamp(note2), getTimestamp(note1)));
   }
 
   protected List<Note> getFilteredNotes() {

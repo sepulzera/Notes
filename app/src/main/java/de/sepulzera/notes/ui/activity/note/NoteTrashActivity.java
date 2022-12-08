@@ -2,7 +2,6 @@ package de.sepulzera.notes.ui.activity.note;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -94,15 +93,11 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
         List<Note> checkedItems = mAdapter.getCheckedItems();
         if (checkedItems.size() == 0) return true;
 
-        switch (item.getItemId()) {
-          case R.id.cm_delete:
-            deleteNotes(checkedItems);
-            break;
-
-          case R.id.cm_restore:
-            doRestore(checkedItems);
-            break;
-
+        int itemId = item.getItemId();
+        if (R.id.cm_delete == itemId) {
+          deleteNotes(checkedItems);
+        } else if (R.id.cm_restore == itemId) {
+          doRestore(checkedItems);
         }
 
         invalidateOptionsMenu();
@@ -128,14 +123,9 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
       }
     });
 
-    mMainView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-
-      @Override
-      public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
-                                     int position, long arg3) {
-        mMainView.setItemChecked(position, !mAdapter.isPositionChecked(position));
-        return false;
-      }
+    mMainView.setOnItemLongClickListener((arg0, arg1, position, arg3) -> {
+      mMainView.setItemChecked(position, !mAdapter.isPositionChecked(position));
+      return false;
     });
 
     /* /CONTEXTUAL ACTION BAR */
@@ -149,10 +139,10 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
       @Override
       public void run() {
         mAdapter.updateView();
-        mHandler.postDelayed( this, 60 * MainActivity.mListRefreshInterval * 1000 );
+        mHandler.postDelayed( this, 60L * MainActivity.mListRefreshInterval * 1000 );
       }
     };
-    mHandler.postDelayed(mRunRefreshUi, 60 * MainActivity.mListRefreshInterval * 1000 );
+    mHandler.postDelayed(mRunRefreshUi, 60L * MainActivity.mListRefreshInterval * 1000 );
   }
 
   private void createState() {
@@ -200,7 +190,7 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
   public void onResume() {
     super.onResume();
     mAdapter.updateView();
-    mHandler.postDelayed(mRunRefreshUi, 60 * MainActivity.mListRefreshInterval * 1000 );
+    mHandler.postDelayed(mRunRefreshUi, 60L * MainActivity.mListRefreshInterval * 1000);
   }
 
   @Override
@@ -232,17 +222,15 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
-    switch (item.getItemId()) {
-      case android.R.id.home:
-        onBackPressed();
-        return true;
-
-      case R.id.om_trash_empty:
-        empty();
-        return true;
-
-      default:
-        return super.onOptionsItemSelected(item);
+    int itemId = item.getItemId();
+    if (android.R.id.home == itemId) {
+      onBackPressed();
+      return true;
+    } else if (R.id.om_trash_empty == itemId) {
+      empty();
+      return true;
+    } else {
+      return super.onOptionsItemSelected(item);
     }
   }
 
@@ -250,45 +238,36 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
     final AlertDialog.Builder builder = new AlertDialog.Builder(this);
     builder.setTitle(getResources().getString(R.string.dialog_empty_trash_title))
         .setMessage(R.string.dialog_empty_trash_msg)
-        .setPositiveButton(getResources().getString(R.string.dialog_empty_trash_go), new DialogInterface.OnClickListener() {
-          @Override
-          public void onClick(DialogInterface dialog, int which) {
-            // yes = delete
-            mEmptyTrashRequested = true;
+        .setPositiveButton(getResources().getString(R.string.dialog_empty_trash_go), (dialog, which) -> {
+          // yes = delete
+          mEmptyTrashRequested = true;
 
-            mAdapter.clear();
-            fixAppBarInvisible();
+          mAdapter.clear();
+          fixAppBarInvisible();
+          invalidateOptionsMenu();
+
+          final NoteService srv = NoteServiceImpl.getInstance();
+
+          final Snackbar snack = Snackbar.make(mMainView, getResources().getString(R.string.snack_trash_emptied)
+              , Snackbar.LENGTH_LONG);
+          snack.setAction(R.string.snack_undo, v -> {
+            // restore note again
+            mEmptyTrashRequested = false;
+            refreshList();
             invalidateOptionsMenu();
-
-            final NoteService srv = NoteServiceImpl.getInstance();
-
-            final Snackbar snack = Snackbar.make(mMainView, getResources().getString(R.string.snack_trash_emptied)
-                , Snackbar.LENGTH_LONG);
-            snack.setAction(R.string.snack_undo, new View.OnClickListener() {
-              @Override
-              public void onClick(View v) {
-                // restore note again
-                mEmptyTrashRequested = false;
-                refreshList();
-                invalidateOptionsMenu();
+          });
+          snack.addCallback(new Snackbar.Callback() {
+            @Override
+            public void onDismissed(Snackbar snackbar, int event) {
+              if (event != DISMISS_EVENT_ACTION) {
+                finishEmptyTrash(srv);
               }
-            });
-            snack.addCallback(new Snackbar.Callback() {
-              @Override
-              public void onDismissed(Snackbar snackbar, int event) {
-                if (event != DISMISS_EVENT_ACTION) {
-                  finishEmptyTrash(srv);
-                }
-              }
-            });
-            snack.show();
-          }
+            }
+          });
+          snack.show();
         })
-        .setNegativeButton(getResources().getString(R.string.dialog_btn_abort), new DialogInterface.OnClickListener() {
-          @Override
-          public void onClick(DialogInterface dialog, int which) {
-            // no = aborts
-          }
+        .setNegativeButton(getResources().getString(R.string.dialog_btn_abort), (dialog, which) -> {
+          // no = aborts
         }).show();
   }
 
@@ -312,18 +291,12 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
       final AlertDialog.Builder builder = new AlertDialog.Builder(this);
       builder.setTitle(getResources().getString(R.string.dialog_trash_delete_note_title))
           .setMessage(msg)
-          .setPositiveButton(getResources().getString(R.string.dialog_trash_delete_note_go_btn), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-              // yes = delete
-              doDelete(notes);
-            }
+          .setPositiveButton(getResources().getString(R.string.dialog_trash_delete_note_go_btn), (dialog, which) -> {
+            // yes = delete
+            doDelete(notes);
           })
-          .setNegativeButton(getResources().getString(R.string.dialog_btn_abort), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-              // no = abort
-            }
+          .setNegativeButton(getResources().getString(R.string.dialog_btn_abort), (dialog, which) -> {
+            // no = abort
           }).show();
     }
   }
@@ -387,22 +360,19 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
         ? String.format(getResources().getString(R.string.snack_note_deleted), notes.get(0).getTitle())
         : String.format(getResources().getString(R.string.snack_notes_deleted), notes.size());
     final Snackbar snack = Snackbar.make(mMainView, msg, Snackbar.LENGTH_LONG);
-    snack.setAction(R.string.snack_undo, new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        // restore note again
-        mDeleteNotes = null;
-        for (Note nextNote : notes) {
-          mAdapter.put(nextNote);
-          if (!nextNote.getDraft()) {
-            final Note draft = srv.getDraft(nextNote);
-            if (draft != null) {
-              mAdapter.put(draft);
-            }
+    snack.setAction(R.string.snack_undo, v -> {
+      // restore note again
+      mDeleteNotes = null;
+      for (Note nextNote : notes) {
+        mAdapter.put(nextNote);
+        if (!nextNote.getDraft()) {
+          final Note draft = srv.getDraft(nextNote);
+          if (draft != null) {
+            mAdapter.put(draft);
           }
         }
-        invalidateOptionsMenu();
       }
+      invalidateOptionsMenu();
     });
     snack.addCallback(new Snackbar.Callback() {
       @Override
@@ -448,22 +418,19 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
         ? String.format(getResources().getString(R.string.snack_note_restored), notes.get(0).getTitle())
         : String.format(getResources().getString(R.string.snack_notes_restored), notes.size());
     final Snackbar snack = Snackbar.make(mMainView, msg, Snackbar.LENGTH_LONG);
-    snack.setAction(R.string.snack_undo, new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        --mRestoredNotesCount;
-        mRestoreNotes = null;
-        for (Note nextNote : notes) {
-          nextNote.setCurr(false);
-        }
-
-        for (Note nextDraft : deletedDraftsAndRevisions) {
-          // undo -> add note again
-          // -> if the draft was restored, add the note again, too
-          mAdapter.put(nextDraft);
-        }
-        invalidateOptionsMenu();
+    snack.setAction(R.string.snack_undo, v -> {
+      --mRestoredNotesCount;
+      mRestoreNotes = null;
+      for (Note nextNote : notes) {
+        nextNote.setCurr(false);
       }
+
+      for (Note nextDraft : deletedDraftsAndRevisions) {
+        // undo -> add note again
+        // -> if the draft was restored, add the note again, too
+        mAdapter.put(nextDraft);
+      }
+      invalidateOptionsMenu();
     });
     snack.addCallback(new Snackbar.Callback() {
       @Override

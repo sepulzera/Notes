@@ -3,16 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="de.sepulzera.notes">
 
-  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" tools:ignore="ScopedStorage" />
 
   <application
-      android:allowBackup="false"
       android:icon="@mipmap/ic_launcher"
       android:label="@string/app_name"
       android:supportsRtl="true"
       android:theme="@style/AppThemeNoActionBar"
       tools:ignore="GoogleAppIndexingWarning">
-    <activity android:name=".ui.activity.note.MainActivity">
+    <activity android:name=".ui.activity.note.MainActivity"
+        android:exported="true">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
 
@@ -27,7 +27,7 @@
     <activity
         android:name=".ui.activity.note.NoteTabViewerActivity"
         android:parentActivityName=".ui.activity.note.MainActivity"
-        android:windowSoftInputMode="adjustResize"></activity>
+        android:windowSoftInputMode="adjustResize" />
     <activity
         android:name=".ui.activity.note.NoteTrashActivity"
         android:label="@string/note_trash_title"

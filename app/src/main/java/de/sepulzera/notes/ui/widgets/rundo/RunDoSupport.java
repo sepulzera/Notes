@@ -15,8 +15,8 @@ import android.widget.EditText;
  *
  * @author Tom Calver
  */
+@SuppressWarnings("unused")
 public class RunDoSupport extends Fragment implements RunDo {
-
     private RunDo.TextLink mTextLink;
     private EditText mTextRef;
     private RunDo.Callbacks mCallbacks;
@@ -65,7 +65,7 @@ public class RunDoSupport extends Fragment implements RunDo {
         try {
             mTextLink = (RunDo.TextLink) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement RunDo.TextLink");
+            throw new ClassCastException(context + " must implement RunDo.TextLink");
         }
 
         if (context instanceof RunDo.Callbacks) mCallbacks = (RunDo.Callbacks) context;
@@ -74,18 +74,6 @@ public class RunDoSupport extends Fragment implements RunDo {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        Bundle args = getArguments();
-        mIdent = args != null? args.getString(IDENT_TAG) : null;
-
-        if (mUndoQueue == null) mUndoQueue = new FixedSizeArrayDeque<>(queueSize);
-        if (mRedoQueue == null) mRedoQueue = new FixedSizeArrayDeque<>(queueSize);
-
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
 
         if (savedInstanceState != null) {
             mUndoQueue = savedInstanceState.getParcelable(UNDO_TAG);
@@ -100,6 +88,11 @@ public class RunDoSupport extends Fragment implements RunDo {
             trackingState = savedInstanceState.getInt(TRACKING_TAG);
         }
 
+        Bundle args = getArguments();
+        mIdent = args != null? args.getString(IDENT_TAG) : null;
+
+        if (mUndoQueue == null) mUndoQueue = new FixedSizeArrayDeque<>(queueSize);
+        if (mRedoQueue == null) mRedoQueue = new FixedSizeArrayDeque<>(queueSize);
     }
 
     @Override
@@ -155,12 +148,10 @@ public class RunDoSupport extends Fragment implements RunDo {
 
             if (mCallbacks != null && isQueueEmpty(mUndoQueue)) mCallbacks.undoAvailable();
         }
-
     }
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-
         switch (trackingState) {
             case TRACKING_STARTED:
                 trackingState = TRACKING_ENDED;
@@ -169,7 +160,6 @@ public class RunDoSupport extends Fragment implements RunDo {
                 restartCountdownRunnable();
                 break;
         }
-
     }
 
     @Override
@@ -201,7 +191,6 @@ public class RunDoSupport extends Fragment implements RunDo {
      */
     @Override
     public void notifyArrayDequeDataReady(SubtractStrings.Item item) {
-
         trackingState = TRACKING_ENDED;
 
         if (item.getDeviationType() == SubtractStrings.UNCHANGED) {
@@ -282,7 +271,6 @@ public class RunDoSupport extends Fragment implements RunDo {
      */
     @Override
     public void undo() {
-
         if (isRunning && !undoRequested) {
             undoRequested = true;
             restartCountdownRunnableImmediately();
@@ -335,7 +323,6 @@ public class RunDoSupport extends Fragment implements RunDo {
         } finally {
             mOldText = mTextRef.getText().toString();
         }
-
     }
 
     /**
@@ -344,7 +331,6 @@ public class RunDoSupport extends Fragment implements RunDo {
      */
     @Override
     public void redo() {
-
         trackingState = TRACKING_STARTED;
 
         if (isQueueEmpty(mRedoQueue)) {
@@ -353,7 +339,6 @@ public class RunDoSupport extends Fragment implements RunDo {
         }
 
         try {
-
             SubtractStrings.Item temp = pollRedoQueue();
 
             switch (temp.getDeviationType()) {
@@ -385,13 +370,11 @@ public class RunDoSupport extends Fragment implements RunDo {
             fillUndoQueue(temp);
 
             if (mCallbacks != null) mCallbacks.redoCalled();
-
         } catch (IndexOutOfBoundsException e) {
             e.printStackTrace();
         } finally {
             mOldText = mTextRef.getText().toString();
         }
-
     }
 
     /**

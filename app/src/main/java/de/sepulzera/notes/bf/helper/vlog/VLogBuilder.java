@@ -37,10 +37,10 @@ public class VLogBuilder {
   }
 
   public static class VLogEntry {
-    public String tag;
-    public String msg;
+    public final String tag;
+    public final String msg;
 
-    public VLogEntry(String tag, String msg) {
+    protected VLogEntry(String tag, String msg) {
       this.tag = tag;
       this.msg = msg;
     }

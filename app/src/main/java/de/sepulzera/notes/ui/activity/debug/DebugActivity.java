@@ -38,12 +38,6 @@ public class DebugActivity extends AppCompatActivity {
 
     // SETUP APPLICATION
 
-    if (null != savedInstanceState) {
-      restoreState(savedInstanceState);
-    } else {
-      createState();
-    }
-
     Toolbar toolbar = findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
     final ActionBar ab = getSupportActionBar();
@@ -58,14 +52,6 @@ public class DebugActivity extends AppCompatActivity {
 
     mDebugMsg = mMainView.findViewById(R.id.debug_log);
     initializeDebugMsg();
-  }
-
-  private void createState() {
-    // nothing to do
-  }
-
-  private void restoreState(@NonNull final Bundle outState) {
-    // nothing to do
   }
 
   @Override
@@ -84,27 +70,24 @@ public class DebugActivity extends AppCompatActivity {
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
-    switch (item.getItemId()) {
-      case android.R.id.home:
-        onBackPressed();
-        return true;
-
-      case R.id.om_debug_copy:
-        copyToClipboard();
-        Snackbar.make(mMainView, getResources().getString(R.string.copied_to_clipboard), Snackbar.LENGTH_LONG).show();
-        return true;
-
-      case R.id.om_debug_share:
-        Intent intent = Helper.createShareIntent("Notes Debug Log", getMsg());
-        startActivity(Intent.createChooser(intent, getString(R.string.share)));
-        return true;
-
-      default:
-        return super.onOptionsItemSelected(item);
+    int itemId = item.getItemId();
+    if (android.R.id.home == itemId) {
+      onBackPressed();
+      return true;
+    } else if (R.id.om_debug_copy == itemId) {
+      copyToClipboard();
+      Snackbar.make(mMainView, getResources().getString(R.string.copied_to_clipboard), Snackbar.LENGTH_LONG).show();
+      return true;
+    } else if (R.id.om_debug_share == itemId) {
+      Intent intent = Helper.createShareIntent("Notes Debug Log", getMsg());
+      startActivity(Intent.createChooser(intent, getString(R.string.share)));
+      return true;
+    } else {
+      return super.onOptionsItemSelected(item);
     }
   }
 
-  public void copyToClipboard() {
+  private void copyToClipboard() {
     ClipboardManager cman = ((ClipboardManager) this.getSystemService(Context.CLIPBOARD_SERVICE));
     if (cman != null) {
       cman.setPrimaryClip(
@@ -112,7 +95,7 @@ public class DebugActivity extends AppCompatActivity {
     }
   }
 
-  public void initializeDebugMsg() {
+  private void initializeDebugMsg() {
     mDebugMsg.setShowSoftInputOnFocus(false);
     mDebugMsg.setCustomSelectionActionModeCallback(new CustomSelectionActionModeCallback());
     mDebugMsg.setCustomInsertionActionModeCallback(new CustomInsertionActionModeCallback());
@@ -132,7 +115,7 @@ public class DebugActivity extends AppCompatActivity {
     mMainView.setBackgroundColor(getResources().getColor(R.color.colorNoteBgReadonly, null));
   }
 
-  public String getMsg() {
+  private String getMsg() {
     @Nullable Editable text = mDebugMsg.getText();
     return text == null ? "" : text.toString();
   }

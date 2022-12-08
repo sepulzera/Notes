@@ -17,7 +17,7 @@ import de.sepulzera.notes.bf.helper.Helper;
 public class SettingsActivity extends AppCompatActivity {
 
   @Override
-  protected void onCreate(Bundle savedInstanceState) {
+  public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.settings_activity);
     getSupportFragmentManager()
@@ -56,19 +56,16 @@ public class SettingsActivity extends AppCompatActivity {
 
       Preference pref = findPreference(getString(R.string.PREF_DAY_NIGHT_MODE_KEY));
       if (pref != null) {
-        pref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-          @Override
-          public boolean onPreferenceChange(Preference preference, Object newValue) {
-            FragmentActivity activity = getActivity();
-            if (activity != null) {
-              if (newValue instanceof String) {
-                String newValueS = newValue.toString();
-                Helper.setNightMode(Integer.parseInt(newValueS));
-                getActivity().recreate();
-              }
+        pref.setOnPreferenceChangeListener((preference, newValue) -> {
+          FragmentActivity activity = getActivity();
+          if (activity != null) {
+            if (newValue instanceof String) {
+              String newValueS = newValue.toString();
+              Helper.setNightMode(Integer.parseInt(newValueS));
+              getActivity().recreate();
             }
-            return true;
           }
+          return true;
         });
       }
     }

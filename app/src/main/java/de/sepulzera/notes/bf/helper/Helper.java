@@ -11,11 +11,15 @@ import androidx.appcompat.app.AppCompatDelegate;
 import android.util.Log;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.Calendar;
 import java.util.Date;
@@ -107,18 +111,17 @@ public class Helper {
   }
 
   /**
-   * Writes the {@code content} into the given file on disk.
+   * Writes the {@code content} into the given file on disk. Will overwrite existing content.
    *
    * @param path File pathname (URI).
    * @param content ...
-   * @param doReplace True: the file will be replaced. False: the content will be appended, if the file already exists.
    *
    * @throws IllegalArgumentException File could not be opened (access error, permissions error).
    */
-  public static void writeFile(@NonNull final String path, @NonNull String content, boolean doReplace) {
+  public static void writeFile(@NonNull final String path, @NonNull String content) {
     File file = new File(path);
 
-    if (doReplace && file.exists()) {
+    if (file.exists()) {
       // clean up the previous file
       if (!file.delete()) {
         throw new IllegalArgumentException("file could not been deleted!");
@@ -139,6 +142,21 @@ public class Helper {
           Log.e("Error", e.toString());
         }
       }
+    }
+  }
+
+  public static void writeFile(@NonNull final Context context, @NonNull final Uri uri, @NonNull String content) {
+    try (OutputStream outputStream = context.getContentResolver().openOutputStream(uri, "rw")) {
+      if (outputStream == null) {
+        return;
+      }
+      try (OutputStreamWriter writer = new OutputStreamWriter(outputStream)) {
+        writer.write(content);
+      } catch (IOException e) {
+        throw new IllegalArgumentException(e);
+      }
+    } catch (IOException e) {
+      Log.d("notes", "Exception while writing a file: " + e.getMessage());
     }
   }
 

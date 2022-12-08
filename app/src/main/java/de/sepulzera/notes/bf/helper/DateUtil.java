@@ -73,6 +73,17 @@ public class DateUtil {
   }
 
   /**
+   * Formats the given datetime, simplified without timezone.
+   *
+   * @param date ...
+   *
+   * @return The date as simplified ISO-8601-like without timezone, or empty string if {@code date} is {@code null}.
+   */
+  public static String formatDatetime(@Nullable final Date date) {
+    return (date == null) ? "" : df_datetime.format(date);
+  }
+
+  /**
    * <p>Prints in a very fashioned way, how far the date {@code compareDate} comes before {@code now}.</p>
    * <p>
    * <table>
@@ -204,6 +215,7 @@ public class DateUtil {
     df_day       = new SimpleDateFormat("EEE", Locale.getDefault());
     df_monthDay  = new SimpleDateFormat("MMM dd", Locale.getDefault());
     df_yearMonth = new SimpleDateFormat("MMM yyyy", Locale.getDefault());
+    df_datetime  = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss", Locale.getDefault());
   }
 
   private DateUtil() {
@@ -214,6 +226,7 @@ public class DateUtil {
   private static DateFormat df_day       = new SimpleDateFormat("EEE", Locale.getDefault());
   private static DateFormat df_monthDay  = new SimpleDateFormat("MMM dd", Locale.getDefault());
   private static DateFormat df_yearMonth = new SimpleDateFormat("MMM yyyy", Locale.getDefault());
+  private static DateFormat df_datetime  = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss", Locale.getDefault());
 
   private static       String     POST_NOW;
   private static       String     POST_MINUTE;

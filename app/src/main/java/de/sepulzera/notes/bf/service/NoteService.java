@@ -43,7 +43,7 @@ public interface NoteService {
 
   void restoreBackup(@NonNull final Context context, @NonNull final Uri backupFile);
 
-  File saveBackup(@NonNull final String fileName);
+  String getSaveBackup();
 
   void wipeTrash();
 }

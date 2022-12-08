@@ -14,6 +14,7 @@ import androidx.fragment.app.FragmentManager;
  *
  * @author Tom Calver
  */
+@SuppressWarnings("unused")
 public interface RunDo extends TextWatcher, WriteToArrayDeque {
 
     String TAG = "RunDo";

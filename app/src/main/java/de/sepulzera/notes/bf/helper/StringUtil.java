@@ -410,42 +410,6 @@ public class StringUtil {
     return toString(lines);
   }
 
-  /*
-  public static int getIndexOfLineStart(@NonNull String str, int pos) {
-    int strLen = str.length();
-    int selStart;
-    if (pos < 0) {
-      selStart = 0;
-    } else if (strLen > 0 && pos > strLen) {
-      selStart = strLen;
-    } else {
-      selStart = pos;
-    }
-
-    int lineStart = str.substring(0, selStart).lastIndexOf(LINE_ENDING);
-    return lineStart < 0? 0 : lineStart + 1;
-  }
-
-  public static int getIndexOfLineEnd(@NonNull String str, int pos) {
-    int strLen = str.length();
-
-    if (strLen == 0) {
-      return 0;
-    }
-
-    int selEnd;
-    if (pos < 0) {
-      selEnd = 0;
-    } else if (pos > strLen) {
-      selEnd = strLen;
-    } else {
-      selEnd = pos;
-    }
-
-    int lineEnd = str.indexOf(LINE_ENDING, selEnd);
-    return lineEnd < 0? strLen - 1 : lineEnd - 1;
-  } */
-
   /**
    * <p>Moves the selected lines from a string up by one.</p>
    * <p>A line is a substring delimited by {@link StringUtil#LINE_ENDING}s.
