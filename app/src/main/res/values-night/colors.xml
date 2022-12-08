@@ -12,7 +12,9 @@
 
   <color type="color" name="colorNoteBg">#222</color>
   <color type="color" name="colorNoteBgReadonly">#302020</color>
+  <color type="color" name="colorNoteBgSelected">#3d2a22</color>
 
-  <color type="color" name="white">#DDD</color>
-  <color type="color" name="darkGray">#222</color>
+  <color type="color" name="white">#FFF</color>
+  <color type="color" name="whiteSmoke">#DDD</color>
+  <color type="color" name="darkGray">#333</color>
 </resources>

@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
                                                  xmlns:app="http://schemas.android.com/apk/res-auto"
                                                  android:id="@+id/main_content"
                                                  android:layout_width="match_parent"
                                                  android:layout_height="match_parent">
 
-  <android.support.design.widget.AppBarLayout
+  <com.google.android.material.appbar.AppBarLayout
       android:id="@+id/appbar"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
@@ -20,24 +20,24 @@
         app:layout_scrollFlags="scroll|enterAlways|snap"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-    <android.support.design.widget.TabLayout
+    <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabs"
         android:layout_width="match_parent"
         android:layout_height="32dp"
         android:background="@color/colorPrimaryBar"
         app:tabBackground="@color/colorPrimaryBar"
-        app:tabMaxWidth="0dp"
-        app:tabGravity="fill"/>
+        app:tabGravity="fill"
+        app:tabMaxWidth="0dp" />
 
-  </android.support.design.widget.AppBarLayout>
+  </com.google.android.material.appbar.AppBarLayout>
 
-  <android.support.v4.view.ViewPager
+  <androidx.viewpager.widget.ViewPager
       android:id="@+id/viewpager"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-  <android.support.v7.widget.ActionMenuView
+  <androidx.appcompat.widget.ActionMenuView
       android:id="@+id/toolbar_edit"
       android:layout_width="match_parent"
       android:layout_height="40dp"
@@ -47,28 +47,30 @@
       android:visibility="gone"
       app:layout_scrollFlags="scroll|enterAlways|snap" />
 
-  <android.support.design.widget.FloatingActionButton
+  <com.google.android.material.floatingactionbutton.FloatingActionButton
       android:id="@+id/fab_save"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginBottom="12dp"
       android:layout_marginEnd="@dimen/activity_horizontal_margin"
-      android:src="@drawable/ic_save_white_24dp"
+      android:src="@drawable/ic_save"
       android:visibility="visible"
       android:layout_gravity="end|bottom"
-      app:backgroundTint="@color/colorAccentDark" />
+      app:backgroundTint="@color/colorAccentDark"
+      android:contentDescription="@string/save" />
 
-  <android.support.design.widget.FloatingActionButton
+  <com.google.android.material.floatingactionbutton.FloatingActionButton
       android:id="@+id/fab_edit"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_margin="@dimen/activity_horizontal_margin"
-      android:src="@android:drawable/ic_menu_edit"
+      android:src="@drawable/ic_edit"
       android:layout_gravity="end|bottom"
       android:visibility="gone"
-      app:backgroundTint="@color/colorAccentDark" />
+      app:backgroundTint="@color/colorAccentDark"
+      android:contentDescription="@string/edit" />
 
-  <android.support.design.widget.FloatingActionButton
+  <com.google.android.material.floatingactionbutton.FloatingActionButton
       android:id="@+id/fab_show_toolbar_edit"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
@@ -76,12 +78,13 @@
       app:fabSize="mini"
       app:borderWidth="0dp"
       android:elevation="6dp"
-      android:src="@drawable/ic_keyboard_arrow_up_24px"
+      android:src="@drawable/ic_keyboard_arrow_up"
       app:backgroundTint="@color/colorAccent"
       app:layout_anchor="@id/appbar"
-      app:layout_anchorGravity="end|bottom" />
+      app:layout_anchorGravity="end|bottom"
+      android:contentDescription="@string/expand" />
 
-  <android.support.design.widget.FloatingActionButton
+  <com.google.android.material.floatingactionbutton.FloatingActionButton
       android:id="@+id/fab_hide_toolbar_edit"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
@@ -89,9 +92,10 @@
       app:fabSize="mini"
       app:borderWidth="0dp"
       android:elevation="6dp"
-      android:src="@drawable/ic_keyboard_arrow_down_24px"
+      android:src="@drawable/ic_keyboard_arrow_down"
       app:backgroundTint="@color/colorAccent"
       app:layout_anchor="@id/appbar"
-      app:layout_anchorGravity="end|bottom" />
+      app:layout_anchorGravity="end|bottom"
+      android:contentDescription="@string/hide" />
 
-</android.support.design.widget.CoordinatorLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -7,6 +7,5 @@
 .DS_Store
 .externalNativeBuild
 .gradle
-gradle.properties
 keystore.properties
 

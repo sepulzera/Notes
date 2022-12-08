@@ -12,7 +12,9 @@
 
   <color type="color" name="colorNoteBg">#FFF</color>
   <color type="color" name="colorNoteBgReadonly">#FFF5F5</color>
+  <color type="color" name="colorNoteBgSelected">#482e22</color>
 
-  <color type="color" name="white">#DDD</color>
-  <color type="color" name="darkGray">#222</color>
+  <color type="color" name="white">#FFF</color>
+  <color type="color" name="whiteSmoke">#DDD</color>
+  <color type="color" name="darkGray">#333</color>
 </resources>

@@ -90,6 +90,8 @@ public class StringUtilTest {
     assertEquals("first line empty", "Hello World!", StringUtil.deleteLines("\nHello World!", 0));
     assertEquals("middle line empty", "Hello World!\nAnother World!", StringUtil.deleteLines("Hello World!\n\nAnother World!", 13));
     assertEquals("last line empty", "Hello World!", StringUtil.deleteLines("Hello World!\n", 13));
+
+    assertEquals("last line empty", "Hello World!\n\n", StringUtil.deleteLines("Hello World!\n\n\n", 14));
   }
 
   @Test

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns="http://www.w3.org/2000/svg"
+   id="svg8"
+   version="1.1"
+   viewBox="0 0 142 142"
+   height="142mm"
+   width="142mm">
+  <defs
+     id="defs2" />
+  <g
+     id="layer5">
+    <rect
+       y="155"
+       x="0"
+       height="142"
+       width="142"
+       id="rect815"
+       style="opacity:1;fill:#158f25;fill-opacity:1;stroke-width:0.15779752"
+       transform="translate(0,-155)" />
+  </g>
+  <g
+     style="display:none"
+     id="layer2">
+    <path
+       id="rect955-2-3"
+       d="M 41.008371,100.93257 82.075797,142 H 139.35415 V 83.39739 L 104.13251,48.17576 92.091983,60.2163 86.908311,55.03263 Z"
+       style="opacity:0.3;fill:#ff00ff;fill-opacity:1;stroke-width:0.6569739" />
+  </g>
+  <g
+     style="display:inline"
+     id="layer4">
+    <path
+       id="rect955-2-5"
+       transform="scale(0.26458333)"
+       d="M 392.77148 192.06836 L 358.00195 226.83789 L 354.82227 223.6582 L 333.81641 202.65234 L 328.47461 207.99609 L 154.99219 381.47656 L 310.20703 536.69336 L 526.69336 536.69141 L 536.69336 536.69141 L 536.69336 335.99023 L 526.69336 325.99023 L 392.77148 192.06836 z "
+       style="opacity:0.25;fill:#000000;fill-opacity:1;stroke-width:2.48305106" />
+  </g>
+</svg>

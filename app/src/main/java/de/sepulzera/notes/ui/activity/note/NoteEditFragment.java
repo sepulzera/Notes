@@ -4,23 +4,27 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.ActionMode;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
 import java.util.List;
-import java.util.Objects;
 
 import de.sepulzera.notes.R;
 import de.sepulzera.notes.bf.helper.StringUtil;
+import de.sepulzera.notes.bf.helper.vlog.VLog;
 import de.sepulzera.notes.ds.model.Note;
 import de.sepulzera.notes.ui.widgets.EditTextSelectable;
 import de.sepulzera.notes.ui.widgets.rundo.RunDo;
@@ -32,6 +36,8 @@ public class NoteEditFragment extends Fragment implements EditTextSelectable.Sel
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     super.onCreateView(inflater, container, savedInstanceState);
+
+    VLog.d(ACTIVITY_IDENT, "Creating view.");
 
     final View view = (container == null)? getView() : inflater.inflate(R.layout.frag_note, container, false);
     if (view == null) {
@@ -56,12 +62,9 @@ public class NoteEditFragment extends Fragment implements EditTextSelectable.Sel
       public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
       public void onTextChanged(CharSequence s, int start, int before, int count) {}
     });
-    mEditMsg.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-      @Override
-      public void onFocusChange(View view, boolean hasFocus) {
-        if (mEditMsg.hasFocus()) {
-          mListener.onTextChanged(getMsg(), true, mEditMsg.getSelectionStart(), mEditMsg.getSelectionEnd());
-        }
+    mEditMsg.setOnFocusChangeListener((view1, hasFocus) -> {
+      if (mEditMsg.hasFocus()) {
+        mListener.onTextChanged(getMsg(), true, mEditMsg.getSelectionStart(), mEditMsg.getSelectionEnd());
       }
     });
     mEditMsg.addSelectionChangedListener(this);
@@ -86,10 +89,7 @@ public class NoteEditFragment extends Fragment implements EditTextSelectable.Sel
     mMsg        = savedInstanceState.getString(KEY_MSG);
     mIsEditable = savedInstanceState.getBoolean(KEY_EDITABLE, true);
 
-    FragmentManager fragmentManager = getFragmentManager();
-    if (fragmentManager == null) {
-      throw new IllegalStateException("No FragmentManager!");
-    }
+    FragmentManager fragmentManager = getChildFragmentManager();
     final List<Fragment> frags = fragmentManager.getFragments();
     if (frags.size() == 0) {
       throw new IllegalStateException("RunDo Fragment is lost");
@@ -121,7 +121,7 @@ public class NoteEditFragment extends Fragment implements EditTextSelectable.Sel
   public int getIndex() { return mIndex; }
 
   public void copyToClipboard() {
-    ClipboardManager cman = ((ClipboardManager) Objects.requireNonNull(getActivity()).getSystemService(Context.CLIPBOARD_SERVICE));
+    ClipboardManager cman = ((ClipboardManager) requireActivity().getSystemService(Context.CLIPBOARD_SERVICE));
     if (cman != null) {
       cman.setPrimaryClip(
           ClipData.newPlainText("notes_" + mNote.getTitle(), getMsg()));
@@ -172,7 +172,7 @@ public class NoteEditFragment extends Fragment implements EditTextSelectable.Sel
       // stay
       String nextLine = lines.get(selectedLines[selectedLines.length - 1] + 1);
       if (nextLine.length() - 1 < posInLine) {
-        selPos = posOfLine + (nextLine.length() > 0 ? nextLine.length() : 0);
+        selPos = posOfLine + nextLine.length();
       } else {
         selPos = posOfLine + posInLine;
       }
@@ -192,8 +192,8 @@ public class NoteEditFragment extends Fragment implements EditTextSelectable.Sel
     setMsg(msgCopiedLine);
     int len = msgCopiedLine.length();
 
-    selStart = (selStart > len? len : selStart);
-    selEnd = (selEnd > len? len : selEnd);
+    selStart = Math.min(selStart, len);
+    selEnd = Math.min(selEnd, len);
     mEditMsg.setSelection(selStart, selEnd);
   }
 
@@ -235,20 +235,83 @@ public class NoteEditFragment extends Fragment implements EditTextSelectable.Sel
   public void setEditable(boolean editable) {
     mIsEditable = editable;
     if (editable) {
-      mEditMsg.setEnabled(true);
+      mEditMsg.setShowSoftInputOnFocus(true);
+      mEditMsg.setCustomSelectionActionModeCallback(null);
+      mEditMsg.setCustomInsertionActionModeCallback(null);
+      mEditMsg.setOnDragListener(null);
     } else {
-      mEditMsg.setEnabled(false);
+      mEditMsg.setShowSoftInputOnFocus(false);
+      mEditMsg.setCustomSelectionActionModeCallback(new CustomSelectionActionModeCallback());
+      mEditMsg.setCustomInsertionActionModeCallback(new CustomInsertionActionModeCallback());
+      mEditMsg.setOnDragListener(new DragListener());
     }
 
     if (editable && mRunDo == null) {
-      FragmentManager fragmentManager = getFragmentManager();
-      if (fragmentManager == null) {
-        throw new IllegalStateException("No FragmentManager!");
-      }
+      FragmentManager fragmentManager = getChildFragmentManager();
       mRunDo = RunDo.Factory.getInstance(fragmentManager, String.valueOf(mIndex));
     }
 
     mView.setBackgroundColor(getResources().getColor(editable? R.color.colorNoteBg : R.color.colorNoteBgReadonly, null));
+  }
+
+  protected static class CustomSelectionActionModeCallback implements ActionMode.Callback {
+
+    @Override
+    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+      return true;
+    }
+
+    @Override
+    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+      try {
+        MenuItem copyItem = menu.findItem(android.R.id.copy);
+        CharSequence title = copyItem.getTitle();
+        menu.clear();
+        menu.add(0, android.R.id.copy, 0, title);
+      }
+      catch (Exception e) {
+        // ignored
+      }
+      return true;
+    }
+
+    @Override
+    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+      return false;
+    }
+
+    @Override
+    public void onDestroyActionMode(ActionMode mode) {
+    }
+  }
+
+  protected static class CustomInsertionActionModeCallback implements ActionMode.Callback {
+
+    @Override
+    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+      return false;
+    }
+
+    @Override
+    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+      return false;
+    }
+
+    @Override
+    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+      return false;
+    }
+
+    @Override
+    public void onDestroyActionMode(ActionMode mode) {
+    }
+  }
+
+  protected static class DragListener implements View.OnDragListener {
+    @Override
+    public boolean onDrag(View view, DragEvent dragEvent) {
+      return true;
+    }
   }
 
   public boolean isChanged() {
@@ -317,13 +380,12 @@ public class NoteEditFragment extends Fragment implements EditTextSelectable.Sel
   }
 
   @Override
-  public void onAttach(Context context) {
+  public void onAttach(@NonNull Context context) {
     super.onAttach(context);
     if (context instanceof NoteEditFragmentListener ) {
       mListener = (NoteEditFragmentListener)context;
     } else {
-      throw new RuntimeException(context.toString()
-          + " must implement TeamCreateFragmentListener");
+      throw new RuntimeException(context + " must implement TeamCreateFragmentListener");
     }
   }
 
@@ -347,4 +409,6 @@ public class NoteEditFragment extends Fragment implements EditTextSelectable.Sel
   private static final String KEY_INDEX    = "noteEditFrag_index";
   private static final String KEY_MSG      = "noteEditFrag_msg";
   private static final String KEY_EDITABLE = "noteEditFrag_editable";
+
+  private static final String ACTIVITY_IDENT = "NoteEditFragment";
 }

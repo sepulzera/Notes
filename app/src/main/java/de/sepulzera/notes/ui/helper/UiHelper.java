@@ -7,11 +7,11 @@ import android.view.inputmethod.InputMethodManager;
 
 public final class UiHelper {
   /**
-   * Versteckt das Soft-Keyboard.
+   * Hides the Soft-Keyboard.
    *
-   * @param view Aktiver View.
-   * @param activity Aktive Activity.
-   * @param context Aktiver Context.
+   * @param view ...
+   * @param activity ...
+   * @param context ...
    */
   public static void hideKeyboard(final View view, final Activity activity, final Context context) {
     if (view != null && activity != null && context != null) {

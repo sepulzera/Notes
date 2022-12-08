@@ -1,0 +1,74 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+  <PreferenceCategory
+      app:title="@string/appearance_header"
+      app:icon="@drawable/ic_color_lens">
+
+    <ListPreference
+        app:defaultValue="@string/pref_day_night_mode_default"
+        app:entries="@array/pref_day_night_mode_titles"
+        app:entryValues="@array/pref_day_night_mode_values"
+        app:key="@string/PREF_DAY_NIGHT_MODE_KEY"
+        app:title="@string/pref_title_day_night_mode"
+        app:useSimpleSummaryProvider="true" />
+
+    <ListPreference
+        app:defaultValue="@string/pref_list_refresh_interval_default"
+        app:entries="@array/pref_list_refresh_interval_titles"
+        app:entryValues="@array/pref_list_refresh_interval_values"
+        app:key="@string/PREF_LIST_REFRESH_INTERVAL_KEY"
+        app:title="@string/pref_title_list_refresh_interval"
+        app:useSimpleSummaryProvider="true" />
+
+  </PreferenceCategory>
+
+  <PreferenceCategory
+      app:title="@string/notes_header"
+      app:icon="@drawable/ic_pref_edit">
+
+    <SwitchPreference
+        app:defaultValue="@string/pref_note_open_readonly_default"
+        app:key="@string/PREF_NOTE_OPEN_READONLY_KEY"
+        app:summaryOff="@string/pref_description_note_open_readonly_off"
+        app:summaryOn="@string/pref_description_note_open_readonly_on"
+        app:title="@string/pref_title_note_open_readonly" />
+
+  </PreferenceCategory>
+
+  <PreferenceCategory
+      app:title="@string/storage_header"
+      app:icon="@drawable/ic_sd_storage">
+
+    <ListPreference
+        app:defaultValue="@string/pref_rev_delete_old_num_default"
+        app:entries="@array/pref_rev_delete_old_num_titles"
+        app:entryValues="@array/pref_rev_delete_old_num_values"
+        app:key="@string/PREF_REV_DELETE_OLD_NUM_KEY"
+        app:title="@string/pref_title_rev_delete_old_num"
+        app:useSimpleSummaryProvider="true" />
+
+    <ListPreference
+        app:defaultValue="@string/pref_note_remove_deleted_days_num_default"
+        app:entries="@array/pref_note_remove_deleted_days_titles"
+        app:entryValues="@array/pref_note_remove_deleted_days_values"
+        app:key="@string/PREF_NOTE_REMOVE_DELETED_DAYS_NUM_KEY"
+        app:title="@string/pref_title_note_remove_deleted_days"
+        app:useSimpleSummaryProvider="true" />
+
+  </PreferenceCategory>
+
+  <PreferenceCategory
+      app:title="@string/debug_header"
+      app:icon="@android:drawable/ic_lock_idle_low_battery">
+
+    <SwitchPreference
+        app:defaultValue="@string/pref_debugging_mode_default"
+        app:key="@string/PREF_DEBUGGING_MODE_KEY"
+        app:summaryOff="@string/pref_description_debugging_mode_off"
+        app:summaryOn="@string/pref_description_debugging_mode_on"
+        app:title="@string/pref_title_debugging_mode" />
+
+
+  </PreferenceCategory>
+
+</PreferenceScreen>

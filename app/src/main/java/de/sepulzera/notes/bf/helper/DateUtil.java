@@ -1,8 +1,8 @@
 package de.sepulzera.notes.bf.helper;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.util.Log;
 
 import java.text.DateFormat;
@@ -20,15 +20,15 @@ public class DateUtil {
   @NonNull public static DateFormat getDefaultDateFormatter() { return df_iso8601; }
 
   /**
-   * Vergleicht die beiden Daten.
-   * {@code null}-Werte werden wie "frühestes Datum der Galaxy" behandelt.
+   * Compares two dates.
+   * {@code null}-values are treated as "earliest day of our galaxy".
    *
-   * @param date1 Erstes Datum. Darf null sein.
-   * @param date2 Zweites Datum. Darf null sein.
+   * @param date1 First date. May be null.
+   * @param date2 Second date. May be null.
    *
-   * @return {@code 0}, wenn sie gleich sind.
-   *         {@code < 0}, wenn date1 vor date2 ist.
-   *         {@code > 0}, wenn date1 nach date2 ist.
+   * @return {@code 0}, if both dates are equal.
+   *         {@code < 0}, if date1 is before date2.
+   *         {@code > 0}, if date1 is after date2.
    */
   public static int compare(@Nullable final Date date1, @Nullable final Date date2) {
     if (date1 == null) {
@@ -45,14 +45,13 @@ public class DateUtil {
   }
 
   /**
-   * Prüft, ob date1 der gleiche DateTime-Stamp wie date2 ist.
-   * Prüft nicht, ob es die gleiche Objekt-Referenz ist.
-   * {@code null} wird als einheitlicher Wert betrachtet, also beide {@code null} = wahr.
+   * Compares two dates.
+   * {@code null}-values are treated as equal.
    *
-   * @param date1 Date1.
-   * @param date2 Date2.
+   * @param date1 First date. May be null.
+   * @param date2 Second date. May be null.
    *
-   * @return date1 und date2 gleich {@code null} oder {@code date1.compareTo(date2) == 0}
+   * @return True: date1 is equal to date2 or both dates are {@code null} - False: else.
    */
   @SuppressWarnings("unused")
   public static boolean equals(@Nullable final Date date1, @Nullable final Date date2) {
@@ -63,54 +62,63 @@ public class DateUtil {
   }
 
   /**
-   * Formatiert das übergebene Datum nach ISO-8601.
-   * Eignet sich für die normierte Übergabe als Parameter (z. B. an Web services).
-   * Hinweis: Sollte nicht für UI-Ausgabe verwendet werden.
+   * Formats the given date as ISO-8601.
    *
-   * @param date Das zu formatierende Datum. Darf null sein.
+   * @param date ...
    *
-   * @return Das formatierte Datum oder leer, falls date == null.
+   * @return The date as ISO-8601, or empty string if {@code date} is {@code null}.
    */
-  public static String formatDate(@Nullable final Date date) {
-    return (date == null)? "" : df_iso8601.format(date);
+  public static String toISO8601(@Nullable final Date date) {
+    return (date == null) ? "" : df_iso8601.format(date);
   }
 
   /**
-   * <p>Gibt fancy und kurz zurück, wie lange das {@code compareDate} hinter {@code now} zurück liegt </p>
+   * Formats the given datetime, simplified without timezone.
+   *
+   * @param date ...
+   *
+   * @return The date as simplified ISO-8601-like without timezone, or empty string if {@code date} is {@code null}.
+   */
+  public static String formatDatetime(@Nullable final Date date) {
+    return (date == null) ? "" : df_datetime.format(date);
+  }
+
+  /**
+   * <p>Prints in a very fashioned way, how far the date {@code compareDate} comes before {@code now}.</p>
    * <p>
    * <table>
-   *   <caption>Ein- und Ausgabe, wenn heute Mo 13, 12:00 ist:</caption>
+   *   <caption>Input and output, if compare to Mo 13, 12:00.</caption>
    *   <tr>
-   *     <th>Eingabe</th>
-   *     <th>Ausgabe</th>
+   *     <th>compareDate</th>
+   *     <th>Return value</th>
    *   </tr>
    *   <tr>
-   *     <td>heute, 11:59:30</td>
-   *     <td>Jetzt</td>
+   *     <td>today, 11:59:30</td>
+   *     <td>Now</td>
    *   </tr>
    *   <tr>
-   *     <td>heute, 11:59</td>
-   *     <td>1 Minute</td>
+   *     <td>today, 11:59</td>
+   *     <td>1 minute</td>
    *   </tr>
    *   <tr>
-   *     <td>heute, 10:00</td>
-   *     <td>2 Stunden</td>
+   *     <td>today, 10:00</td>
+   *     <td>2 hours</td>
    *   </tr>
    *   <tr>
-   *     <td>gestern, 23:00</td>
-   *     <td>13 Stunden</td>
+   *     <td>yesterday, 23:00</td>
+   *     <td>13 hours</td>
    *   </tr>
    *   <tr>
-   *     <td>vorgestern, 23:00</td>
+   *     <td>day before yesterday, 23:00</td>
    *     <td>Sa 11</td>
    *   </tr>
    * </table></p>
    *
    *
-   * @param now Referenz-Jetzt.
-   * @param compareDate Zeit in der Vergangenheit, die ausgegeben werden soll.
+   * @param now Date-Instance that is now to compare with.
+   * @param compareDate The date to calculated the elapsed time for display.
    *
-   * @return Vergangene Zeit von {@code compareDate} seit {@code now}.
+   * @return Elapsed time from {@code compareDate} to {@code now}.
    */
   public static String formatDatePastShort(@Nullable final Date now, @Nullable final Date compareDate) {
     if (null == compareDate) {
@@ -120,7 +128,7 @@ public class DateUtil {
     final Date nowNotNull = (null == now)? Calendar.getInstance().getTime() : now;
 
     if (compare(compareDate, nowNotNull) > 0) {
-      // comparedate nach nowNotNull
+      // comparedate after nowNotNull
       return "";
     }
 
@@ -146,11 +154,11 @@ public class DateUtil {
   /**
    * <p>Get a diff between two dates.</p>
    *
-   * @param dateBefore the oldest date
-   * @param dateAfter the newest date
-   * @param timeUnit the unit in which you want the diff
+   * @param dateBefore The oldest date.
+   * @param dateAfter The newest date.
+   * @param timeUnit The unit in which you want the diff.
    *
-   * @return the diff value, in the provided unit
+   * @return The diff value, in the provided unit.
    */
   public static long getDateDiff(Date dateBefore, Date dateAfter, TimeUnit timeUnit) {
     long diffInMillies = dateAfter.getTime() - dateBefore.getTime();
@@ -170,14 +178,15 @@ public class DateUtil {
   }
 
   /**
-   * Versucht das Datum nach Schema x zu parsen.
-   * Hinweis: Sollte nicht für UI-Ausgabe verwendet werden.
+   * Parse the given date-string to an actual date.
    *
-   * @param date Das zu parsende Datum. Darf null sein.
+   * The string should be iso8601.
    *
-   * @return Das geparste Datum oder null, falls date null/leer oder Fehler.
+   * @param date Date-string to parse. Should be iso8601. May be null.
    *
-   * @see #formatDate(Date)
+   * @return Date or null if the given strnig was null/empty or could not be parsed.
+   *
+   * @see #toISO8601(Date)
    */
   public static Date parseDate(@Nullable String date) {
     if (StringUtil.isEmpty(date)) {
@@ -193,24 +202,31 @@ public class DateUtil {
   }
 
   /**
-   * Lokalisiert die Anwendung.
+   * Needs to be called as initialization to provide proper localization.
    *
-   * @param context Context.
+   * @param context ...
    */
   public static void localize(@NonNull Context context) {
     POST_NOW     = context.getResources().getString(R.string.post_now);
     POST_MINUTE  = context.getResources().getString(R.string.post_minute);
     POST_HOUR    = context.getResources().getString(R.string.post_hour);
+
+    df_iso8601   = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.getDefault());
+    df_day       = new SimpleDateFormat("EEE", Locale.getDefault());
+    df_monthDay  = new SimpleDateFormat("MMM dd", Locale.getDefault());
+    df_yearMonth = new SimpleDateFormat("MMM yyyy", Locale.getDefault());
+    df_datetime  = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss", Locale.getDefault());
   }
 
   private DateUtil() {
     // Utility class
   }
 
-  private static final DateFormat df_iso8601   = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.getDefault());
-  private static final DateFormat df_day       = new SimpleDateFormat("EEE", Locale.getDefault());
-  private static final DateFormat df_monthDay  = new SimpleDateFormat("MMM dd", Locale.getDefault());
-  private static final DateFormat df_yearMonth = new SimpleDateFormat("MMM yyyy", Locale.getDefault());
+  private static DateFormat df_iso8601   = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.getDefault());
+  private static DateFormat df_day       = new SimpleDateFormat("EEE", Locale.getDefault());
+  private static DateFormat df_monthDay  = new SimpleDateFormat("MMM dd", Locale.getDefault());
+  private static DateFormat df_yearMonth = new SimpleDateFormat("MMM yyyy", Locale.getDefault());
+  private static DateFormat df_datetime  = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss", Locale.getDefault());
 
   private static       String     POST_NOW;
   private static       String     POST_MINUTE;

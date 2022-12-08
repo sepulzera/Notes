@@ -6,6 +6,11 @@
     <item name="colorPrimary">@color/colorPrimary</item>
     <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
     <item name="colorAccent">@color/colorAccent</item>
+
+    <item name="iconPreferenceColor">@color/colorAccent</item>
+
+    <!-- To enable contextual action bar for longclicks -->
+    <item name="windowActionModeOverlay">true</item>
   </style>
 
   <!-- Base application theme with ActionBar -->
@@ -14,6 +19,8 @@
     <item name="colorPrimary">@color/colorPrimary</item>
     <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
     <item name="colorAccent">@color/colorAccent</item>
-  </style>
+
+    <item name="iconPreferenceColor">@color/colorAccent</item>
+</style>
 
 </resources>

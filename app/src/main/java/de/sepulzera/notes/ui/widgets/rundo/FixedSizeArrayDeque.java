@@ -12,6 +12,7 @@ import java.util.ArrayDeque;
  *
  * @author Tom Calver
  */
+@SuppressWarnings("rawtypes")
 public final class FixedSizeArrayDeque<T> extends ArrayDeque<T> implements Parcelable {
 
     /**

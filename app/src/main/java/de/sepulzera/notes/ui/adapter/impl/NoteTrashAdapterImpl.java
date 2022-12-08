@@ -1,11 +1,12 @@
 package de.sepulzera.notes.ui.adapter.impl;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import java.util.Date;
 import java.util.List;
 
+import de.sepulzera.notes.bf.helper.DateUtil;
 import de.sepulzera.notes.bf.service.NoteService;
 import de.sepulzera.notes.bf.service.impl.NoteServiceImpl;
 import de.sepulzera.notes.ds.model.Note;
@@ -42,5 +43,21 @@ public class NoteTrashAdapterImpl extends NoteAdapterImpl {
   @Override
   protected Date getTimestamp(@NonNull final Note note) {
     return note.getDeldt();
+  }
+
+  /**
+   * <p>Sorts the notes descending by DELDT.</p>
+   * <p>Drafts are always displayed above their corresponding revision.
+   * (The DELDT for drafts and their revisions are equal.)</p>
+   */
+  @Override
+  protected void sort() {
+    getFilteredNotes().sort((note1, note2) -> {
+      if (note1.getIdent() == note2.getIdent()) {
+        if (note1.getDraft() && note2.getDraft()) return 0;
+        return note1.getDraft() ? -1 : 1;
+      }
+      return DateUtil.compare(getTimestamp(note2), getTimestamp(note1));
+    });
   }
 }

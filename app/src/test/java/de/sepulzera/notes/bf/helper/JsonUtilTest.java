@@ -39,16 +39,9 @@ public class JsonUtilTest {
     final Date nullDate = null;
     final Date nonNullDate = GregorianCalendar.getInstance().getTime();
 
-    final String nullKey = null;
     final String nonNullKey = "myKey";
 
     final JSONObject json = new JSONObject();
-
-    JsonUtil.putDateIfPresent(json, nullKey, nullDate);
-    assertFalse(json.has(nullKey));
-
-    JsonUtil.putDateIfPresent(json, nullKey, nonNullDate);
-    assertFalse(json.has(nullKey));
 
     JsonUtil.putDateIfPresent(json, nonNullKey, nullDate);
     assertFalse(json.has(nonNullKey));
@@ -60,20 +53,15 @@ public class JsonUtilTest {
   @SuppressWarnings("WrapperTypeMayBePrimitive")
   @Test
   public void putLongTest() {
-    final String nullStr = null;
     final Long lng0 = 0L;
     final long lng999 = 999L;
     final Long longMinus500 = -500L;
 
-    final String nullKey = null;
     final String lng0Key = "lng0Key";
     final String lng999Key = "lng999Key";
     final String longMinus500Key = "longMinus500Key";
 
     final JSONObject json = new JSONObject();
-
-    JsonUtil.putStringIfPresent(json, nullKey, nullStr);
-    assertFalse(json.has(nullKey));
 
     JsonUtil.putLong(json, lng0Key, lng0);
     assertTrue(json.has(lng0Key));

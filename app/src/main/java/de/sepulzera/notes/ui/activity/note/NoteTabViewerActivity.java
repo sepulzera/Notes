@@ -3,21 +3,19 @@ package de.sepulzera.notes.ui.activity.note;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.ActionMenuView;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.NonNull;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.tabs.TabLayout;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.ActionMenuView;
+import androidx.appcompat.widget.Toolbar;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -26,22 +24,22 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 import de.sepulzera.notes.R;
 import de.sepulzera.notes.bf.helper.Helper;
 import de.sepulzera.notes.bf.helper.StringUtil;
+import de.sepulzera.notes.bf.helper.vlog.VLog;
 import de.sepulzera.notes.bf.service.NoteService;
 import de.sepulzera.notes.bf.service.impl.NoteServiceImpl;
 import de.sepulzera.notes.ds.model.Note;
@@ -55,6 +53,8 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.act_note_tab_viewer);
+
+    VLog.d(ACTIVITY_IDENT, "Creating activity.");
 
     Toolbar toolbar = findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
@@ -85,62 +85,50 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
 
     // button save
     mFabSave = findViewById(R.id.fab_save);
-    mFabSave.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        NoteEditFragment noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
-        if (noteFrag != null) {
-          final Note note = noteFrag.getNote();
-          if (!note.getCurrRev()) {
-            Snackbar.make(mView, getResources().getString(R.string.note_save_ignore_old_rev), Snackbar.LENGTH_LONG).show();
-            return;
-          }
-          saveNote(noteFrag);
+    mFabSave.setOnClickListener(v -> {
+      NoteEditFragment noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
+      if (noteFrag != null) {
+        final Note note = noteFrag.getNote();
+        if (!note.getCurrRev()) {
+          Snackbar.make(mView, getResources().getString(R.string.note_save_ignore_old_rev), Snackbar.LENGTH_LONG).show();
+          return;
         }
+        saveNote(noteFrag);
       }
     });
 
     // button edit
     mFabEdit = findViewById(R.id.fab_edit);
-    mFabEdit.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        NoteEditFragment noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
-        if (noteFrag != null) {
-          final Note note = noteFrag.getNote();
-          if (!note.getCurrRev()) {
-            return;
-          }
-          noteFrag.setEditable(true);
-          invalidateFloatingActionButton(true, true);
-          invalidateOptionsMenu();
+    mFabEdit.setOnClickListener(v -> {
+      NoteEditFragment noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
+      if (noteFrag != null) {
+        final Note note = noteFrag.getNote();
+        if (!note.getCurrRev()) {
+          return;
         }
+        noteFrag.setEditable(true);
+        invalidateFloatingActionButton(true, true);
+        invalidateOptionsMenu();
       }
     });
 
     mFabShowTbEdit = findViewById(R.id.fab_show_toolbar_edit);
-    mFabShowTbEdit.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        mShowToolbarEdit = true;
-        hideFloatingActionButton(mFabShowTbEdit);
-        showFloatingActionButton(mFabHideTbEdit);
-        invalidateOptionsMenu();
-      }
+    mFabShowTbEdit.setOnClickListener(v -> {
+      mShowToolbarEdit = true;
+      hideFloatingActionButton(mFabShowTbEdit);
+      showFloatingActionButton(mFabHideTbEdit);
+      invalidateOptionsMenu();
     });
 
     mFabHideTbEdit = findViewById(R.id.fab_hide_toolbar_edit);
-    mFabHideTbEdit.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        mShowToolbarEdit = false;
-        hideFloatingActionButton(mFabHideTbEdit);
-        showFloatingActionButton(mFabShowTbEdit);
-        invalidateOptionsMenu();
-      }
+    mFabHideTbEdit.setOnClickListener(v -> {
+      mShowToolbarEdit = false;
+      hideFloatingActionButton(mFabHideTbEdit);
+      showFloatingActionButton(mFabShowTbEdit);
+      invalidateOptionsMenu();
     });
 
-    invalidateFloatingActionButton(true, mNoteFrags.get(0).getFragment().isEditable());
+    invalidateFloatingActionButton(mNoteFrags.get(0).getFragment());
     invalidateOptionsMenu();
   }
 
@@ -159,31 +147,36 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
       }
     }
 
+    final NoteService srv = NoteServiceImpl.getInstance();
+
     if (mNote.getDraft()) {
       mDraft = mNote;
-      mNoteFrags.add(mNote, getResources().getString(R.string.tab_viewer_draft_title));
-      mDisplayedNote = mNote;
-
-      final NoteService srv = NoteServiceImpl.getInstance();
+      mDisplayedNote = mDraft;
       mNote = srv.getCurrRevision(mNote);
-      if (null != mNote) {
-        mNoteFrags.add(mNote, getResources().getString(R.string.tab_viewer_note_title));
-      }
     } else {
-      final NoteService srv = NoteServiceImpl.getInstance();
       mDraft = srv.getDraft(mNote);
       if (null != mDraft) {
-        if (!mDraft.getCurr()) {
+        if (mNote.getCurr() && !mDraft.getCurr()) {
           mDraft = null;
         } else {
-          mNoteFrags.add(mDraft, getResources().getString(R.string.tab_viewer_draft_title));
           mDisplayedNote = mDraft;
         }
       }
-      mNoteFrags.add(mNote, getResources().getString(R.string.tab_viewer_note_title));
       if (mDisplayedNote == null) {
         mDisplayedNote = mNote;
       }
+    }
+
+    if (mDisplayedNote == null) {
+      throw new IllegalArgumentException("DisplayedNote must not be null.");
+    }
+    if (mDraft != null) {
+      VLog.d(ACTIVITY_IDENT, "Draft=\"" + mDraft + "\"");
+      mNoteFrags.add(mDraft, getResources().getString(R.string.tab_viewer_draft_title));
+    }
+    if (mNote != null) {
+      VLog.d(ACTIVITY_IDENT, "Note=\"" + mNote + "\"");
+      mNoteFrags.add(mNote, getResources().getString(R.string.tab_viewer_note_title));
     }
 
     // set ActionBar title
@@ -197,6 +190,7 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
     mDisplayedNote = (Note)outState.getSerializable(KEY_DISPLAYED_NOTE);
     mShowsRevisions = outState.getBoolean(KEY_SHOW_REVS);
     mShowToolbarEdit = outState.getBoolean(KEY_SHOW_TB_EDIT);
+    mInvalidateList = outState.getBoolean(KEY_INVALID_LIST);
 
     mCanUndo = outState.getBoolean(KEY_CAN_UNDO);
     mCanRedo = outState.getBoolean(KEY_CAN_REDO);
@@ -215,12 +209,7 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
       }
     }
 
-    Collections.sort(noteFrags, new Comparator<NoteEditFragment>() {
-      @Override
-      public int compare(NoteEditFragment frag1, NoteEditFragment frag2) {
-        return Integer.compare(frag1.getIndex(), frag2.getIndex());
-      }
-    });
+    noteFrags.sort(Comparator.comparingInt(NoteEditFragment::getIndex));
 
     NoteEditFragment noteFrag = noteFrags.get(0);
     if (mDraft != null) {
@@ -253,6 +242,7 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
     outState.putString(KEY_TITLE, getTitle().toString());
     outState.putBoolean(KEY_SHOW_REVS , mShowsRevisions);
     outState.putBoolean(KEY_SHOW_TB_EDIT, mShowToolbarEdit);
+    outState.putBoolean(KEY_INVALID_LIST, mInvalidateList);
 
     outState.putBoolean(KEY_CAN_UNDO, mCanUndo);
     outState.putBoolean(KEY_CAN_REDO, mCanRedo);
@@ -260,11 +250,11 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
 
   public static void readPreferences(@NonNull final Context context) {
     mOpenNotesReadonly = Helper.getPreferenceAsBool(context
-        , context.getResources().getString(R.string.PREF_NOTE_OPEN_READONLY_KEY), Boolean.valueOf(context.getResources().getString(R.string.pref_note_open_readonly_default)));
+        , context.getResources().getString(R.string.PREF_NOTE_OPEN_READONLY_KEY), Boolean.parseBoolean(context.getResources().getString(R.string.pref_note_open_readonly_default)));
   }
 
   private void invalidateFloatingActionButton(@NonNull final NoteEditFragment frag) {
-    final boolean isCurrRev = mDisplayedNote != null && mDisplayedNote.getCurrRev();
+    final boolean isCurrRev = mDisplayedNote != null && mDisplayedNote.getCurrRev() && mDisplayedNote.getCurr();
     invalidateFloatingActionButton(isCurrRev, frag.isEditable());
   }
 
@@ -326,6 +316,7 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
   public boolean onCreateOptionsMenu(Menu menu) {
     getMenuInflater().inflate(R.menu.om_note_view, menu);
 
+    final boolean isCurr     = mDisplayedNote != null && mDisplayedNote.getCurr();
     final boolean isCurrRev  = mDisplayedNote != null && mDisplayedNote.getCurrRev();
     final boolean isNewNote  = mDisplayedNote != null && mDisplayedNote.getId() == 0L;
     final NoteEditFragment frag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
@@ -334,10 +325,14 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
     MenuItem item;
     if ((item = menu.findItem(R.id.om_detail_note_show_revisions)) != null) { item.setVisible(!mShowsRevisions && mDisplayedNote != null && !isNewNote && (mDisplayedNote.getRevision() > 2 || (mDisplayedNote.getRevision() == 2 && !mDisplayedNote.getDraft()))); }
     if ((item = menu.findItem(R.id.om_detail_note_rename))         != null) { item.setVisible(isCurrRev && !isNewNote && isEditable); }
+    if ((item = menu.findItem(R.id.om_detail_note_checkout))       != null) { item.setVisible(!isCurrRev && !isEditable); }
     if ((item = menu.findItem(R.id.om_detail_note_clear))          != null) { item.setVisible(isCurrRev && isEditable && !frag.getMsg().isEmpty()); }
+    if ((item = menu.findItem(R.id.om_detail_note_delete))         != null) { item.setVisible(isCurr && isCurrRev && isEditable && !mDisplayedNote.getDraft()); }
+    if ((item = menu.findItem(R.id.om_detail_draft_discard))       != null) { item.setVisible(isCurr && isCurrRev && isEditable && mDisplayedNote.getDraft()); }
     if ((item = menu.findItem(R.id.om_detail_note_revert))         != null) { item.setVisible(isCurrRev && !isNewNote && isEditable && frag.isChanged()); }
-    if ((item = menu.findItem(R.id.om_detail_note_delete))         != null) { item.setVisible(isCurrRev && isEditable && !mDisplayedNote.getDraft()); }
-    if ((item = menu.findItem(R.id.om_detail_draft_discard))       != null) { item.setVisible(isCurrRev && isEditable && mDisplayedNote.getDraft()); }
+
+    if ((item = menu.findItem(R.id.om_detail_note_delete_perma))   != null) { item.setVisible(!isCurr); }
+    if ((item = menu.findItem(R.id.om_detail_note_restore))        != null) { item.setVisible(!isCurr); }
 
     onCreateToolbarMenu(frag);
 
@@ -353,12 +348,7 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
       MenuItem item;
       for (int i = 0; i < bottomMenu.size(); i++) {
         item = bottomMenu.getItem(i);
-        item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-          @Override
-          public boolean onMenuItemClick(MenuItem item) {
-            return onOptionsItemSelected(item);
-          }
-        });
+        item.setOnMenuItemClickListener(this::onOptionsItemSelected);
 
         if ((item = bottomMenu.findItem(R.id.om_detail_note_undo))           != null) { mItemUndo = item; }
         if ((item = bottomMenu.findItem(R.id.om_detail_note_redo))           != null) { mItemRedo = item; }
@@ -432,115 +422,117 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
-    switch (item.getItemId()) {
-      case android.R.id.home:
-        onBackPressed();
-        return true;
-
-      case R.id.om_detail_note_copy_to_clipboard:
-        NoteEditFragment noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
-        if (noteFrag != null) {
-          noteFrag.copyToClipboard();
-          Snackbar.make(mView, getResources().getString(R.string.copied_to_clipboard), Snackbar.LENGTH_LONG).show();
-        }
-        return true;
-
-      case R.id.om_detail_note_send_as_msg:
-        noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
-        if (noteFrag != null) {
-          startActivity(new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:"))
-              .putExtra("sms_body", NoteServiceImpl.getInstance().toNoteTitle(noteFrag.getNote().getTitle()) + ": " + noteFrag.getMsg()));
-        }
-        return true;
-
-      case R.id.om_detail_note_show_revisions:
-        showRevisions();
-        return true;
-
-      case R.id.om_detail_note_rename:
-        noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
-        if (noteFrag != null) {
-          renameNote(noteFrag);
-        }
-        return true;
-
-      case R.id.om_detail_note_delete:
-      case R.id.om_detail_draft_discard:
-        noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
-        if (noteFrag != null) {
-          deleteNote(noteFrag);
-        }
-        return true;
-
-      case R.id.om_detail_note_clear:
-        noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
-        if (noteFrag != null) {
-          (noteFrag).clearNote();
-          invalidateOptionsMenu();
-        }
-        return true;
-
-      case R.id.om_detail_note_revert:
-        noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
-        if (noteFrag != null) {
-          (noteFrag).revert();
-          invalidateOptionsMenu();
-        }
-        return true;
+    int itemId = item.getItemId();
+    if (android.R.id.home == itemId) {
+      onBackPressed();
+      return true;
+    } else if (R.id.om_detail_note_checkout == itemId) {
+      NoteEditFragment noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
+      if (noteFrag != null) {
+        checkoutNote(noteFrag);
+      }
+      return true;
+    } else if (R.id.om_detail_note_copy_to_clipboard == itemId) {
+      NoteEditFragment noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
+      if (noteFrag != null) {
+        noteFrag.copyToClipboard();
+        Snackbar.make(mView, getResources().getString(R.string.copied_to_clipboard), Snackbar.LENGTH_LONG).show();
+      }
+      return true;
+    } else if (R.id.om_detail_note_share == itemId) {
+      NoteEditFragment noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
+      if (noteFrag != null) {
+        Note note = noteFrag.getNote();
+        Intent intent = Helper.createShareIntent(note.getTitle(), note.getTitle() + ": " + note.getMsg());
+        startActivity(Intent.createChooser(intent, getString(R.string.share)));
+      }
+      return true;
+    } else if (R.id.om_detail_note_show_revisions == itemId) {
+      showRevisions();
+      return true;
+    } else if (R.id.om_detail_note_rename == itemId) {
+      NoteEditFragment noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
+      if (noteFrag != null) {
+        renameNote(noteFrag);
+      }
+      return true;
+    } else if (R.id.om_detail_note_delete == itemId
+            || R.id.om_detail_draft_discard == itemId
+            || R.id.om_detail_note_delete_perma == itemId) {
+      NoteEditFragment noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
+      if (noteFrag != null) {
+        deleteNote(noteFrag);
+      }
+      return true;
+    } else if (R.id.om_detail_note_restore == itemId) {
+      NoteEditFragment noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
+      if (noteFrag != null) {
+        restoreNote(noteFrag);
+      }
+      return true;
+    } else if (R.id.om_detail_note_clear == itemId) {
+      NoteEditFragment noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
+      if (noteFrag != null) {
+        (noteFrag).clearNote();
+        invalidateOptionsMenu();
+      }
+      return true;
+    } else if (R.id.om_detail_note_revert == itemId) {
+      NoteEditFragment noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
+      if (noteFrag != null) {
+        (noteFrag).revert();
+        invalidateOptionsMenu();
+      }
+      return true;
+    }
 
 
       /* Note Edit Options */
 
-      case R.id.om_detail_note_undo:
-        noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
-        if (noteFrag != null) {
-          (noteFrag).undo();
-          invalidateOptionsMenu();
-        }
-        return true;
-
-      case R.id.om_detail_note_redo:
-        noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
-        if (noteFrag != null) {
-          (noteFrag).redo();
-          invalidateOptionsMenu();
-        }
-        return true;
-
-      case R.id.om_detail_note_line_delete:
-        noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
-        if (noteFrag != null) {
-          (noteFrag).deleteSelectedLines();
-          invalidateOptionsMenu();
-        }
-        return true;
-
-      case R.id.om_detail_note_line_duplicate:
-        noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
-        if (noteFrag != null) {
-          (noteFrag).duplicateSelectedLines();
-          invalidateOptionsMenu();
-        }
-        return true;
-
-      case R.id.om_detail_note_line_up:
-        noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
-        if (noteFrag != null) {
-          (noteFrag).moveSelectedLinesUp();
-          invalidateOptionsMenu();
-        }
-        return true;
-
-      case R.id.om_detail_note_line_down:
-        noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
-        if (noteFrag != null) {
-          (noteFrag).moveSelectedLinesDown();
-          invalidateOptionsMenu();
-        }
-        return true;
-
-      default:
-        return super.onOptionsItemSelected(item);
+    else if (R.id.om_detail_note_undo == itemId) {
+      NoteEditFragment noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
+      if (noteFrag != null) {
+        (noteFrag).undo();
+        invalidateOptionsMenu();
+      }
+      return true;
+    } else if (R.id.om_detail_note_redo == itemId) {
+      NoteEditFragment noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
+      if (noteFrag != null) {
+        (noteFrag).redo();
+        invalidateOptionsMenu();
+      }
+      return true;
+    } else if (R.id.om_detail_note_line_delete == itemId) {
+      NoteEditFragment noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
+      if (noteFrag != null) {
+        (noteFrag).deleteSelectedLines();
+        invalidateOptionsMenu();
+      }
+      return true;
+    } else if (R.id.om_detail_note_line_duplicate == itemId) {
+      NoteEditFragment noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
+      if (noteFrag != null) {
+        (noteFrag).duplicateSelectedLines();
+        invalidateOptionsMenu();
+      }
+      return true;
+    } else if (R.id.om_detail_note_line_up == itemId) {
+      NoteEditFragment noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
+      if (noteFrag != null) {
+        (noteFrag).moveSelectedLinesUp();
+        invalidateOptionsMenu();
+      }
+      return true;
+    } else if (R.id.om_detail_note_line_down == itemId) {
+      NoteEditFragment noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
+      if (noteFrag != null) {
+        (noteFrag).moveSelectedLinesDown();
+        invalidateOptionsMenu();
+      }
+      return true;
+    } else {
+      return super.onOptionsItemSelected(item);
     }
   }
 
@@ -549,27 +541,27 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
     final String newTitle = getTitle().toString();
 
     if (mDraft == null) {
-      // Nur Note
-        // unverändert -> Zurück
-        //   verändert -> Save Draft
+      // Note only
+        // unchanged -> back
+        //   changed -> save Draft
       final NoteEditFragment frag = mNoteFrags.get(0).getFragment();
       if (frag.isChanged() || !StringUtil.equals(frag.getNote().getTitle(), newTitle)) {
         draft(frag);
       }
     } else if (mNote == null) {
-      // Nur Draft
-      // unverändert -> Zurück
-      //   verändert -> Update Draft
+      // Draft only
+      // unchanged -> back
+      //   changed -> update Draft
       final NoteEditFragment frag = mNoteFrags.get(0).getFragment();
       if (frag.isChanged() || (!StringUtil.isEmpty(frag.getNote().getTitle()) && !StringUtil.equals(frag.getNote().getTitle(), newTitle))) {
         draft(frag);
       }
     } else {
-      // Note und Draft
-        // Note unverändert , Draft unverändert -> Zurück
-        // Note unverändert , Draft   verändert -> Update Draft
-        // Note   verändert , Draft unverändert -> Override Draft
-        // Note   verändert , Draft   verändert -> KONFLIKT -> Dialog
+      // Note and Draft
+        // Note unchanged , Draft unchanged -> back
+        // Note unchanged , Draft   changed -> update Draft
+        // Note   changed , Draft unchanged -> override Draft
+        // Note   changed , Draft   changed -> CONFLICT -> open dialog
 
       final NoteEditFragment draftFrag = mNoteFrags.get(0).getFragment();
       // noteFrag is always right of draftFrag
@@ -580,11 +572,11 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
 
       if (!noteChanged && !draftChanged) {
         if (!StringUtil.equals(draftFrag.getNote().getTitle(), newTitle)) {
-          // Nur rename
+          // just rename it
           draft(draftFrag);
         }
-        // Zurück
-        super.onBackPressed();
+        // back
+        executeDone();
       } else if (!noteChanged) { // && draftChanged
         // Update Draft
         draft(draftFrag);
@@ -592,28 +584,41 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
         // Override Draft
         draft(noteFrag);
       } else { // noteChanged && draftChanged
-        // KONFLIKT -> Dialog
+        // CONFLICT -> open dialog
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(getResources().getString(R.string.dialog_back_unsaved_conflict_title))
             .setMessage(getResources().getString(R.string.dialog_back_unsaved_conflict_msg))
-            .setPositiveButton(getResources().getString(R.string.dialog_back_unsaved_conflict_go), new DialogInterface.OnClickListener() {
-              @Override
-              public void onClick(DialogInterface dialog, int which) {
-                // yes = ignore conflict and go back
-                finish();
-              }
+            .setPositiveButton(getResources().getString(R.string.dialog_back_unsaved_conflict_go), (dialog, which) -> {
+              // yes = ignore conflict and go back
+              executeDone();
             })
-            .setNegativeButton(getResources().getString(R.string.dialog_btn_abort), new DialogInterface.OnClickListener() {
-              @Override
-              public void onClick(DialogInterface dialog, int which) {
-                // no = abort
-              }
+            .setNegativeButton(getResources().getString(R.string.dialog_btn_abort), (dialog, which) -> {
+              // no = abort
             }).show();
         return;
       }
     }
 
-    super.onBackPressed();
+    executeDone();
+  }
+
+  private void checkoutNote(@NonNull final NoteEditFragment frag) {
+    final Note note = frag.getNote();
+
+    final NoteService srv = NoteServiceImpl.getInstance();
+    final Note copyNote = srv.copy(this, note);
+    copyNote.setTitle(String.format(getResources().getString(R.string.checkout_name)
+        , note.getTitle(), note.getRevision()));
+    final Note savedNote = srv.save(copyNote);
+    mInvalidateList = true;
+
+    final Snackbar snack = Snackbar.make(mView, getResources().getString(R.string.snack_note_checked_out), Snackbar.LENGTH_LONG);
+    snack.setAction(R.string.snack_goto, v -> {
+      // goto -> close current note and open the other one
+      mFollowupNoteId = savedNote.getId();
+      onBackPressed();
+    });
+    snack.show();
   }
 
   private void renameNote(@NonNull final NoteEditFragment frag) {
@@ -628,17 +633,10 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
     input.setSelectAllOnFocus(true);
     builder.setView(input);
 
-    builder.setPositiveButton(getResources().getString(R.string.dialog_rename_note_rename_btn), new DialogInterface.OnClickListener() {
-      @Override
-      public void onClick(DialogInterface dialog, int which) {
-        setTitle(input.getText().toString());
-      }
-    }).setNegativeButton(getResources().getString(R.string.dialog_btn_abort), new DialogInterface.OnClickListener() {
-      @Override
-      public void onClick(DialogInterface dialog, int which) {
-        dialog.cancel();
-      }
-    });
+    builder
+        .setPositiveButton(getResources().getString(R.string.dialog_rename_note_rename_btn),
+            (dialog, which) -> setTitle(input.getText().toString()))
+        .setNegativeButton(getResources().getString(R.string.dialog_btn_abort), (dialog, which) -> dialog.cancel());
 
     final AlertDialog dialog = builder.create();
     final Window dialogWindow = dialog.getWindow();
@@ -669,6 +667,12 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
     executeDone(note);
   }
 
+  private void restoreNote(@NonNull final NoteEditFragment frag) {
+    final Note note = frag.getNote();
+    note.setCurr(true);
+    executeDone(note);
+  }
+
   private void draft(@NonNull final NoteEditFragment frag) {
     final Note note = frag.getNote();
     note.setMsg(frag.getMsg());
@@ -689,10 +693,13 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
     final String newTitle = getTitle().toString();
     if (!note.getDraft()
         && StringUtil.equals(newMsg, note.getMsg()) && StringUtil.equals(newTitle, note.getTitle())) {
+      VLog.d(ACTIVITY_IDENT,  "Closing note=\"" + note + "\". (no changes)");
       // no changes made -> just go back
-      finish();
+      executeDone();
       return;
     }
+
+    VLog.d(ACTIVITY_IDENT,  "Saving note=\"" + note + "\". (title=\"" + newTitle + "\", msg=\"" + newMsg + "\"");
 
     final Note saveNote = NoteServiceImpl.getInstance().clone(note);
     saveNote.setMsg(newMsg);
@@ -723,18 +730,12 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
 
     builder.setView(input);
 
-    builder.setPositiveButton(getResources().getString(R.string.dialog_create_note_save_btn), new DialogInterface.OnClickListener() {
-      @Override
-      public void onClick(DialogInterface dialog, int which) {
-        saveNote.setTitle(srv.toNoteTitle(input.getText().toString()));
-        saveNote.setRevision(1);
-        executeDone(saveNote);
-      }
-    }).setNegativeButton(getResources().getString(R.string.dialog_btn_abort), new DialogInterface.OnClickListener() {
-      @Override
-      public void onClick(DialogInterface dialog, int which) {
-        // no = abort
-      }
+    builder.setPositiveButton(getResources().getString(R.string.dialog_create_note_save_btn), (dialog, which) -> {
+      saveNote.setTitle(srv.toNoteTitle(input.getText().toString()));
+      saveNote.setRevision(1);
+      executeDone(saveNote);
+    }).setNegativeButton(getResources().getString(R.string.dialog_btn_abort), (dialog, which) -> {
+      // no = abort
     });
     AlertDialog dialog = builder.create();
     Window dialogWindow = dialog.getWindow();
@@ -742,19 +743,35 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
       dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
     }
     dialog.show();
+
   }
 
-  private void executeDone(@NonNull final Note note) {
+  private void executeDone() {
+    executeDone(null);
+  }
+
+  private void executeDone(final Note note) {
     UiHelper.hideKeyboard(mView, this, getApplicationContext());
-    setResult(Activity.RESULT_OK, new Intent()
-        .putExtra(Note.TAG_NOTE, note));
+
+    Intent result = new Intent();
+    if (note != null) {
+      VLog.d(ACTIVITY_IDENT,  "ExecuteDone note=\"" + note + "\"");
+      result.putExtra(Note.TAG_NOTE, note);
+    }
+    if (mInvalidateList) {
+      result.putExtra(MainActivity.RQ_EXTRA_INVALIDATE_LIST, true);
+    }
+    if (mFollowupNoteId != null) {
+      result.putExtra(MainActivity.RQ_EXTRA_FOLLOWUP_ID, mFollowupNoteId);
+    }
+    setResult(Activity.RESULT_OK, result);
+
     finish();
   }
 
   private void setupViewPager(@NonNull final ViewPager viewPager) {
     mAdapter = new NoteFragmentPagerAdapter(getSupportFragmentManager());
     viewPager.setAdapter(mAdapter);
-
     loadTabsIntoPager(mAdapter, mNoteFrags);
 
     viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -879,7 +896,7 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
     private final List<String> mFragmentTitles = new ArrayList<>();
 
     NoteFragmentPagerAdapter(FragmentManager fm) {
-      super(fm);
+      super(fm, FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
     }
 
     void addFragment(@NonNull final NoteFrag noteFrag) {
@@ -888,7 +905,7 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
     }
 
     @Override
-    public Fragment getItem(int position) {
+    public @NonNull Fragment getItem(int position) {
       return mFragments.get(position);
     }
 
@@ -908,7 +925,7 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
     }
   }
 
-  private class NoteFragmentAdapter {
+  private static class NoteFragmentAdapter {
     private final List<NoteFrag> mNoteFrags;
 
     NoteFragmentAdapter() {
@@ -918,7 +935,7 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
     void add(@NonNull final Note note, @NonNull final String fragmentTitle) {
       final NoteEditFragment frag = new NoteEditFragment();
       frag.initialize(mNoteFrags.size(), note);
-      // Fragmente anweisen, sich nicht vollständig zu zerstören (wegen Referenzen)
+      // The fragment's instances should not be destroyed to not invalidate the references to them
       frag.setRetainInstance(true);
 
       mNoteFrags.add(new NoteFrag(note, frag, fragmentTitle));
@@ -938,7 +955,7 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
     }
   }
 
-  private class NoteFrag {
+  private static class NoteFrag {
     private final Note mNote;
     private final NoteEditFragment mFrag;
     private final String mTitle;
@@ -1003,8 +1020,10 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
   private Note    mNote;
   private Note    mDraft;
   private Note    mDisplayedNote;
+  private Long    mFollowupNoteId = null;
 
   private boolean mShowsRevisions = false;
+  private boolean mInvalidateList = false;
 
   private final NoteFragmentAdapter mNoteFrags = new NoteFragmentAdapter();
 
@@ -1030,7 +1049,10 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
   private static final String KEY_DISPLAYED_NOTE = "notetabvieweract_displayednote";
   private static final String KEY_SHOW_REVS      = "notetabvieweract_showrevs";
   private static final String KEY_SHOW_TB_EDIT   = "notetabvieweract_showtoolbaredit";
+  private static final String KEY_INVALID_LIST   = "notetabvieweract_invalidatelist";
 
   private static final String KEY_CAN_UNDO = "notetabvieweract_canundo";
   private static final String KEY_CAN_REDO = "notetabvieweract_canredo";
+
+  private static final String ACTIVITY_IDENT = "NoteTabViewerActivity";
 }

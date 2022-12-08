@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
 
   <item
       android:id="@+id/om_detail_note_copy_to_clipboard"
-      android:icon="@drawable/ic_content_copy_white_24dp"
       android:title="@string/copy_to_clipboard"/>
   <item
-      android:id="@+id/om_detail_note_send_as_msg"
-      android:icon="@drawable/ic_email_white_24dp"
-      android:title="@string/cm_send_as_msg"/>
+      android:id="@+id/om_detail_note_share"
+      android:title="@string/cm_share"/>
+  <item
+      android:id="@+id/om_detail_note_checkout"
+      android:title="@string/checkout"/>
   <item
       android:id="@+id/om_detail_note_show_revisions"
       android:title="@string/om_detail_note_show_revisions" />
   <item
       android:id="@+id/om_detail_note_rename"
-      android:title="@string/cm_rename_note" />
+      android:title="@string/cm_rename" />
   <item
       android:id="@+id/om_detail_note_clear"
       android:title="@string/clear" />
@@ -23,8 +25,20 @@
       android:title="@string/revert" />
   <item
       android:id="@+id/om_detail_note_delete"
-      android:title="@string/cm_delete_note"/>
+      android:title="@string/cm_delete"/>
   <item
       android:id="@+id/om_detail_draft_discard"
-      android:title="@string/cm_draft_discard"/>
+      android:title="@string/cm_delete"/>
+  <item
+      android:id="@+id/om_detail_note_delete_perma"
+      android:title="@string/cm_delete_permanently"
+      android:icon="@android:drawable/ic_delete"
+      app:iconTint="@color/white"
+      app:showAsAction="ifRoom" />
+  <item
+      android:id="@+id/om_detail_note_restore"
+      android:title="@string/cm_note_restore"
+      android:icon="@drawable/ic_restore"
+      app:iconTint="@color/white"
+      app:showAsAction="ifRoom" />
 </menu>

@@ -1,0 +1,1 @@
+When adding the svg as asset via Android Studio, the fg-icon must be scaled to 47 %.

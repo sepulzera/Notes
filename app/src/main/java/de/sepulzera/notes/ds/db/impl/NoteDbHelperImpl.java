@@ -3,7 +3,7 @@ package de.sepulzera.notes.ds.db.impl;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import de.sepulzera.notes.ds.model.NoteContract.NoteEntry;
 

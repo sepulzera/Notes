@@ -2,7 +2,7 @@ package de.sepulzera.notes.ui.adapter.impl;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.text.Spannable;
 import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
@@ -15,11 +15,11 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
+import androidx.core.content.ContextCompat;
 import de.sepulzera.notes.R;
 import de.sepulzera.notes.bf.helper.DateUtil;
 import de.sepulzera.notes.bf.helper.StringUtil;
@@ -28,9 +28,6 @@ import de.sepulzera.notes.bf.service.impl.NoteServiceImpl;
 import de.sepulzera.notes.ds.model.Note;
 import de.sepulzera.notes.ui.adapter.NoteAdapter;
 
-/**
- * Adapter Liste von Notizen.
- */
 @SuppressWarnings("WeakerAccess")
 public class NoteAdapterImpl extends BaseAdapter
     implements NoteAdapter, Filterable {
@@ -71,7 +68,7 @@ public class NoteAdapterImpl extends BaseAdapter
   public void remove(@NonNull final Note note) {
     doRemove(note);
 
-    filter(mSearch);
+    notifyDataSetChanged();
   }
 
   private void doRemove(@NonNull final Note note) {
@@ -115,23 +112,62 @@ public class NoteAdapterImpl extends BaseAdapter
     sort();
   }
 
+  /* SELECTION */
+
+  @Override
+  public void setNewSelection(int position) {
+    mSelection.put(position, true);
+    notifyDataSetChanged();
+  }
+
+  @Override
+  public boolean isPositionChecked(int position) {
+    Boolean result = mSelection.get(position);
+    // return result == null ? false : result;
+    return result != null && result;
+  }
+
+  @Override
+  public List<Note> getCheckedItems() {
+    List<Note> checkedItems = new ArrayList<>();
+    for (Integer pos : mSelection.keySet()) {
+      Note nextNote = (Note)getItem(pos);
+      checkedItems.add(nextNote);
+    }
+    return checkedItems;
+  }
+
+  @Override
+  public void removeSelection(int position) {
+    mSelection.remove(position);
+    notifyDataSetChanged();
+  }
+
+  @Override
+  public void clearSelection() {
+    mSelection = new HashMap<>();
+    notifyDataSetChanged();
+  }
+
+  /* /SELECTION */
+
   /**
-   * <p>Sortiert die Notizen absteigend nach dem LCHADT.</p>
+   * Sorts the notes descending by LCHADT.
    */
   protected void sort() {
-    Collections.sort(mFilteredNotes, new Comparator<Note>() {
-      @Override
-      public int compare(Note note1, Note note2) {
-        return DateUtil.compare(getTimestamp(note2), getTimestamp(note1));
-      }
-    });
+    mFilteredNotes.sort((note1, note2) -> DateUtil.compare(getTimestamp(note2), getTimestamp(note1)));
+  }
+
+  protected List<Note> getFilteredNotes() {
+    return mFilteredNotes;
   }
 
   /**
-   * <p>Gibt die Notiz mit der angegebenen ID zurück.</p>
+   * Returns the note with the given {@code id}.
    *
-   * @param id ID der gesuchten Notiz.
-   * @return Notiz mit der angegebenen ID oder null wenn nicht gefunden.
+   * @param id ID of the requested note.
+   *
+   * @return Note with the given {@code id} or {@code null} if missing.
    */
   protected Note get(long id) {
     for (Note note : mNotes) {
@@ -167,18 +203,15 @@ public class NoteAdapterImpl extends BaseAdapter
   @Override
   public View getView(int position, View convertView, ViewGroup parent) {
     ViewHolder holder;
-    // falls nötig, convertView bauen
     if (convertView == null) {
-      // Layoutdatei entfalten
       convertView = mInflater.inflate(R.layout.item_note, parent, false);
-      // Holder erzeugen
+
       holder = new ViewHolder();
       holder.title = convertView.findViewById(R.id.title);
       holder.msg   = convertView.findViewById(R.id.msg);
       holder.timestamp = convertView.findViewById(R.id.timestamp);
       convertView.setTag(holder);
     } else {
-      // Holder bereits vorhanden
       holder = (ViewHolder) convertView.getTag();
     }
 
@@ -213,6 +246,9 @@ public class NoteAdapterImpl extends BaseAdapter
       holder.title.setText(displayedTitle);
       holder.msg.setText(StringUtil.isBlank(content)? mEmptyContent : content);
     }
+
+    convertView.setBackgroundColor(ContextCompat.getColor(convertView.getContext(),
+        mSelection.get(position) != null ? R.color.colorNoteBgSelected : android.R.color.transparent));
 
     return convertView;
   }
@@ -283,6 +319,7 @@ public class NoteAdapterImpl extends BaseAdapter
 
   private   final List<Note>     mNotes;
   private         List<Note>     mFilteredNotes;
+  private HashMap<Integer, Boolean> mSelection = new HashMap<>();
 
   private   final LayoutInflater mInflater;
 

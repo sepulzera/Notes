@@ -2,7 +2,7 @@ package de.sepulzera.notes.bf.service;
 
 import android.content.Context;
 import android.net.Uri;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import java.io.File;
 import java.util.List;
@@ -43,7 +43,7 @@ public interface NoteService {
 
   void restoreBackup(@NonNull final Context context, @NonNull final Uri backupFile);
 
-  File saveBackup(@NonNull final String fileName);
+  String getSaveBackup();
 
   void wipeTrash();
 }

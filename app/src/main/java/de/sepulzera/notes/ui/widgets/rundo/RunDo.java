@@ -1,8 +1,11 @@
 package de.sepulzera.notes.ui.widgets.rundo;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.text.TextWatcher;
 import android.widget.EditText;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 /**
  * <code>RunDo</code> implementations monitor and manipulate {@link EditText} fields, by
@@ -11,6 +14,7 @@ import android.widget.EditText;
  *
  * @author Tom Calver
  */
+@SuppressWarnings("unused")
 public interface RunDo extends TextWatcher, WriteToArrayDeque {
 
     String TAG = "RunDo";
@@ -133,13 +137,13 @@ public interface RunDo extends TextWatcher, WriteToArrayDeque {
 
     /**
      * Returns a {@link RunDo} implementation which extends either
-     * {@link android.support.v4.app.Fragment} or {@link android.app.Fragment}.
+     * {@link Fragment} or {@link android.app.Fragment}.
      */
     final class Factory {
 
         private Factory() { throw new AssertionError(); }
 
-        public static RunDo getInstance(@NonNull android.support.v4.app.FragmentManager fm, String ident) {
+        public static RunDo getInstance(@NonNull FragmentManager fm, String ident) {
 
             String tag = ident == null || ident.isEmpty() ? RunDo.TAG : RunDo.TAG + '_' + ident;
 

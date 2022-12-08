@@ -8,27 +8,31 @@
         android:title="@string/nav_home" />
     <item
         android:id="@+id/nav_trash"
-        android:icon="@android:drawable/ic_menu_delete"
+        android:icon="@drawable/ic_delete"
         android:title="@string/nav_trash" />
     <item
         android:id="@+id/nav_preferences"
-        android:icon="@android:drawable/ic_menu_manage"
+        android:icon="@drawable/ic_settings"
         android:title="@string/nav_preferences" />
+    <item
+        android:id="@+id/nav_debug_log"
+        android:icon="@android:drawable/ic_lock_idle_low_battery"
+        android:title="@string/nav_debug_log" />
   </group>
 
   <item android:title="@string/nav_commands">
     <menu>
       <item
           android:id="@+id/nav_backup"
-          android:icon="@android:drawable/ic_menu_save"
+          android:icon="@drawable/ic_archive"
           android:title="@string/nav_backup" />
       <item
           android:id="@+id/nav_restore"
-          android:icon="@android:drawable/ic_menu_upload"
+          android:icon="@drawable/ic_unarchive"
           android:title="@string/nav_restore" />
       <item
           android:id="@+id/nav_about"
-          android:icon="@android:drawable/ic_menu_info_details"
+          android:icon="@drawable/ic_info"
           android:title="@string/nav_about" />
     </menu>
   </item>

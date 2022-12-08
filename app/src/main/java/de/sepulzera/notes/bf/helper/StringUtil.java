@@ -1,7 +1,7 @@
 package de.sepulzera.notes.bf.helper;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,14 +36,17 @@ public class StringUtil {
    * StringUtils.abbreviate("abcdefg", 3) = IllegalArgumentException
    * </pre>
    *
-   * @param str  the String to check, may be null
-   * @param maxWidth  maximum length of result String, must be at least 4
-   * @return abbreviated String, <code>null</code> if null String input
-   * @throws IllegalArgumentException if the width is too small
+   * @param str The String to check, may be null.
+   * @param maxWidth Maximum length of result String, must be at least 4.
+   *
+   * @return Abbreviated String, {@code null} if null String input.
+   *
+   * @throws IllegalArgumentException If the width is too small.
    */
   public static String abbreviate(String str, int maxWidth) {
     return abbreviate(str, 0, maxWidth);
   }
+
   /**
    * <p>Abbreviates a String using ellipses. This will turn
    * "Now is the time for all good men" into "...is the time for..."</p>
@@ -72,11 +75,13 @@ public class StringUtil {
    * StringUtils.abbreviate("abcdefghij", 5, 6)        = IllegalArgumentException
    * </pre>
    *
-   * @param str  the String to check, may be null
-   * @param offset  left edge of source String
-   * @param maxWidth  maximum length of result String, must be at least 4
-   * @return abbreviated String, <code>null</code> if null String input
-   * @throws IllegalArgumentException if the width is too small
+   * @param str The String to check, may be null.
+   * @param offset Left edge of source String.
+   * @param maxWidth Maximum length of result String, must be at least 4.
+   *
+   * @return Abbreviated String, {@code null} if null String input
+   *
+   * @throws IllegalArgumentException If the width is too small.
    */
   @SuppressWarnings("SameParameterValue")
   private static String abbreviate(String str, int offset, int maxWidth) {
@@ -108,12 +113,12 @@ public class StringUtil {
   }
 
   /**
-   * Gibt den str zurück oder defaultIfNull, falls der str null ist.
+   * Returns {@code str} or {@code defaultIfNull} if and only if it is null.
    *
-   * @param str str
-   * @param defaultIfNull Rückgabewert, falls str null.
+   * @param str String.
+   * @param defaultIfNull Value if {@code str} is {@code null}.
    *
-   * @return str oder defaultIfNull, falls str null.
+   * @return {@code str} or {@code defaultIfNull} if {@code str} is {@code null}.
    */
   public static String defaultIfNull(@Nullable String str, @Nullable String defaultIfNull) {
     return str == null? defaultIfNull : str;
@@ -133,9 +138,10 @@ public class StringUtil {
    * StringUtil.equals("abc", "ABC") = false
    * </pre>
    *
-   * @param str1  the first String, may be {@code null}
-   * @param str2  the second String, may be {@code null}
-   * @return {@code true} if the Strings are equal, case sensitive, or both {@code null}
+   * @param str1 The first String, may be {@code null}.
+   * @param str2 The second String, may be {@code null}.
+   *
+   * @return True if the Strings are equal, case sensitive, or both {@code null}.
    */
   public static boolean equals(@Nullable String str1, @Nullable String str2) {
     //noinspection EqualsReplaceableByObjectsCall
@@ -156,9 +162,10 @@ public class StringUtil {
    * StringUtil.equals("abc", "ABC") = false
    * </pre>
    *
-   * @param str1  the first String, may be {@code null}
-   * @param str2  the second String, may be {@code null}
-   * @return {@code true} if the Strings are equal and not {@code null}, case sensitive
+   * @param str1  the first String, may be {@code null}.
+   * @param str2  the second String, may be {@code null}.
+   *
+   * @return True if the Strings are equal and not {@code null}, case sensitive.
    */
   public static boolean equalsExceptNull(@Nullable String str1, @Nullable String str2) {
     //noinspection PointlessNullCheck
@@ -176,9 +183,9 @@ public class StringUtil {
    * StringUtils.isBlank("  bob  ") = false
    * </pre>
    *
-   * @param cs The CharSequence to check, may be null
+   * @param cs The CharSequence to check, may be null.
    *
-   * @return {@code true} if the CharSequence is null, empty or whitespace
+   * @return True if the CharSequence is null, empty or whitespace.
    *
    * @see <a href="commons.apache.org/proper/commons-lang/apidocs/src-html/org/apache/commons/lang3/StringUtils.html">Apache Lang3 StringUtils</a>
    */
@@ -208,7 +215,7 @@ public class StringUtil {
    *
    * @param cs the CharSequence to check, may be null.
    *
-   * @return {@code true} if the CharSequence is empty or null.
+   * @return True if the CharSequence is empty or null.
    *
    * @see <a href="commons.apache.org/proper/commons-lang/apidocs/src-html/org/apache/commons/lang3/StringUtils.html">Apache Lang3 StringUtils</a>
    */
@@ -262,16 +269,29 @@ public class StringUtil {
     return toString(lines);
   }
 
+  /**
+   * <p>Splits the {@code str} into *Lines*.</p>
+   * <p>Each line in {@code str} is separated by a LINE_ENDING character.</p>
+   * <p>The returned array consists of one item per line.</p>
+   *
+   * @param str E. g. "Foo\nBar".
+   *
+   * @return ["Foo", "Bar"]
+   *
+   * @see StringUtil#toString(List)
+   */
   public static List<String> getLines(@NonNull String str) {
-    List<String> lines = new ArrayList<>(Arrays.asList(str.split(LINE_ENDING)));
-
-    if (str.charAt(str.length() - 1) == '\n') {
-      lines.add("");
-    }
-
-    return lines;
+    return new ArrayList<>(Arrays.asList(str.split(LINE_ENDING, -1)));
   }
 
+  /**
+   * <p>Builds a single string for the given {@code lines}.</p>
+   * <p>Each line in {@code str} is separated by a LINE_ENDING character.</p>
+   *
+   * @param lines E. g. ["Foo", "Bar"]
+   *
+   * @return "Foo\nBar"
+   */
   private static String toString(@NonNull List<String> lines) {
     StringBuilder blder = new StringBuilder();
 
@@ -288,6 +308,17 @@ public class StringUtil {
     return blder.toString();
   }
 
+  /**
+   * <p>Returns the indices of the selected lines in {@code str}.</p>
+   *
+   * <p>Does quite some nice magic together with {@link StringUtil#getLines(String)}</p>
+   *
+   * @param str "Lorem\nIpsum\nDolor\Eset"
+   * @param selectionStart 8
+   * @param selectionEnd 14
+   *
+   * @return [2, 3] (Lines for Ipsum and Dolor)
+   */
   public static int[] getSelectedLines(@NonNull String str, int selectionStart, int selectionEnd) {
     int selStart = selectionStart;
     int selEnd = selectionEnd;
@@ -324,7 +355,7 @@ public class StringUtil {
   private static int[] toIntArray(@NonNull List<Integer> intList) {
 
     // Java8
-    // return intList.stream().mapToInt( i -> i).toArray();
+    // return intList.stream().mapToInt(i -> i).toArray();
 
     int[] intArray = new int[intList.size()];
     for (int i = 0; i < intList.size(); ++i) {
@@ -378,42 +409,6 @@ public class StringUtil {
 
     return toString(lines);
   }
-
-  /*
-  public static int getIndexOfLineStart(@NonNull String str, int pos) {
-    int strLen = str.length();
-    int selStart;
-    if (pos < 0) {
-      selStart = 0;
-    } else if (strLen > 0 && pos > strLen) {
-      selStart = strLen;
-    } else {
-      selStart = pos;
-    }
-
-    int lineStart = str.substring(0, selStart).lastIndexOf(LINE_ENDING);
-    return lineStart < 0? 0 : lineStart + 1;
-  }
-
-  public static int getIndexOfLineEnd(@NonNull String str, int pos) {
-    int strLen = str.length();
-
-    if (strLen == 0) {
-      return 0;
-    }
-
-    int selEnd;
-    if (pos < 0) {
-      selEnd = 0;
-    } else if (pos > strLen) {
-      selEnd = strLen;
-    } else {
-      selEnd = pos;
-    }
-
-    int lineEnd = str.indexOf(LINE_ENDING, selEnd);
-    return lineEnd < 0? strLen - 1 : lineEnd - 1;
-  } */
 
   /**
    * <p>Moves the selected lines from a string up by one.</p>
