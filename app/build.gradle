@@ -8,7 +8,7 @@ android {
     minSdkVersion 24
     targetSdkVersion 32
     versionCode 25
-    versionName "2.5.2-dev"
+    versionName "3.0.0"
     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     signingConfig signingConfigs.debug
   }
