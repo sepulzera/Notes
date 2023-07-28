@@ -3,17 +3,12 @@ package de.sepulzera.notes.bf.service.impl;
 import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
-import android.os.Build;
-import android.os.Environment;
-import android.provider.MediaStore;
 
 import androidx.annotation.NonNull;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import java.io.File;
-import java.nio.file.FileStore;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -25,7 +20,6 @@ import java.util.List;
 import java.util.Locale;
 
 import de.sepulzera.notes.R;
-import de.sepulzera.notes.bf.helper.DateUtil;
 import de.sepulzera.notes.bf.helper.Helper;
 import de.sepulzera.notes.bf.helper.StringUtil;
 import de.sepulzera.notes.bf.helper.vlog.VLog;

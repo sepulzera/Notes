@@ -56,6 +56,9 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
 
     VLog.d(ACTIVITY_IDENT, "Creating activity.");
 
+    Helper.localize(getApplicationContext());
+    Helper.updatePreferences(this);
+
     Toolbar toolbar = findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
 
@@ -107,6 +110,11 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
           return;
         }
         noteFrag.setEditable(true);
+        if (note.getDraft()) {
+          mIsDraftFragEditable = true;
+        } else {
+          mIsNoteFragEditable = true;
+        }
         invalidateFloatingActionButton(true, true);
         invalidateOptionsMenu();
       }
@@ -128,7 +136,7 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
       invalidateOptionsMenu();
     });
 
-    invalidateFloatingActionButton(mNoteFrags.get(0).getFragment());
+    invalidateFloatingActionButton();
     invalidateOptionsMenu();
   }
 
@@ -145,6 +153,8 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
       if (mNote == null) {
         throw new IllegalArgumentException("note must not be null!");
       }
+      mIsDraftFragEditable = !mOpenNotesReadonly;
+      mIsNoteFragEditable  = !mOpenNotesReadonly;
     }
 
     final NoteService srv = NoteServiceImpl.getInstance();
@@ -188,6 +198,8 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
     mNote  = (Note)outState.getSerializable(Note.TAG_NOTE);
     mDraft = (Note)outState.getSerializable(KEY_DRAFT);
     mDisplayedNote = (Note)outState.getSerializable(KEY_DISPLAYED_NOTE);
+    mIsDraftFragEditable = outState.getBoolean(KEY_DRAFT_EDITABLE);
+    mIsNoteFragEditable = outState.getBoolean(KEY_NOTE_EDITABLE);
     mShowsRevisions = outState.getBoolean(KEY_SHOW_REVS);
     mShowToolbarEdit = outState.getBoolean(KEY_SHOW_TB_EDIT);
     mInvalidateList = outState.getBoolean(KEY_INVALID_LIST);
@@ -226,8 +238,6 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
 
   @Override
   public void onSaveInstanceState(@NonNull final Bundle outState) {
-    mPager.setCurrentItem(0);
-
     super.onSaveInstanceState(outState);
 
     if (mNote != null) {
@@ -239,6 +249,8 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
     if (mDisplayedNote != null) {
       outState.putSerializable(KEY_DISPLAYED_NOTE, mDisplayedNote);
     }
+    outState.putBoolean(KEY_DRAFT_EDITABLE, mIsDraftFragEditable);
+    outState.putBoolean(KEY_NOTE_EDITABLE, mIsNoteFragEditable);
     outState.putString(KEY_TITLE, getTitle().toString());
     outState.putBoolean(KEY_SHOW_REVS , mShowsRevisions);
     outState.putBoolean(KEY_SHOW_TB_EDIT, mShowToolbarEdit);
@@ -253,9 +265,10 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
         , context.getResources().getString(R.string.PREF_NOTE_OPEN_READONLY_KEY), Boolean.parseBoolean(context.getResources().getString(R.string.pref_note_open_readonly_default)));
   }
 
-  private void invalidateFloatingActionButton(@NonNull final NoteEditFragment frag) {
+  private void invalidateFloatingActionButton() {
     final boolean isCurrRev = mDisplayedNote != null && mDisplayedNote.getCurrRev() && mDisplayedNote.getCurr();
-    invalidateFloatingActionButton(isCurrRev, frag.isEditable());
+    final boolean isEditable = mDisplayedNote != null && mDisplayedNote.getDraft() ? mIsDraftFragEditable : mIsNoteFragEditable;
+    invalidateFloatingActionButton(isCurrRev, isEditable);
   }
 
   private void invalidateFloatingActionButton(boolean isCurrRev, boolean isEditable) {
@@ -693,17 +706,14 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
     final String newTitle = getTitle().toString();
     if (!note.getDraft()
         && StringUtil.equals(newMsg, note.getMsg()) && StringUtil.equals(newTitle, note.getTitle())) {
-      VLog.d(ACTIVITY_IDENT,  "Closing note=\"" + note + "\". (no changes)");
       // no changes made -> just go back
       executeDone();
       return;
     }
 
-    VLog.d(ACTIVITY_IDENT,  "Saving note=\"" + note + "\". (title=\"" + newTitle + "\", msg=\"" + newMsg + "\"");
-
     final Note saveNote = NoteServiceImpl.getInstance().clone(note);
     saveNote.setMsg(newMsg);
-    saveNote.setTitle(StringUtil.equals(getResources().getString(R.string.new_note_title), newTitle)? "" : newTitle);
+    saveNote.setTitle(StringUtil.equals(getResources().getString(R.string.new_note_title), newTitle) ? "" : newTitle);
 
     final boolean wasDraft = note.getDraft();
     if (wasDraft) {
@@ -743,7 +753,6 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
       dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
     }
     dialog.show();
-
   }
 
   private void executeDone() {
@@ -800,7 +809,7 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
     NoteEditFragment noteFrag = getActiveNoteFragment(getSupportFragmentManager(), mPager);
     if (noteFrag != null) {
       mDisplayedNote = noteFrag.getNote();
-      invalidateFloatingActionButton(noteFrag);
+      invalidateFloatingActionButton();
       invalidateOptionsMenu();
     }
   }
@@ -934,7 +943,7 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
 
     void add(@NonNull final Note note, @NonNull final String fragmentTitle) {
       final NoteEditFragment frag = new NoteEditFragment();
-      frag.initialize(mNoteFrags.size(), note);
+      frag.initialize(mNoteFrags.size(), note, mOpenNotesReadonly || !note.getCurrRev());
       // The fragment's instances should not be destroyed to not invalidate the references to them
       frag.setRetainInstance(true);
 
@@ -1026,6 +1035,8 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
   private boolean mInvalidateList = false;
 
   private final NoteFragmentAdapter mNoteFrags = new NoteFragmentAdapter();
+  private boolean mIsNoteFragEditable = false;
+  private boolean mIsDraftFragEditable = false;
 
   private NoteFragmentPagerAdapter mAdapter;
   private ViewPager mPager;
@@ -1047,6 +1058,8 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
   private static final String KEY_DRAFT          = "notetabvieweract_draft";
   private static final String KEY_TITLE          = "notetabvieweract_title";
   private static final String KEY_DISPLAYED_NOTE = "notetabvieweract_displayednote";
+  private static final String KEY_DRAFT_EDITABLE = "notetabvieweract_drafteditable";
+  private static final String KEY_NOTE_EDITABLE  = "notetabvieweract_noteeditable";
   private static final String KEY_SHOW_REVS      = "notetabvieweract_showrevs";
   private static final String KEY_SHOW_TB_EDIT   = "notetabvieweract_showtoolbaredit";
   private static final String KEY_INVALID_LIST   = "notetabvieweract_invalidatelist";

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.Uri;
 import androidx.annotation.NonNull;
 
-import java.io.File;
 import java.util.List;
 
 import de.sepulzera.notes.ds.model.Note;
