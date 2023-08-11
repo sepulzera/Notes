@@ -91,14 +91,16 @@ public class NoteEditFragment extends Fragment implements EditTextSelectable.Sel
 
     FragmentManager fragmentManager = getChildFragmentManager();
     final List<Fragment> frags = fragmentManager.getFragments();
-    if (frags.size() == 0) {
-      throw new IllegalStateException("RunDo Fragment is lost");
-    }
-    // may have additional frags, but only the RunDo is needed
-    for (final Fragment frag : frags) {
-      if (frag instanceof RunDoSupport && String.valueOf(mIndex).equals(((RunDoSupport)frag).getIdent())) {
-        mRunDo = (RunDoSupport)frag;
-        break;
+    if (frags.size() > 0) {
+      // may have additional frags, but only the RunDo is needed
+      for (final Fragment frag : frags) {
+        if (frag instanceof RunDoSupport && String.valueOf(mIndex).equals(((RunDoSupport) frag).getIdent())) {
+          mRunDo = (RunDoSupport) frag;
+          break;
+        }
+      }
+      if (mRunDo == null) {
+        throw new IllegalStateException("RunDo Fragment is lost");
       }
     }
   }
@@ -112,10 +114,10 @@ public class NoteEditFragment extends Fragment implements EditTextSelectable.Sel
     outState.putBoolean(KEY_EDITABLE, mIsEditable);
   }
 
-  public void initialize(int index, @NonNull final Note note) {
+  public void initialize(int index, @NonNull final Note note, boolean openNotesReadonly) {
     mIndex = index;
     mNote = note;
-    mIsEditable = note.getId() == 0L || !NoteTabViewerActivity.mOpenNotesReadonly;
+    mIsEditable = note.getId() == 0L || !openNotesReadonly;
   }
   public Note getNote() { return mNote; }
   public int getIndex() { return mIndex; }

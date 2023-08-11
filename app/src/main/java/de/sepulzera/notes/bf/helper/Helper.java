@@ -11,10 +11,8 @@ import androidx.appcompat.app.AppCompatDelegate;
 import android.util.Log;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -252,10 +250,15 @@ public class Helper {
    * @param mode {@code AppCompatDelegate.MODE_NIGHT_NO}, {@code AppCompatDelegate.MODE_NIGHT_YES} or {@code AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM}
    */
   public static void setNightMode(int mode) {
+    int systemMode;
     switch (mode) {
-      case 0:  AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO); break;
-      case 1:  AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES); break;
-      default: AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM); break;
+      case 0:  systemMode = AppCompatDelegate.MODE_NIGHT_NO;  break;
+      case 1:  systemMode = AppCompatDelegate.MODE_NIGHT_YES; break;
+      default: systemMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM; break;
+    }
+
+    if (systemMode != AppCompatDelegate.getDefaultNightMode()) {
+      AppCompatDelegate.setDefaultNightMode(systemMode);
     }
   }
 

@@ -79,7 +79,7 @@ This app fits your needs. Doesn't? Change it right to your needs.
 
 ### System Requirements
 
-* OS: Android 7.0
+* OS: Android 10.0
 * Display: 480x800, hdpi
 * Touch Input
 

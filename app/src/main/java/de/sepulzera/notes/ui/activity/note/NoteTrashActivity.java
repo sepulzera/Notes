@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.sepulzera.notes.R;
+import de.sepulzera.notes.bf.helper.Helper;
 import de.sepulzera.notes.bf.helper.vlog.VLog;
 import de.sepulzera.notes.bf.service.NoteService;
 import de.sepulzera.notes.bf.service.impl.NoteServiceImpl;
@@ -39,6 +40,9 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
     setContentView(R.layout.act_note_trash);
 
     VLog.d(ACTIVITY_IDENT, "Creating activity.");
+
+    Helper.localize(getApplicationContext());
+    Helper.updatePreferences(this);
 
     // SETUP APPLICATION
 
