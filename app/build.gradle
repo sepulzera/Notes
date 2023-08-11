@@ -8,7 +8,7 @@ android {
     minSdkVersion 29
     targetSdkVersion 32
     versionCode 26
-    versionName "3.0.1-SNAPSHOT"
+    versionName "3.0.1"
     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     signingConfig signingConfigs.debug
   }
@@ -19,6 +19,11 @@ android {
     release {
       minifyEnabled false
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    }
+  }
+  packagingOptions {
+    dex {
+      useLegacyPackaging true
     }
   }
   testOptions {
