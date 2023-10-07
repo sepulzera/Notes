@@ -71,9 +71,6 @@ import de.sepulzera.notes.bf.service.impl.NoteServiceImpl;
  */
 public class MainActivity extends AppCompatActivity
     implements AdapterView.OnItemClickListener, SearchView.OnQueryTextListener {
-  public static int mListRefreshInterval = 5;
-  public static boolean mDebugMode = false;
-
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -214,10 +211,10 @@ public class MainActivity extends AppCompatActivity
       @Override
       public void run() {
         mAdapter.updateView();
-        mHandler.postDelayed( this, 60L * mListRefreshInterval * 1000 );
+        mHandler.postDelayed( this, mListRefreshInterval);
       }
     };
-    mHandler.postDelayed(mRunRefreshUi, 60L * mListRefreshInterval * 1000 );
+    mHandler.postDelayed(mRunRefreshUi, mListRefreshInterval);
   }
 
   /**
@@ -244,7 +241,7 @@ public class MainActivity extends AppCompatActivity
   public void onResume() {
     super.onResume();
     mAdapter.updateView();
-    mHandler.postDelayed(mRunRefreshUi, 60L * mListRefreshInterval * 1000 );
+    mHandler.postDelayed(mRunRefreshUi, mListRefreshInterval);
 
     Helper.dailyTask(this);
   }
@@ -259,8 +256,6 @@ public class MainActivity extends AppCompatActivity
   }
 
   public static void readPreferences(@NonNull final Context context) {
-    mListRefreshInterval = Helper.getPreferenceAsInt(context
-        , context.getResources().getString(R.string.PREF_LIST_REFRESH_INTERVAL_KEY), Integer.parseInt(context.getResources().getString(R.string.pref_list_refresh_interval_default)));
     mDebugMode = Helper.getPreferenceAsBool(context
         , context.getResources().getString(R.string.PREF_DEBUGGING_MODE_KEY), false);
   }
@@ -794,4 +789,7 @@ public class MainActivity extends AppCompatActivity
   public  static final String RQ_EXTRA_FOLLOWUP_ID         = "followup_note_id";
 
   private static final String ACTIVITY_IDENT = "MainActivity";
+
+  private static boolean mDebugMode = false;
+  private static final long mListRefreshInterval = 60000L; // 60L * 1 * 1000
 }

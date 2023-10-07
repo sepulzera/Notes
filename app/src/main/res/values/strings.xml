@@ -170,27 +170,6 @@
     <item>0</item>
   </string-array>
 
-  <!-- note list refresh -->
-  <string name="pref_title_list_refresh_interval">Interval to refresh the notes list</string>
-  <string name="pref_list_refresh_interval_default">5</string>
-  <string-array name="pref_list_refresh_interval_titles">
-    <item>Never</item>
-    <item>1 Minute</item>
-    <item>2 Minutes</item>
-    <item>5 Minutes</item>
-    <item>10 Minutes</item>
-    <item>30 Minutes</item>
-    <item>60 Minutes</item>
-  </string-array>
-  <string-array name="pref_list_refresh_interval_values">
-    <item>-1</item>
-    <item>1</item>
-    <item>2</item>
-    <item>5</item>
-    <item>30</item>
-    <item>60</item>
-  </string-array>
-
   <!-- note open readonly -->
   <string name="pref_description_note_open_readonly_off">Open Notes editable.</string>
   <string name="pref_description_note_open_readonly_on">Open Notes readonly to prevent changes. They can be toggled editable.</string>
@@ -221,7 +200,6 @@
   <string name="title_activity_debug">Debug</string>
 
   <!-- constants, DO NOT CHANGE -->
-  <string name="PREF_LIST_REFRESH_INTERVAL_KEY">pref_list_refresh_interval_key</string>
   <string name="PREF_DAY_NIGHT_MODE_KEY">pref_day_night_mode_key</string>
   <string name="PREF_NOTE_OPEN_READONLY_KEY">pref_note_open_readonly_key</string>
   <string name="PREF_REV_DELETE_OLD_NUM_KEY">pref_rev_delete_old_num_key</string>

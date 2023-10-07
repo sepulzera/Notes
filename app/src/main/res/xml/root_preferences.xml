@@ -11,15 +11,6 @@
         app:key="@string/PREF_DAY_NIGHT_MODE_KEY"
         app:title="@string/pref_title_day_night_mode"
         app:useSimpleSummaryProvider="true" />
-
-    <ListPreference
-        app:defaultValue="@string/pref_list_refresh_interval_default"
-        app:entries="@array/pref_list_refresh_interval_titles"
-        app:entryValues="@array/pref_list_refresh_interval_values"
-        app:key="@string/PREF_LIST_REFRESH_INTERVAL_KEY"
-        app:title="@string/pref_title_list_refresh_interval"
-        app:useSimpleSummaryProvider="true" />
-
   </PreferenceCategory>
 
   <PreferenceCategory
@@ -32,7 +23,6 @@
         app:summaryOff="@string/pref_description_note_open_readonly_off"
         app:summaryOn="@string/pref_description_note_open_readonly_on"
         app:title="@string/pref_title_note_open_readonly" />
-
   </PreferenceCategory>
 
   <PreferenceCategory
@@ -54,7 +44,6 @@
         app:key="@string/PREF_NOTE_REMOVE_DELETED_DAYS_NUM_KEY"
         app:title="@string/pref_title_note_remove_deleted_days"
         app:useSimpleSummaryProvider="true" />
-
   </PreferenceCategory>
 
   <PreferenceCategory
@@ -67,8 +56,6 @@
         app:summaryOff="@string/pref_description_debugging_mode_off"
         app:summaryOn="@string/pref_description_debugging_mode_on"
         app:title="@string/pref_title_debugging_mode" />
-
-
   </PreferenceCategory>
 
 </PreferenceScreen>

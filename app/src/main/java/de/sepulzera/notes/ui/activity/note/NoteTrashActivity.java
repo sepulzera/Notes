@@ -143,10 +143,10 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
       @Override
       public void run() {
         mAdapter.updateView();
-        mHandler.postDelayed( this, 60L * MainActivity.mListRefreshInterval * 1000 );
+        mHandler.postDelayed( this, mListRefreshInterval);
       }
     };
-    mHandler.postDelayed(mRunRefreshUi, 60L * MainActivity.mListRefreshInterval * 1000 );
+    mHandler.postDelayed(mRunRefreshUi, mListRefreshInterval);
   }
 
   private void createState() {
@@ -194,7 +194,7 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
   public void onResume() {
     super.onResume();
     mAdapter.updateView();
-    mHandler.postDelayed(mRunRefreshUi, 60L * MainActivity.mListRefreshInterval * 1000);
+    mHandler.postDelayed(mRunRefreshUi, mListRefreshInterval);
   }
 
   @Override
@@ -525,4 +525,6 @@ public class NoteTrashActivity extends AppCompatActivity implements AdapterView.
   private static final int RQ_VIEW_NOTE_ACTION = 54011; // Single click (View)
 
   private static final String ACTIVITY_IDENT = "NoteTrashActivity";
+
+  private static final long mListRefreshInterval = 60000L; // 60L * 1 * 1000
 }
