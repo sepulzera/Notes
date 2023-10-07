@@ -47,8 +47,6 @@ import de.sepulzera.notes.ui.helper.UiHelper;
 import de.sepulzera.notes.ui.widgets.rundo.RunDo;
 
 public class NoteTabViewerActivity extends AppCompatActivity implements NoteEditFragment.NoteEditFragmentListener, RunDo.Callbacks, RunDo.TextLink {
-  public static boolean mOpenNotesReadonly = true;
-
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -148,6 +146,8 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
     final Bundle extras = intent.getExtras();
     if (null == extras) {
       mNote = new Note();
+      mIsDraftFragEditable = true;
+      mIsNoteFragEditable  = true;
     } else {
       mNote = (Note) intent.getExtras().getSerializable(Note.TAG_NOTE);
       if (mNote == null) {
@@ -1053,6 +1053,7 @@ public class NoteTabViewerActivity extends AppCompatActivity implements NoteEdit
   private MenuItem mItemLineUp;
   private MenuItem mItemLineDown;
 
+  private static boolean mOpenNotesReadonly = true;
   private static final int mNumScrollTabs = 5;
 
   private static final String KEY_DRAFT          = "notetabvieweract_draft";

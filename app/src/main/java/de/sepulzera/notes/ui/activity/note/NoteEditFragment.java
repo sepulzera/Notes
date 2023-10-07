@@ -387,7 +387,7 @@ public class NoteEditFragment extends Fragment implements EditTextSelectable.Sel
     if (context instanceof NoteEditFragmentListener ) {
       mListener = (NoteEditFragmentListener)context;
     } else {
-      throw new RuntimeException(context + " must implement TeamCreateFragmentListener");
+      throw new RuntimeException(context + " must implement NoteEditFragmentListener");
     }
   }
 
